@@ -56,7 +56,7 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * EUC-JP
   * Korean
     * ISO-2022-KR
-    * EUC-KR
+    * EUC-KR / UHC
   * Russian
     * ISO-8859-5
     * KOI8-R
