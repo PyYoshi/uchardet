@@ -61,6 +61,11 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * ISO-8859-13
   * Latvian
     * ISO-8859-13
+  * Portuguese
+    * ISO-8859-1
+    * ISO-8859-9
+    * ISO-8859-15
+    * WINDOWS-1252
   * Russian
     * ISO-8859-5
     * KOI8-R
