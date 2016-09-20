@@ -112,13 +112,17 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[34] = new nsSingleByteCharSetProber(&Windows_1252DanishModel);
 
   mProbers[35] = new nsSingleByteCharSetProber(&Iso_8859_13LithuanianModel);
+  mProbers[36] = new nsSingleByteCharSetProber(&Iso_8859_10LithuanianModel);
+  mProbers[37] = new nsSingleByteCharSetProber(&Iso_8859_4LithuanianModel);
 
-  mProbers[36] = new nsSingleByteCharSetProber(&Iso_8859_13LatvianModel);
+  mProbers[38] = new nsSingleByteCharSetProber(&Iso_8859_13LatvianModel);
+  mProbers[39] = new nsSingleByteCharSetProber(&Iso_8859_10LatvianModel);
+  mProbers[40] = new nsSingleByteCharSetProber(&Iso_8859_4LatvianModel);
 
-  mProbers[37] = new nsSingleByteCharSetProber(&Iso_8859_1PortugueseModel);
-  mProbers[38] = new nsSingleByteCharSetProber(&Iso_8859_9PortugueseModel);
-  mProbers[39] = new nsSingleByteCharSetProber(&Iso_8859_15PortugueseModel);
-  mProbers[40] = new nsSingleByteCharSetProber(&Windows_1252PortugueseModel);
+  mProbers[41] = new nsSingleByteCharSetProber(&Iso_8859_1PortugueseModel);
+  mProbers[42] = new nsSingleByteCharSetProber(&Iso_8859_9PortugueseModel);
+  mProbers[43] = new nsSingleByteCharSetProber(&Iso_8859_15PortugueseModel);
+  mProbers[44] = new nsSingleByteCharSetProber(&Windows_1252PortugueseModel);
 
   Reset();
 }

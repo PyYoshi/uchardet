@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # ##### BEGIN LICENSE BLOCK #####
@@ -38,32 +38,36 @@
 #
 # ##### END LICENSE BLOCK #####
 
-import re
+from codepoints import *
 
-## Mandatory Properties ##
+name = 'ISO-8859-4'
+aliases = ['ISO_8859-2:1988', 'ISO_8859-4', 'iso-ir-110',
+           'csISOLatin4', 'latin4', 'l4']
 
-# The human name for the language, in English.
-name = 'Latvian'
-# Use 2-letter ISO 639-1 if possible, 3-letter ISO code otherwise,
-# or use another catalog as a last resort.
-code = 'lv'
-# ASCII characters are also used.
-use_ascii = True
-# The charsets we want to support and create data for.
-charsets = ['ISO-8859-4', 'ISO-8859-10', 'ISO-8859-13']
+language = \
+{
+    # Nordic languages. Largely superseded by ISO-8859-10.
+    'complete': [ 'et', 'lv', 'lt', 'kl', 'saam1281' ],
+    'incomplete': []
+}
 
-## Optional Properties ##
-
-# Alphabet characters.
-# If use_ascii=True, there is no need to add any ASCII characters.
-# If case_mapping=True, there is no need to add several cases of a same
-# character (provided Python algorithms know the right cases).
-alphabet = 'āčēģīķļņšūž'
-# The start page. Just taking a starred page.
-start_pages = ['Zigfrīds Anna Meierovics']
-# give possibility to select another code for the Wikipedia URL.
-wikipedia_code = code
-# 'a' and 'A' will be considered the same character, and so on.
-# This uses Python algorithm to determine upper/lower-case of a given
-# character.
-case_mapping = True
+#   X0  X1  X2  X3  X4  X5  X6  X7  X8  X9  XA  XB  XC  XD  XE  XF   #
+charmap = \
+[
+    CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,RET,CTR,CTR,RET,CTR,CTR, # 0X
+    CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR, # 1X
+    SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM, # 2X
+    NUM,NUM,NUM,NUM,NUM,NUM,NUM,NUM,NUM,NUM,SYM,SYM,SYM,SYM,SYM,SYM, # 3X
+    SYM,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET, # 4X
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,SYM,SYM,SYM,SYM,SYM, # 5X
+    SYM,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET, # 6X
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,SYM,SYM,SYM,SYM,CTR, # 7X
+    CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR, # 8X
+    CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR, # 9X
+    SYM,LET,LET,LET,SYM,LET,LET,SYM,SYM,LET,LET,LET,LET,SYM,LET,SYM, # AX
+    SYM,LET,SYM,LET,SYM,LET,LET,SYM,SYM,LET,LET,LET,LET,LET,LET,LET, # BX
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET, # CX
+    LET,LET,LET,LET,LET,LET,LET,SYM,LET,LET,LET,LET,LET,LET,LET,LET, # DX
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET, # EX
+    LET,LET,LET,LET,LET,LET,LET,SYM,LET,LET,LET,LET,LET,LET,LET,SYM, # FX
+]

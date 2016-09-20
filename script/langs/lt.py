@@ -50,7 +50,7 @@ code = 'lt'
 # ASCII characters are also used.
 use_ascii = True
 # The charsets we want to support and create data for.
-charsets = ['ISO-8859-13']
+charsets = ['ISO-8859-4', 'ISO-8859-10', 'ISO-8859-13', ]
 
 ## Optional Properties ##
 

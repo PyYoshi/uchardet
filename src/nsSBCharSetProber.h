@@ -173,8 +173,12 @@ extern const SequenceModel Iso_8859_1DanishModel;
 extern const SequenceModel Windows_1252DanishModel;
 
 extern const SequenceModel Iso_8859_13LithuanianModel;
+extern const SequenceModel Iso_8859_10LithuanianModel;
+extern const SequenceModel Iso_8859_4LithuanianModel;
 
 extern const SequenceModel Iso_8859_13LatvianModel;
+extern const SequenceModel Iso_8859_10LatvianModel;
+extern const SequenceModel Iso_8859_4LatvianModel;
 
 extern const SequenceModel Iso_8859_1PortugueseModel;
 extern const SequenceModel Iso_8859_9PortugueseModel;
