@@ -113,6 +113,8 @@ nsSBCSGroupProber::nsSBCSGroupProber()
 
   mProbers[35] = new nsSingleByteCharSetProber(&Iso_8859_13LithuanianModel);
 
+  mProbers[36] = new nsSingleByteCharSetProber(&Iso_8859_13LatvianModel);
+
   Reset();
 }
 

@@ -174,5 +174,7 @@ extern const SequenceModel Windows_1252DanishModel;
 
 extern const SequenceModel Iso_8859_13LithuanianModel;
 
+extern const SequenceModel Iso_8859_13LatvianModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 
