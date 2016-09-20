@@ -176,5 +176,10 @@ extern const SequenceModel Iso_8859_13LithuanianModel;
 
 extern const SequenceModel Iso_8859_13LatvianModel;
 
+extern const SequenceModel Iso_8859_1PortugueseModel;
+extern const SequenceModel Iso_8859_9PortugueseModel;
+extern const SequenceModel Iso_8859_15PortugueseModel;
+extern const SequenceModel Windows_1252PortugueseModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 
