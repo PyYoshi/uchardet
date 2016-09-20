@@ -57,6 +57,10 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
   * Korean
     * ISO-2022-KR
     * EUC-KR / UHC
+  * Lithuanian
+    * ISO-8859-13
+  * Latvian
+    * ISO-8859-13
   * Russian
     * ISO-8859-5
     * KOI8-R
