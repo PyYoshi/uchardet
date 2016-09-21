@@ -211,5 +211,11 @@ extern const SequenceModel Iso_8859_13FinnishModel;
 extern const SequenceModel Iso_8859_15FinnishModel;
 extern const SequenceModel Windows_1252FinnishModel;
 
+extern const SequenceModel Iso_8859_1ItalianModel;
+extern const SequenceModel Iso_8859_3ItalianModel;
+extern const SequenceModel Iso_8859_9ItalianModel;
+extern const SequenceModel Iso_8859_15ItalianModel;
+extern const SequenceModel Windows_1252ItalianModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 
