@@ -136,6 +136,13 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[52] = new nsSingleByteCharSetProber(&Mac_CentraleuropeSlovakModel);
   mProbers[53] = new nsSingleByteCharSetProber(&Ibm852SlovakModel);
 
+  mProbers[54] = new nsSingleByteCharSetProber(&Windows_1250PolishModel);
+  mProbers[55] = new nsSingleByteCharSetProber(&Iso_8859_2PolishModel);
+  mProbers[56] = new nsSingleByteCharSetProber(&Iso_8859_13PolishModel);
+  mProbers[57] = new nsSingleByteCharSetProber(&Iso_8859_16PolishModel);
+  mProbers[58] = new nsSingleByteCharSetProber(&Mac_CentraleuropePolishModel);
+  mProbers[59] = new nsSingleByteCharSetProber(&Ibm852PolishModel);
+
   Reset();
 }
 

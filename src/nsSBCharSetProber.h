@@ -197,5 +197,12 @@ extern const SequenceModel Iso_8859_2SlovakModel;
 extern const SequenceModel Ibm852SlovakModel;
 extern const SequenceModel Mac_CentraleuropeSlovakModel;
 
+extern const SequenceModel Windows_1250PolishModel;
+extern const SequenceModel Iso_8859_2PolishModel;
+extern const SequenceModel Iso_8859_13PolishModel;
+extern const SequenceModel Iso_8859_16PolishModel;
+extern const SequenceModel Ibm852PolishModel;
+extern const SequenceModel Mac_CentraleuropePolishModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 
