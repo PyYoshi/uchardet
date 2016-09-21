@@ -84,6 +84,11 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * MAC-CYRILLIC
     * IBM866
     * IBM855
+  * Slovak
+    * Windows-1250
+    * ISO-8859-2
+    * IBM852
+    * Mac-CentralEurope
   * Spanish
     * ISO-8859-1
     * ISO-8859-15
