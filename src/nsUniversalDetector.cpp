@@ -113,6 +113,7 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
   {
     mStart = PR_FALSE;
     if (aLen > 2)
+    {
       switch (aBuf[0])
         {
         case '\xEF':
@@ -153,12 +154,13 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
           }
           break;
         }
+    }
 
-      if (mDetectedCharset)
-      {
+    if (mDetectedCharset)
+    {
         mDone = PR_TRUE;
         return NS_OK;
-      }
+    }
   }
 
   PRUint32 i;
