@@ -257,7 +257,10 @@ def visit_pages(titles, depth, lang, logfd):
         logfd.write("\n{} (revision {})".format(title, page.revision_id))
 
         process_text(page.content, lang)
-        next_titles += page.links
+        try:
+            next_titles += page.links
+        except KeyError:
+            pass
 
     if depth >= options.max_depth:
         return
