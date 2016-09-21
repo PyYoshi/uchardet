@@ -187,5 +187,10 @@ extern const SequenceModel Windows_1252PortugueseModel;
 
 extern const SequenceModel Iso_8859_3MalteseModel;
 
+extern const SequenceModel Windows_1250CzechModel;
+extern const SequenceModel Iso_8859_2CzechModel;
+extern const SequenceModel Ibm852CzechModel;
+extern const SequenceModel Mac_CentraleuropeCzechModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 

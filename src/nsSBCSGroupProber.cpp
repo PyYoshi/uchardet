@@ -126,6 +126,11 @@ nsSBCSGroupProber::nsSBCSGroupProber()
 
   mProbers[45] = new nsSingleByteCharSetProber(&Iso_8859_3MalteseModel);
 
+  mProbers[46] = new nsSingleByteCharSetProber(&Windows_1250CzechModel);
+  mProbers[47] = new nsSingleByteCharSetProber(&Iso_8859_2CzechModel);
+  mProbers[48] = new nsSingleByteCharSetProber(&Mac_CentraleuropeCzechModel);
+  mProbers[49] = new nsSingleByteCharSetProber(&Ibm852CzechModel);
+
   Reset();
 }
 
