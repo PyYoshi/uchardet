@@ -20,6 +20,7 @@
  *
  * Contributor(s):
  *          BYVoid <byvoid.kcp@gmail.com>
+ *          Jehan <jehan at girinstud.io>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,22 +44,29 @@ extern "C" {
 
 #include <stddef.h>
 
+/**
+ * A handle for a uchardet encoding detector.
+ */
 typedef struct uchardet * uchardet_t;
 
 /**
  * Create an encoding detector.
- * @return a handle of a instance of uchardet
+ * @return an instance of uchardet_t.
  */
 uchardet_t uchardet_new(void);
 
 /**
  * Delete an encoding detector.
- * @param ud [in] handle of a instance of uchardet
+ * @param ud [in] the uchardet_t handle to delete.
  */
 void uchardet_delete(uchardet_t ud);
 
 /**
  * Feed data to an encoding detector.
+ * The detector is able to shortcut processing when it reaches certainty
+ * for an encoding, so you should not worry about limiting input data.
+ * As far as you should be concerned: the more the better.
+ *
  * @param ud [in] handle of a instance of uchardet
  * @param data [in] data
  * @param len [in] number of byte of data
