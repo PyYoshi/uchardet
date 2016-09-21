@@ -124,6 +124,8 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[43] = new nsSingleByteCharSetProber(&Iso_8859_15PortugueseModel);
   mProbers[44] = new nsSingleByteCharSetProber(&Windows_1252PortugueseModel);
 
+  mProbers[45] = new nsSingleByteCharSetProber(&Iso_8859_3MalteseModel);
+
   Reset();
 }
 
