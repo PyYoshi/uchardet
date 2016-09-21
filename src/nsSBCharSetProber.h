@@ -204,5 +204,12 @@ extern const SequenceModel Iso_8859_16PolishModel;
 extern const SequenceModel Ibm852PolishModel;
 extern const SequenceModel Mac_CentraleuropePolishModel;
 
+extern const SequenceModel Iso_8859_1FinnishModel;
+extern const SequenceModel Iso_8859_4FinnishModel;
+extern const SequenceModel Iso_8859_9FinnishModel;
+extern const SequenceModel Iso_8859_13FinnishModel;
+extern const SequenceModel Iso_8859_15FinnishModel;
+extern const SequenceModel Windows_1252FinnishModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 

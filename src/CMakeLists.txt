@@ -11,6 +11,7 @@ set(
 	LangModels/LangBulgarianModel.cpp
     LangModels/LangCzechModel.cpp
 	LangModels/LangEsperantoModel.cpp
+	LangModels/LangFinnishModel.cpp
 	LangModels/LangFrenchModel.cpp
 	LangModels/LangDanishModel.cpp
 	LangModels/LangGermanModel.cpp
