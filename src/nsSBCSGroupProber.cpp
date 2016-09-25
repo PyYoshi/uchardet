@@ -153,8 +153,8 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[65] = new nsSingleByteCharSetProber(&Iso_8859_1ItalianModel);
   mProbers[66] = new nsSingleByteCharSetProber(&Iso_8859_3ItalianModel);
   mProbers[67] = new nsSingleByteCharSetProber(&Iso_8859_9ItalianModel);
-  mProbers[69] = new nsSingleByteCharSetProber(&Iso_8859_15ItalianModel);
-  mProbers[70] = new nsSingleByteCharSetProber(&Windows_1252ItalianModel);
+  mProbers[68] = new nsSingleByteCharSetProber(&Iso_8859_15ItalianModel);
+  mProbers[69] = new nsSingleByteCharSetProber(&Windows_1252ItalianModel);
 
   Reset();
 }
