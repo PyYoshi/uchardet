@@ -414,10 +414,18 @@ for charset in charsets:
                     uchar = local_lowercase(uchar, lang)
                 for order, (char, ratio) in enumerate(sorted_ratios):
                     if char == ord(uchar):
-                        CTOM_str += '{:3},'.format(order)
+                        CTOM_str += '{:3},'.format(min(249, order))
                         break
                 else:
-                    CTOM_str += '{:3},'.format(n_char)
+                    # XXX: we must make sure the character order does not go
+                    # over the special characters (250 currently). This may
+                    # actually happen when building a model for a language
+                    # writable with many different encoding. So let's just
+                    # ceil the order value at 249 max.
+                    # It may be an interesting alternative to add another
+                    # constant for any character with an order > freqCharCount.
+                    # Maybe IRR (irrelevant character) or simply CHR.
+                    CTOM_str += '{:3},'.format(min(249, n_char))
                     n_char += 1
         CTOM_str += ' /* {:X}X */'.format(line)
     CTOM_str += '\n};\n/*'
