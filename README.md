@@ -26,6 +26,13 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * EUC-TW
     * GB18030
     * HZ-GB-2312
+  * Croatian:
+    * ISO-8859-2
+    * ISO-8859-13
+    * ISO-8859-16
+    * Windows-1250
+    * IBM852
+    * MAC-CENTRALEUROPE
   * Czech
     * Windows-1250
     * ISO-8859-2
