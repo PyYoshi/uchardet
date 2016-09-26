@@ -75,6 +75,11 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
   * Hungarian:
     * ISO-8859-2
     * WINDOWS-1250
+  * Irish Gaelic
+    * ISO-8859-1
+    * ISO-8859-9
+    * ISO-8859-15
+    * WINDOWS-1252
   * Italian
     * ISO-8859-1
     * ISO-8859-3

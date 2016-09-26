@@ -230,5 +230,10 @@ extern const SequenceModel Iso_8859_4EstonianModel;
 extern const SequenceModel Iso_8859_13EstonianModel;
 extern const SequenceModel Iso_8859_15EstonianModel;
 
+extern const SequenceModel Iso_8859_15IrishModel;
+extern const SequenceModel Iso_8859_9IrishModel;
+extern const SequenceModel Iso_8859_1IrishModel;
+extern const SequenceModel Windows_1252IrishModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 

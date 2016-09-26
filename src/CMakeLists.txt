@@ -20,6 +20,7 @@ set(
 	LangModels/LangGreekModel.cpp
 	LangModels/LangHungarianModel.cpp
 	LangModels/LangHebrewModel.cpp
+	LangModels/LangIrishModel.cpp
 	LangModels/LangItalianModel.cpp
     LangModels/LangLithuanianModel.cpp
     LangModels/LangLatvianModel.cpp
