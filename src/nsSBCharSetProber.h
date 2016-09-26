@@ -224,5 +224,11 @@ extern const SequenceModel Iso_8859_16CroatianModel;
 extern const SequenceModel Ibm852CroatianModel;
 extern const SequenceModel Mac_CentraleuropeCroatianModel;
 
+extern const SequenceModel Windows_1252EstonianModel;
+extern const SequenceModel Windows_1257EstonianModel;
+extern const SequenceModel Iso_8859_4EstonianModel;
+extern const SequenceModel Iso_8859_13EstonianModel;
+extern const SequenceModel Iso_8859_15EstonianModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 

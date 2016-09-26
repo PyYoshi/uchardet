@@ -46,6 +46,12 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * ASCII
   * Esperanto
     * ISO-8859-3
+  * Estonian
+    * ISO-8859-4
+    * ISO-8859-13
+    * ISO-8859-13
+    * Windows-1252
+    * Windows-1257
   * Finnish
     * ISO-8859-1
     * ISO-8859-4
