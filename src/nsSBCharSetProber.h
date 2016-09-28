@@ -240,5 +240,11 @@ extern const SequenceModel Iso_8859_2RomanianModel;
 extern const SequenceModel Iso_8859_16RomanianModel;
 extern const SequenceModel Ibm852RomanianModel;
 
+extern const SequenceModel Windows_1250SloveneModel;
+extern const SequenceModel Iso_8859_2SloveneModel;
+extern const SequenceModel Iso_8859_16SloveneModel;
+extern const SequenceModel Ibm852SloveneModel;
+extern const SequenceModel Mac_CentraleuropeSloveneModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 
