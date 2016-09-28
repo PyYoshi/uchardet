@@ -115,6 +115,11 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * ISO-8859-9
     * ISO-8859-15
     * WINDOWS-1252
+  * Romanian:
+    * ISO-8859-2
+    * ISO-8859-16
+    * Windows-1250
+    * IBM852
   * Russian
     * ISO-8859-5
     * KOI8-R

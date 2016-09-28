@@ -174,6 +174,11 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[83] = new nsSingleByteCharSetProber(&Iso_8859_15IrishModel);
   mProbers[84] = new nsSingleByteCharSetProber(&Windows_1252IrishModel);
 
+  mProbers[85] = new nsSingleByteCharSetProber(&Windows_1250RomanianModel);
+  mProbers[86] = new nsSingleByteCharSetProber(&Iso_8859_2RomanianModel);
+  mProbers[87] = new nsSingleByteCharSetProber(&Iso_8859_16RomanianModel);
+  mProbers[88] = new nsSingleByteCharSetProber(&Ibm852RomanianModel);
+
   Reset();
 }
 
