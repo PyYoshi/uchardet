@@ -142,6 +142,12 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * ISO-8859-1
     * ISO-8859-15
     * WINDOWS-1252
+  * Swedish
+    * ISO-8859-1
+    * ISO-8859-4
+    * ISO-8859-9
+    * ISO-8859-15
+    * WINDOWS-1252
   * Thai
     * TIS-620
     * ISO-8859-11
