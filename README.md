@@ -193,6 +193,26 @@ The source can be browsed at: https://cgit.freedesktop.org/uchardet/uchardet/
     make
     make install
 
+### Build with flatpak-builder
+
+Here is a working "module" section to include in your Flatpak's json manifest:
+
+```
+"modules": [
+    {
+        "name": "uchardet",
+        "buildsystem": "cmake",
+        "builddir": true,
+        "config-opts": [ "-DCMAKE_INSTALL_LIBDIR=lib" ],
+        "sources": [
+            {
+                ...
+            }
+        ]
+    }
+]
+```
+
 ## Usage
 
 ### Command Line
