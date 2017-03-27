@@ -120,6 +120,10 @@ main(int argc, char ** argv)
 
     /* In a unit test, 0 means success, other returned values mean failure. */
     success = (strcmp(charset, expected_charset) != 0);
+    
+    // if (success != 0) {
+    //     printf("expected_charset=%s, got=%s\n", expected_charset, charset);
+    // }
 
     free(charset);
     free(filename);
