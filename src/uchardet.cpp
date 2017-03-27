@@ -44,25 +44,29 @@ class HandleUniversalDetector : public nsUniversalDetector
 {
 protected:
     char *m_charset;
-
+    float m_confidence;
 public:
     HandleUniversalDetector()
     : nsUniversalDetector(NS_FILTER_ALL)
     , m_charset(0)
     {
+        m_confidence = 0.0;
     }
 
     virtual ~HandleUniversalDetector()
     {
-        if (m_charset)
+        if (m_charset) {
             free(m_charset);
+            m_confidence = 0.0;
+        }
     }
 
-    virtual void Report(const char* charset)
+    virtual void Report(const char* charset, float confidence)
     {
         if (m_charset)
             free(m_charset);
         m_charset = strdup(charset);
+        m_confidence = confidence;
     }
 
     virtual void Reset()
@@ -71,11 +75,16 @@ public:
         if (m_charset)
             free(m_charset);
         m_charset = strdup("");
+        m_confidence = 0.0;
     }
 
     const char* GetCharset() const
     {
         return m_charset? m_charset : "";
+    }
+
+    float GetConfidence() {
+        return m_confidence;
     }
 };
 
@@ -108,4 +117,9 @@ void uchardet_reset(uchardet_t ud)
 const char* uchardet_get_charset(uchardet_t ud)
 {
     return reinterpret_cast<HandleUniversalDetector*>(ud)->GetCharset();
+}
+
+float uchardet_get_confidence(uchardet_t ud)
+{
+    return reinterpret_cast<HandleUniversalDetector*>(ud)->GetConfidence();
 }

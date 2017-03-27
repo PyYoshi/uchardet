@@ -190,19 +190,19 @@ extern const SequenceModel Iso_8859_3MalteseModel;
 extern const SequenceModel Windows_1250CzechModel;
 extern const SequenceModel Iso_8859_2CzechModel;
 extern const SequenceModel Ibm852CzechModel;
-extern const SequenceModel Mac_CentraleuropeCzechModel;
+extern const SequenceModel MaccentraleuropeCzechModel;
 
 extern const SequenceModel Windows_1250SlovakModel;
 extern const SequenceModel Iso_8859_2SlovakModel;
 extern const SequenceModel Ibm852SlovakModel;
-extern const SequenceModel Mac_CentraleuropeSlovakModel;
+extern const SequenceModel MaccentraleuropeSlovakModel;
 
 extern const SequenceModel Windows_1250PolishModel;
 extern const SequenceModel Iso_8859_2PolishModel;
 extern const SequenceModel Iso_8859_13PolishModel;
 extern const SequenceModel Iso_8859_16PolishModel;
 extern const SequenceModel Ibm852PolishModel;
-extern const SequenceModel Mac_CentraleuropePolishModel;
+extern const SequenceModel MaccentraleuropePolishModel;
 
 extern const SequenceModel Iso_8859_1FinnishModel;
 extern const SequenceModel Iso_8859_4FinnishModel;
@@ -222,7 +222,7 @@ extern const SequenceModel Iso_8859_2CroatianModel;
 extern const SequenceModel Iso_8859_13CroatianModel;
 extern const SequenceModel Iso_8859_16CroatianModel;
 extern const SequenceModel Ibm852CroatianModel;
-extern const SequenceModel Mac_CentraleuropeCroatianModel;
+extern const SequenceModel MaccentraleuropeCroatianModel;
 
 extern const SequenceModel Windows_1252EstonianModel;
 extern const SequenceModel Windows_1257EstonianModel;
@@ -244,7 +244,7 @@ extern const SequenceModel Windows_1250SloveneModel;
 extern const SequenceModel Iso_8859_2SloveneModel;
 extern const SequenceModel Iso_8859_16SloveneModel;
 extern const SequenceModel Ibm852SloveneModel;
-extern const SequenceModel Mac_CentraleuropeSloveneModel;
+extern const SequenceModel MaccentraleuropeSloveneModel;
 
 extern const SequenceModel Iso_8859_1SwedishModel;
 extern const SequenceModel Iso_8859_4SwedishModel;

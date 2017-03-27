@@ -69,7 +69,7 @@ public:
    virtual void DataEnd(void);
 
 protected:
-   virtual void Report(const char* aCharset) = 0;
+   virtual void Report(const char* aCharset, float aConfidence) = 0;
    virtual void Reset();
    nsInputState  mInputState;
    PRBool  mNbspFound;
@@ -79,6 +79,7 @@ protected:
    PRBool  mGotData;
    char    mLastChar;
    const char *  mDetectedCharset;
+   float mDetectedConfidence;
    PRInt32 mBestGuess;
    PRUint32 mLanguageFilter;
 

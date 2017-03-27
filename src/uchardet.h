@@ -93,6 +93,8 @@ void uchardet_reset(uchardet_t ud);
  */
 const char * uchardet_get_charset(uchardet_t ud);
 
+float uchardet_get_confidence(uchardet_t ud);
+
 #ifdef __cplusplus
 }
 #endif

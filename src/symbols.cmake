@@ -6,6 +6,7 @@ set(
 	uchardet_data_end
 	uchardet_reset
 	uchardet_get_charset
+	uchardet_get_confidence
 )
 
 set (LINK_FLAGS "")
