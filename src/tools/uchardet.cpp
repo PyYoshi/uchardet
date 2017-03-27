@@ -66,8 +66,9 @@ void detect(FILE * fp)
     uchardet_data_end(handle);
 
     const char * charset = uchardet_get_charset(handle);
+    float confidence = uchardet_get_confidence(handle);
     if (*charset)
-    	printf("%s\n", charset);
+    	printf("{ encoding=%s, confidence=%f }\n", charset, confidence);
 	else
 		printf("unknown\n");
 	
