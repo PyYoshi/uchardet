@@ -86,6 +86,10 @@ public:
     float GetConfidence() {
         return m_confidence;
     }
+
+    PRBool HasDone() {
+        return mDone;
+    }
 };
 
 uchardet_t uchardet_new(void)
@@ -101,7 +105,15 @@ void uchardet_delete(uchardet_t ud)
 int uchardet_handle_data(uchardet_t ud, const char * data, size_t len)
 {
     nsresult ret = reinterpret_cast<HandleUniversalDetector*>(ud)->HandleData(data, (PRUint32)len);
-    return (ret != NS_OK);
+    if (ret == NS_ERROR_OUT_OF_MEMORY) {
+        return HANDLE_DATA_RESULT_ERROR;
+    }
+
+    if (reinterpret_cast<HandleUniversalDetector*>(ud)->HasDone()) {
+        return HANDLE_DATA_RESULT_DETECTED;
+    }
+
+    return HANDLE_DATA_RESULT_NEED_MORE_DATA;
 }
 
 void uchardet_data_end(uchardet_t ud)

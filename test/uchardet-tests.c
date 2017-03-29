@@ -56,7 +56,7 @@ detect(FILE *fp)
     {
         size_t len = fread(buffer, 1, BUFFER_SIZE, fp);
         int retval = uchardet_handle_data(handle, buffer, len);
-        if (retval != 0)
+        if (retval == HANDLE_DATA_RESULT_ERROR)
         {
             fprintf(stderr,
                     "uchardet-tests: handle data error.\n");

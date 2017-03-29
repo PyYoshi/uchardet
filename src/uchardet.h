@@ -61,6 +61,10 @@ uchardet_t uchardet_new(void);
  */
 void uchardet_delete(uchardet_t ud);
 
+#define HANDLE_DATA_RESULT_ERROR -1
+#define HANDLE_DATA_RESULT_DETECTED 0
+#define HANDLE_DATA_RESULT_NEED_MORE_DATA 1
+
 /**
  * Feed data to an encoding detector.
  * The detector is able to shortcut processing when it reaches certainty
