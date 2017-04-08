@@ -162,56 +162,18 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
 
 ## Installation
 
-### Debian/Ubuntu/Mint
-
-    apt-get install uchardet libuchardet-dev
-
-### Mageia
-
-    urpmi libuchardet libuchardet-devel
-
-### Fedora
-
-    dnf install uchardet uchardet-devel
-
-### Mac
-
-    brew install uchardet
-
 ### Build from source
-
-Releases are available from:
-https://www.freedesktop.org/software/uchardet/releases/
 
 If you prefer a development version, clone the git repository:
 
-    git clone git://anongit.freedesktop.org/uchardet/uchardet
+    git clone https://github.com/PyYoshi/uchardet.git
 
-The source can be browsed at: https://cgit.freedesktop.org/uchardet/uchardet/
+The source can be browsed at: https://github.com/PyYoshi/uchardet
 
-    cmake .
+    mkdir build/ && cd build/
+    cmake ..
     make
     make install
-
-### Build with flatpak-builder
-
-Here is a working "module" section to include in your Flatpak's json manifest:
-
-```
-"modules": [
-    {
-        "name": "uchardet",
-        "buildsystem": "cmake",
-        "builddir": true,
-        "config-opts": [ "-DCMAKE_INSTALL_LIBDIR=lib" ],
-        "sources": [
-            {
-                ...
-            }
-        ]
-    }
-]
-```
 
 ## Usage
 
@@ -233,19 +195,7 @@ Options:
  ```
 ### Library
 
-See [uchardet.h](https://cgit.freedesktop.org/uchardet/uchardet/tree/src/uchardet.h)
-
-## Related Projects
-
-  * [python-chardet](https://github.com/chardet/chardet) Python port
-  * [ruby-rchardet](http://rubyforge.org/projects/chardet/) Ruby port
-  * [juniversalchardet](http://code.google.com/p/juniversalchardet/) Java port of universalchardet
-  * [jchardet](http://jchardet.sourceforge.net/) Java port of chardet
-  * [nuniversalchardet](http://code.google.com/p/nuniversalchardet/) C# port of universalchardet
-  * [nchardet](http://www.conceptdevelopment.net/Localization/NCharDet/) C# port of chardet
-  * [uchardet-enhanced](https://bitbucket.org/medoc/uchardet-enhanced) A fork of mozilla universalchardet
-  * [rust-uchardet](https://github.com/emk/rust-uchardet) Rust language binding of uchardet
-  * [libchardet](https://ftp.oops.org/pub/oops/libchardet/) Another C/C++ API wrapping Mozilla code.
+See [uchardet.h](https://github.com/PyYoshi/uchardet/blob/cchardet/src/uchardet.h)
 
 ## Licenses
 
