@@ -100,7 +100,9 @@ main(int argc, char ** argv)
     {
         /* Error opening the test file. */
         fprintf(stderr,
-                "uchardet-tests: error opening the test file\n");
+                "uchardet-tests: error opening the test file \"%s\"\n",
+                filename);
+        free(filename);
         return 1;
     }
 
