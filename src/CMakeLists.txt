@@ -85,6 +85,8 @@ add_library(
 	${UCHARDET_LIBRARY}
 	${UCHARDET_SOURCES}
 )
+set_property(TARGET ${UCHARDET_LIBRARY}
+             PROPERTY CXX_STANDARD 11)
 
 if (UCHARDET_STATIC_LIBRARY)
 	add_library(
@@ -92,6 +94,8 @@ if (UCHARDET_STATIC_LIBRARY)
 		STATIC
 		${UCHARDET_SOURCES}
 	)
+    set_property(TARGET ${UCHARDET_STATIC_LIBRARY}
+                 PROPERTY CXX_STANDARD 11)
 endif (UCHARDET_STATIC_LIBRARY)
 
 set_target_properties(
