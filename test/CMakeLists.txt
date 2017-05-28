@@ -20,8 +20,6 @@ add_executable(
 	uchardet-tests
 	${UCHARDET_TEST_SOURCES}
 )
-set_property(TARGET uchardet-tests
-             PROPERTY CXX_STANDARD 11)
 
 target_link_libraries(
 	uchardet-tests

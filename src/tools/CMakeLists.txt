@@ -22,8 +22,6 @@ add_executable(
 	${UCHARDET_BINARY}
 	${UCHARDET_SOURCES}
 )
-set_property(TARGET ${UCHARDET_BINARY}
-             PROPERTY CXX_STANDARD 11)
 
 target_link_libraries(
 	${UCHARDET_BINARY}
