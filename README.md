@@ -174,6 +174,10 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
 
     dnf install uchardet uchardet-devel
 
+### Gentoo
+
+    emerge uchardet
+
 ### Mac
 
     brew install uchardet
@@ -230,7 +234,8 @@ Usage:
 Options:
  -v, --version         Print version and build information.
  -h, --help            Print this help.
- ```
+```
+
 ### Library
 
 See [uchardet.h](https://cgit.freedesktop.org/uchardet/uchardet/tree/src/uchardet.h)
