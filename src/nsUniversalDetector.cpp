@@ -298,12 +298,14 @@ void nsUniversalDetector::DataEnd()
           /* ISO-8859-1 is a good result candidate for ASCII + NBSP.
            * (though it could have been any ISO-8859 encoding). */
           mDetectedCharset = "ISO-8859-1";
+          mDetectedConfidence = 1.0;
       }
       else
       {
           /* ASCII with the ESC character (or the sequence "~{") is still
            * ASCII until proven otherwise. */
           mDetectedCharset = "ASCII";
+          mDetectedConfidence = 1.0;
       }
     default:
       break;
