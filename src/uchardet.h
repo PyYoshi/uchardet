@@ -67,7 +67,7 @@ void uchardet_delete(uchardet_t ud);
  * for an encoding, so you should not worry about limiting input data.
  * As far as you should be concerned: the more the better.
  *
- * @param ud [in] handle of a instance of uchardet
+ * @param ud [in] handle of an instance of uchardet
  * @param data [in] data
  * @param len [in] number of byte of data
  * @return non-zero number on failure.
@@ -76,19 +76,19 @@ int uchardet_handle_data(uchardet_t ud, const char * data, size_t len);
 
 /**
  * Notify an end of data to an encoding detector.
- * @param ud [in] handle of a instance of uchardet
+ * @param ud [in] handle of an instance of uchardet
  */
 void uchardet_data_end(uchardet_t ud);
 
 /**
  * Reset an encoding detector.
- * @param ud [in] handle of a instance of uchardet
+ * @param ud [in] handle of an instance of uchardet
  */
 void uchardet_reset(uchardet_t ud);
 
 /**
  * Get an iconv-compatible name of the encoding that was detected.
- * @param ud [in] handle of a instance of uchardet
+ * @param ud [in] handle of an instance of uchardet
  * @return name of charset on success and "" on failure.
  */
 const char * uchardet_get_charset(uchardet_t ud);
