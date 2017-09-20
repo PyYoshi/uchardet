@@ -252,6 +252,13 @@ See [uchardet.h](https://cgit.freedesktop.org/uchardet/uchardet/tree/src/ucharde
   * [rust-uchardet](https://github.com/emk/rust-uchardet) Rust language binding of uchardet
   * [libchardet](https://ftp.oops.org/pub/oops/libchardet/) Another C/C++ API wrapping Mozilla code.
 
+## Used by
+
+* [mpv](https://mpv.io/) for subtitle detection
+* [Tepl](https://wiki.gnome.org/Projects/Tepl)
+* [Nextcloud IOS app](https://github.com/nextcloud/ios)
+* …
+
 ## Licenses
 
 * [Mozilla Public License Version 1.1](http://www.mozilla.org/MPL/1.1/)
