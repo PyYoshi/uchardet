@@ -36,8 +36,8 @@ include(GNUInstallDirs)
 
 ######## Configuration
 
-option(BUILD_BINARY "Build executable" ON)
-option(BUILD_SHARED_LIBS "Build shared library and link executable to it" ON)
+option(BUILD_BINARY "Build the CLI tool." ON)
+option(BUILD_SHARED_LIBS "Build shared library and link executable to it." ON)
 option(CHECK_SSE2 "Check and enable SSE2 extensions if supported. Disabling SSE on platforms which support it may decrease performances." ON)
 
 if (BUILD_SHARED_LIBS)
