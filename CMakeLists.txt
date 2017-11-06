@@ -38,7 +38,7 @@ include(GNUInstallDirs)
 
 option(BUILD_BINARY "Build executable" ON)
 option(BUILD_SHARED_LIBS "Build shared library and link executable to it" ON)
-option(ENABLE_SSE2 "Enable SSE2 extensions if the compiler supports it" ON)
+option(CHECK_SSE2 "Check and enable SSE2 extensions if supported. Disabling SSE on platforms which support it may decrease performances." ON)
 
 if (BUILD_SHARED_LIBS)
 	option(BUILD_STATIC "Build static library" ON)
@@ -46,13 +46,13 @@ endif (BUILD_SHARED_LIBS)
 
 CHECK_C_COMPILER_FLAG(-msse2 SUPPORTS_CFLAG_SSE2)
 CHECK_C_COMPILER_FLAG(-mfpmath=sse SUPPORTS_CFLAG_SSE_MATH)
-if (ENABLE_SSE2 AND SUPPORTS_CFLAG_SSE2 AND SUPPORTS_CFLAG_SSE_MATH)
+if (CHECK_SSE2 AND SUPPORTS_CFLAG_SSE2 AND SUPPORTS_CFLAG_SSE_MATH)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2 -mfpmath=sse")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2 -mfpmath=sse")
-else (ENABLE_SSE2 AND SUPPORTS_CFLAG_SSE2 AND SUPPORTS_CFLAG_SSE_MATH)
+else (CHECK_SSE2 AND SUPPORTS_CFLAG_SSE2 AND SUPPORTS_CFLAG_SSE_MATH)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffloat-store")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffloat-store")
-endif (ENABLE_SSE2 AND SUPPORTS_CFLAG_SSE2 AND SUPPORTS_CFLAG_SSE_MATH)
+endif (CHECK_SSE2 AND SUPPORTS_CFLAG_SSE2 AND SUPPORTS_CFLAG_SSE_MATH)
 
 configure_file(
 	uchardet.pc.in
