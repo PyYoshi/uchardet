@@ -23,13 +23,6 @@ set (
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-######## Windows
-
-#if (WIN32)
-#	set(CMAKE_SHARED_LIBRARY_PREFIX ${CMAKE_INSTALL_PREFIX})
-#	set(CMAKE_STATIC_LIBRARY_PREFIX ${CMAKE_INSTALL_PREFIX})
-#endif (WIN32)
-
 ######## Directory
 
 include(GNUInstallDirs)
