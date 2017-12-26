@@ -182,6 +182,20 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
 
     brew install uchardet
 
+### Windows
+
+Binary packages are provided in Fedora repository. There may exist other
+pre-built packages but I am not aware of them.
+Nevertheless the library is very easily and quickly compilable under
+Windows as well, so finding a binary package is not necessary.
+Some did it successfully with the [CMake Windows
+installer](https://cmake.org/download/) and MinGW. It should be possible
+to use MinGW-w64 instead of MinGW, in particular to build both 32 and
+64-bit DLL libraries).
+
+Note also that it is very easily cross-buildable (for instance from a
+GNU/Linux machine).
+
 ### Build from source
 
 Releases are available from:
