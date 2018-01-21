@@ -32,12 +32,16 @@ include(GNUInstallDirs)
 option(BUILD_BINARY "Build the CLI tool." ON)
 option(BUILD_SHARED_LIBS "Build shared library and link executable to it." ON)
 option(CHECK_SSE2 "Check and enable SSE2 extensions if supported. Disabling SSE on platforms which support it may decrease performances." ON)
+set(TARGET_ARCHITECTURE "" CACHE STRING "Target CPU architecture. It is autodetected if not specified.")
 
 if (BUILD_SHARED_LIBS)
 	option(BUILD_STATIC "Build static library" ON)
 endif (BUILD_SHARED_LIBS)
 
-string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} TARGET_ARCHITECTURE)
+if (TARGET_ARCHITECTURE STREQUAL "")
+    string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} TARGET_ARCHITECTURE)
+endif (TARGET_ARCHITECTURE STREQUAL "")
+
 if (TARGET_ARCHITECTURE MATCHES ".*(x86)|(amd).*")
     CHECK_C_COMPILER_FLAG(-msse2 SUPPORTS_CFLAG_SSE2)
     CHECK_C_COMPILER_FLAG(-mfpmath=sse SUPPORTS_CFLAG_SSE_MATH)
