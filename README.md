@@ -280,3 +280,15 @@ See [uchardet.h](https://cgit.freedesktop.org/uchardet/uchardet/tree/src/ucharde
 * [GNU Lesser General Public License, version 2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html) or later.
 
 See the file `COPYING` for the complete text of these 3 licenses.
+
+## Code of Conduct
+
+The `uchardet` project is hosted by [freedesktop.org](https://www.freedesktop.org/)
+and as such follows its code of conduct. In other words, it means we
+will treat anyone with respect and expect anyone to do the same.
+
+Please read [freedesktop.org Code of Conduct](https://www.freedesktop.org/wiki/CodeOfConduct).
+
+In case of any problem regarding abusive behavior in uchardet project,
+please contact the maintainer (Jehan) or create a bug report (possibly
+private if needed).
