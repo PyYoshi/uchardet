@@ -268,7 +268,7 @@ const SequenceModel MaccentraleuropeCroatianModel =
   31,
   (float)0.9989731099787131,
   PR_TRUE,
-  "MAC-CENTRALEUROPE"
+  "MacCentralEurope"
 };
 
 const SequenceModel Iso_8859_13CroatianModel =

@@ -274,7 +274,7 @@ const SequenceModel MaccentraleuropePolishModel =
   37,
   (float)0.9894531815946438,
   PR_TRUE,
-  "MAC-CENTRALEUROPE"
+  "MacCentralEurope"
 };
 
 const SequenceModel Iso_8859_13PolishModel =

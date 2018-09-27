@@ -34,12 +34,12 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * ISO-8859-16
     * Windows-1250
     * IBM852
-    * MAC-CENTRALEUROPE
+    * MacCentralEurope
   * Czech
     * Windows-1250
     * ISO-8859-2
     * IBM852
-    * MAC-CENTRALEUROPE
+    * MacCentralEurope
   * Danish
     * ISO-8859-1
     * ISO-8859-15
@@ -111,7 +111,7 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * ISO-8859-16
     * Windows-1250
     * IBM852
-    * MAC-CENTRALEUROPE
+    * MacCentralEurope
   * Portuguese
     * ISO-8859-1
     * ISO-8859-9
@@ -133,13 +133,13 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
     * Windows-1250
     * ISO-8859-2
     * IBM852
-    * MAC-CENTRALEUROPE
+    * MacCentralEurope
   * Slovene
     * ISO-8859-2
     * ISO-8859-16
     * Windows-1250
     * IBM852
-    * MAC-CENTRALEUROPE
+    * MacCentralEurope
   * Spanish
     * ISO-8859-1
     * ISO-8859-15

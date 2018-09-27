@@ -257,7 +257,7 @@ const SequenceModel MaccentraleuropeCzechModel =
   41,
   (float)0.9786035192432675,
   PR_TRUE,
-  "MAC-CENTRALEUROPE"
+  "MacCentralEurope"
 };
 
 const SequenceModel Ibm852CzechModel =
