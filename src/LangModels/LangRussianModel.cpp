@@ -337,7 +337,7 @@ const SequenceModel MacCyrillicRussianModel =
   64,
   (float)0.976601,
   PR_FALSE,
-  "MacCyrillic"
+  "MAC-CYRILLIC"
 };
 
 const SequenceModel Ibm866RussianModel =

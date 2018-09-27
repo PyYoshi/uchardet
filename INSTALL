@@ -1,4 +1,4 @@
-# INSTALL uchardet
+# Building uchardet (generic)
 
 `uchardet` uses a typical cmake installation.
 
@@ -14,3 +14,13 @@ Alternatively, use `ccmake`, curses interface to `cmake`.
 * Install with `make install`.
 
 Read `README` for more details on uchardet.
+
+# Building uchardet on Windows
+
+The above procedure is generic, which means it should work on any platform.
+In particular, it works well on Linux.
+
+The procedure is the same on Windows, but if you want more details (for
+instance which tools to use in order to run CMake on Windows, compiler
+information, etc.), the following link may be useful:
+https://github.com/BYVoid/uchardet/issues/39#issuecomment-353873891
