@@ -124,7 +124,7 @@ static const unsigned char Iso_8859_16_CharToOrderMap[] =
 };
 /*X0  X1  X2  X3  X4  X5  X6  X7  X8  X9  XA  XB  XC  XD  XE  XF */
 
-static const unsigned char Mac_Centraleurope_CharToOrderMap[] =
+static const unsigned char Maccentraleurope_CharToOrderMap[] =
 {
   CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,RET,CTR,CTR,RET,CTR,CTR, /* 0X */
   CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR, /* 1X */
@@ -261,9 +261,9 @@ const SequenceModel Iso_8859_16CroatianModel =
   "ISO-8859-16"
 };
 
-const SequenceModel Mac_CentraleuropeCroatianModel =
+const SequenceModel MaccentraleuropeCroatianModel =
 {
-  Mac_Centraleurope_CharToOrderMap,
+  Maccentraleurope_CharToOrderMap,
   CroatianLangModel,
   31,
   (float)0.9989731099787131,

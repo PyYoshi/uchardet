@@ -82,7 +82,7 @@ static const unsigned char Windows_1250_CharToOrderMap[] =
 };
 /*X0  X1  X2  X3  X4  X5  X6  X7  X8  X9  XA  XB  XC  XD  XE  XF */
 
-static const unsigned char Mac_Centraleurope_CharToOrderMap[] =
+static const unsigned char Maccentraleurope_CharToOrderMap[] =
 {
   CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,RET,CTR,CTR,RET,CTR,CTR, /* 0X */
   CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR, /* 1X */
@@ -250,9 +250,9 @@ const SequenceModel Windows_1250CzechModel =
   "WINDOWS-1250"
 };
 
-const SequenceModel MaccentraleuropeCroatianModel =
+const SequenceModel MaccentraleuropeCzechModel =
 {
-  Mac_Centraleurope_CharToOrderMap,
+  Maccentraleurope_CharToOrderMap,
   CzechLangModel,
   41,
   (float)0.9786035192432675,

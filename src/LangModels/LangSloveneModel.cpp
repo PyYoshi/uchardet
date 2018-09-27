@@ -124,7 +124,7 @@ static const unsigned char Windows_1250_CharToOrderMap[] =
 };
 /*X0  X1  X2  X3  X4  X5  X6  X7  X8  X9  XA  XB  XC  XD  XE  XF */
 
-static const unsigned char Mac_Centraleurope_CharToOrderMap[] =
+static const unsigned char Maccentraleurope_CharToOrderMap[] =
 {
   CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,RET,CTR,CTR,RET,CTR,CTR, /* 0X */
   CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR, /* 1X */
@@ -238,9 +238,9 @@ const SequenceModel Windows_1250SloveneModel =
   "WINDOWS-1250"
 };
 
-const SequenceModel Mac_CentraleuropeSloveneModel =
+const SequenceModel MaccentraleuropeSloveneModel =
 {
-  Mac_Centraleurope_CharToOrderMap,
+  Maccentraleurope_CharToOrderMap,
   SloveneLangModel,
   29,
   (float)0.9983524317161332,
