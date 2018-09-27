@@ -250,7 +250,7 @@ const SequenceModel Windows_1250CzechModel =
   "WINDOWS-1250"
 };
 
-const SequenceModel Mac_CentraleuropeCzechModel =
+const SequenceModel MaccentraleuropeCroatianModel =
 {
   Mac_Centraleurope_CharToOrderMap,
   CzechLangModel,
