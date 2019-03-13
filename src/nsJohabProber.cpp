@@ -20,7 +20,6 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *			Proofpoint, Inc.
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,61 +35,57 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef nsMBCSGroupProber_h__
-#define nsMBCSGroupProber_h__
-
-#include "nsSJISProber.h"
-#include "nsUTF8Prober.h"
-#include "nsEUCJPProber.h"
-#include "nsGB2312Prober.h"
-#include "nsEUCKRProber.h"
 #include "nsJohabProber.h"
-#include "nsBig5Prober.h"
-#include "nsEUCTWProber.h"
 
-#define NUM_OF_PROBERS    8
-#define NUM_OF_LANGUAGES  27
+void  nsJohabProber::Reset(void)
+{
+  mCodingSM->Reset(); 
+  mState = eDetecting;
+  mDistributionAnalyser.Reset(mIsPreferredLanguage);
+  //mContextAnalyser.Reset();
+}
 
-class nsMBCSGroupProber: public nsCharSetProber {
-public:
-  nsMBCSGroupProber(PRUint32 aLanguageFilter);
-  virtual ~nsMBCSGroupProber();
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
-                            int** codePointBuffer,
-                            int*  codePointBufferIdx);
-  int         GetCandidates();
-  const char* GetCharSetName(int candidate);
-  const char* GetLanguage(int candidate);
-  nsProbingState GetState(void) {return mState;}
-  void      Reset(void);
-  float     GetConfidence(int candidate);
-  void      SetOpion() {}
+nsProbingState nsJohabProber::HandleData(const char* aBuf, PRUint32 aLen)
+{
+  nsSMState codingState;
 
-#ifdef DEBUG_chardet
-  void  DumpStatus();
-#endif
-#ifdef DEBUG_jgmyers
-  void GetDetectorState(nsUniversalDetector::DetectorState (&states)[nsUniversalDetector::NumDetectors], PRUint32 &offset);
-#endif
+  for (PRUint32 i = 0; i < aLen; i++)
+  {
+    codingState = mCodingSM->NextState(aBuf[i]);
+    if (codingState == eItsMe)
+    {
+      mState = eFoundIt;
+      break;
+    }
+    if (codingState == eStart)
+    {
+      PRUint32 charLen = mCodingSM->GetCurrentCharLen();
 
-protected:
-  nsProbingState mState;
-  nsCharSetProber* mProbers[NUM_OF_PROBERS];
-  PRBool          mIsActive[NUM_OF_PROBERS];
-  PRUint32 mActiveNum;
-  PRUint32 mKeepNext;
+      if (i == 0)
+      {
+        mLastChar[1] = aBuf[0];
+        mDistributionAnalyser.HandleOneChar(mLastChar, charLen);
+      }
+      else
+        mDistributionAnalyser.HandleOneChar(aBuf+i-1, charLen);
+    }
+  }
 
-  PRBool   candidates[NUM_OF_PROBERS][NUM_OF_LANGUAGES];
+  mLastChar[0] = aBuf[aLen-1];
 
-  int *codePointBuffer[NUM_OF_PROBERS];
-  int  codePointBufferSize[NUM_OF_PROBERS];
-  int  codePointBufferIdx[NUM_OF_PROBERS];
+  if (mState == eDetecting)
+    if (mDistributionAnalyser.GotEnoughData() && GetConfidence() > SHORTCUT_THRESHOLD)
+      mState = eFoundIt;
+//    else
+//      mDistributionAnalyser.HandleData(aBuf, aLen);
 
-  nsLanguageDetector *langDetectors[NUM_OF_PROBERS][NUM_OF_LANGUAGES];
+  return mState;
+}
 
-private:
-  void CheckCandidates();
-};
+float nsJohabProber::GetConfidence(void)
+{
+  float distribCf = mDistributionAnalyser.GetConfidence();
 
-#endif /* nsMBCSGroupProber_h__ */
+  return (float)distribCf;
+}
 
