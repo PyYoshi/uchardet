@@ -35,12 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 #include "../uchardet.h"
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
 #include <getopt.h>
-#include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #ifndef VERSION
