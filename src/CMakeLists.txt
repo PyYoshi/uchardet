@@ -158,6 +158,7 @@ include(symbols.cmake)
 
 if (BUILD_BINARY)
 	add_subdirectory(tools)
+	add_subdirectory(fuzzing)
 endif (BUILD_BINARY)
 
 if (BUILD_FUZZER)
