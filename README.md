@@ -184,8 +184,8 @@ Techniques used by universalchardet are described at http://www.mozilla.org/proj
 
 ### Windows
 
-Binary packages are provided in Fedora repository. There may exist other
-pre-built packages but I am not aware of them.
+Binary packages are provided in Fedora and Msys2 repositories. There may
+exist other pre-built packages but I am not aware of them.
 Nevertheless the library is very easily and quickly compilable under
 Windows as well, so finding a binary package is not necessary.
 Some did it successfully with the [CMake Windows
@@ -271,6 +271,7 @@ See [uchardet.h](https://cgit.freedesktop.org/uchardet/uchardet/tree/src/ucharde
 * [mpv](https://mpv.io/) for subtitle detection
 * [Tepl](https://wiki.gnome.org/Projects/Tepl)
 * [Nextcloud IOS app](https://github.com/nextcloud/ios)
+* [Codelite](https://codelite.org)
 * …
 
 ## Licenses
