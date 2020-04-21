@@ -203,9 +203,9 @@ https://www.freedesktop.org/software/uchardet/releases/
 
 If you prefer a development version, clone the git repository:
 
-    git clone git://anongit.freedesktop.org/uchardet/uchardet
+    git clone https://gitlab.freedesktop.org/uchardet/uchardet.git
 
-The source can be browsed at: https://cgit.freedesktop.org/uchardet/uchardet/
+The source can be browsed at: https://gitlab.freedesktop.org/uchardet/uchardet
 
     cmake .
     make
@@ -252,7 +252,7 @@ Options:
 
 ### Library
 
-See [uchardet.h](https://cgit.freedesktop.org/uchardet/uchardet/tree/src/uchardet.h)
+See [uchardet.h](https://gitlab.freedesktop.org/uchardet/uchardet/-/blob/master/src/uchardet.h)
 
 ## Related Projects
 
