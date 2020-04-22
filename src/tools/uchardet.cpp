@@ -41,6 +41,7 @@
 #include <getopt.h>
 #include <iostream>
 #include <stdio.h>
+#include <string.h>
 
 #ifndef VERSION
 #define VERSION "Unknown"
@@ -125,7 +126,8 @@ int main(int argc, char ** argv)
 
     FILE * f = stdin;
     int error_seen = 0;
-    if (argc < 2)
+    if (argc < 2 ||
+        (argc == 2 && strcmp(argv[1], "--") == 0))
     {
         // No file arg, use stdin by default
         detect(f);
@@ -133,6 +135,10 @@ int main(int argc, char ** argv)
     for (int i = 1; i < argc; i++)
     {
         const char *filename = argv[i];
+
+        if (strcmp(filename, "--") == 0)
+            continue;
+
         f = fopen(filename, "r");
         if (f == NULL)
         {
