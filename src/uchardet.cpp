@@ -91,7 +91,11 @@ void uchardet_delete(uchardet_t ud)
 
 int uchardet_handle_data(uchardet_t ud, const char * data, size_t len)
 {
-    nsresult ret = reinterpret_cast<HandleUniversalDetector*>(ud)->HandleData(data, (PRUint32)len);
+    nsresult ret = NS_OK;
+
+    if (len > 0)
+        ret = reinterpret_cast<HandleUniversalDetector*>(ud)->HandleData(data, (PRUint32)len);
+
     return (ret != NS_OK);
 }
 
