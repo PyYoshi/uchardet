@@ -7,7 +7,7 @@ enable_testing()
 
 ######## Package information
 set (PACKAGE_URL https://www.freedesktop.org/wiki/Software/uchardet/)
-set (PACKAGE_BUGREPORT https://bugs.freedesktop.org/enter_bug.cgi?product=uchardet)
+set (PACKAGE_BUGREPORT https://gitlab.freedesktop.org/uchardet/uchardet/-/issues)
 set (UCHARDET_VERSION_MAJOR 0)
 set (UCHARDET_VERSION_MINOR 0)
 set (UCHARDET_VERSION_REVISION 6)
