@@ -106,6 +106,7 @@ int main(int argc, char ** argv)
         { "help", no_argument, NULL, 'h' },
         { 0, 0, 0, 0 },
     };
+    bool end_options = false;
 
     static int oc;
     while((oc = getopt_long(argc, argv, "vh", longopts, NULL)) != -1)
@@ -136,8 +137,11 @@ int main(int argc, char ** argv)
     {
         const char *filename = argv[i];
 
-        if (strcmp(filename, "--") == 0)
+        if (! end_options && strcmp(filename, "--") == 0)
+        {
+            end_options = true;
             continue;
+        }
 
         f = fopen(filename, "r");
         if (f == NULL)
