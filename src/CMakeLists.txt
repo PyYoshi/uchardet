@@ -79,6 +79,10 @@ add_library(
 	${UCHARDET_LIBRARY}
 	${UCHARDET_SOURCES}
 )
+target_compile_definitions("${UCHARDET_LIBRARY}" PRIVATE BUILDING_UCHARDET)
+if(BUILD_SHARED_LIBS)
+	target_compile_definitions("${UCHARDET_LIBRARY}" PUBLIC UCHARDET_SHARED)
+endif()
 
 if (UCHARDET_STATIC_LIBRARY)
 	add_library(
@@ -86,6 +90,7 @@ if (UCHARDET_STATIC_LIBRARY)
 		STATIC
 		${UCHARDET_SOURCES}
 	)
+	target_compile_definitions("${UCHARDET_STATIC_LIBRARY}" PRIVATE BUILDING_UCHARDET)
 endif (UCHARDET_STATIC_LIBRARY)
 
 set_target_properties(
