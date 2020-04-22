@@ -8,7 +8,7 @@ variables:
 
 ## GNU/Linux 64-bit CIs ##
 
-debian/testing:
+debian/testing-gcc:
   stage: build
   artifacts:
     expire_in: 1 week
@@ -28,6 +28,18 @@ debian/testing:
     - make -j "$(nproc)"
     - make test
     - make install
+
+debian/testing-clang:
+  extends: debian/testing-gcc
+  variables:
+    CC: "clang"
+    CXX: "clang++"
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends
+        build-essential
+        clang
+        cmake
 
 ## Windows CIs ##
 
