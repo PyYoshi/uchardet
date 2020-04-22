@@ -1,0 +1,27 @@
+image: debian:testing
+
+stages:
+  - build
+
+## GNU/Linux 64-bit CIs ##
+
+debian/testing:
+  stage: build
+  artifacts:
+    expire_in: 1 week
+    when: always
+    name: "uchardet-build-${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
+    paths:
+    - _build
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends
+        build-essential
+        cmake
+  script:
+    - mkdir _build
+    - cd _build
+    - cmake ..
+    - make -j "$(nproc)"
+    - make test
+    - make install
