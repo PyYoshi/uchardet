@@ -533,7 +533,8 @@ for charset in charsets:
     SM_str += '\n  {},'.format(freq_count)
     SM_str += '\n  (float){},'.format(ratio_512)
     SM_str += '\n  {},'.format('PR_TRUE' if lang.use_ascii else 'PR_FALSE')
-    SM_str += '\n  "{}"'.format(charset)
+    SM_str += '\n  "{},"'.format(charset)
+    SM_str += '\n  "{}"'.format(lang.code)
     SM_str += '\n};'
     c_code += SM_str
 
