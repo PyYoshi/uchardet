@@ -38,6 +38,7 @@
 #ifndef nsUTF8Prober_h__
 #define nsUTF8Prober_h__
 
+#include <cstddef>
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 
@@ -49,6 +50,7 @@ public:
   virtual ~nsUTF8Prober(){delete mCodingSM;}
   nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
   const char* GetCharSetName() {return "UTF-8";}
+  const char* GetLanguage() {return NULL;}
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
   float     GetConfidence(void);

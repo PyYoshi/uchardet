@@ -255,7 +255,8 @@ const SequenceModel Ibm852SlovakModel =
   45,
   (float)0.9733303573968434,
   PR_TRUE,
-  "IBM852"
+  "IBM852",
+  "sk"
 };
 
 const SequenceModel Iso_8859_2SlovakModel =
@@ -265,7 +266,8 @@ const SequenceModel Iso_8859_2SlovakModel =
   45,
   (float)0.9733303573968434,
   PR_TRUE,
-  "ISO-8859-2"
+  "ISO-8859-2",
+  "sk"
 };
 
 const SequenceModel Mac_CentraleuropeSlovakModel =
@@ -275,7 +277,8 @@ const SequenceModel Mac_CentraleuropeSlovakModel =
   45,
   (float)0.9733303573968434,
   PR_TRUE,
-  "MAC-CENTRALEUROPE"
+  "MAC-CENTRALEUROPE",
+  "sk"
 };
 
 const SequenceModel Windows_1250SlovakModel =
@@ -285,5 +288,6 @@ const SequenceModel Windows_1250SlovakModel =
   45,
   (float)0.9733303573968434,
   PR_TRUE,
-  "WINDOWS-1250"
+  "WINDOWS-1250",
+  "sk"
 };

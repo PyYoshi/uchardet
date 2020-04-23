@@ -233,7 +233,8 @@ const SequenceModel Latin5BulgarianModel =
   64,
   (float)0.969392,
   PR_FALSE,
-  "ISO-8859-5"
+  "ISO-8859-5",
+  "bg"
 };
 
 const SequenceModel Win1251BulgarianModel = 
@@ -243,5 +244,6 @@ const SequenceModel Win1251BulgarianModel =
   64,
   (float)0.969392,
   PR_FALSE,
-  "WINDOWS-1251"
+  "WINDOWS-1251",
+  "bg"
 };

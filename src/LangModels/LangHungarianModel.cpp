@@ -155,7 +155,8 @@ const SequenceModel Iso_8859_2HungarianModel =
   32,
   (float)0.9748272224933486,
   PR_FALSE,
-  "ISO-8859-2"
+  "ISO-8859-2",
+  "hu"
 };
 
 const SequenceModel Windows_1250HungarianModel =
@@ -165,5 +166,6 @@ const SequenceModel Windows_1250HungarianModel =
   32,
   (float)0.9748272224933486,
   PR_FALSE,
-  "WINDOWS-1250"
+  "WINDOWS-1250",
+  "hu"
 };

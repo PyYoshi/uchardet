@@ -219,7 +219,8 @@ const SequenceModel Iso_8859_4EstonianModel =
   33,
   (float)0.9972721312183132,
   PR_TRUE,
-  "ISO-8859-4"
+  "ISO-8859-4",
+  "et"
 };
 
 const SequenceModel Windows_1252EstonianModel =
@@ -229,7 +230,8 @@ const SequenceModel Windows_1252EstonianModel =
   33,
   (float)0.9972721312183132,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "et"
 };
 
 const SequenceModel Iso_8859_15EstonianModel =
@@ -239,7 +241,8 @@ const SequenceModel Iso_8859_15EstonianModel =
   33,
   (float)0.9972721312183132,
   PR_TRUE,
-  "ISO-8859-15"
+  "ISO-8859-15",
+  "et"
 };
 
 const SequenceModel Iso_8859_13EstonianModel =
@@ -249,7 +252,8 @@ const SequenceModel Iso_8859_13EstonianModel =
   33,
   (float)0.9972721312183132,
   PR_TRUE,
-  "ISO-8859-13"
+  "ISO-8859-13",
+  "et"
 };
 
 const SequenceModel Windows_1257EstonianModel =
@@ -259,5 +263,6 @@ const SequenceModel Windows_1257EstonianModel =
   33,
   (float)0.9972721312183132,
   PR_TRUE,
-  "WINDOWS-1257"
+  "WINDOWS-1257",
+  "et"
 };

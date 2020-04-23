@@ -177,7 +177,8 @@ const SequenceModel Iso_8859_1SpanishModel =
   33,
   (float)0.9970385677528184,
   PR_TRUE,
-  "ISO-8859-1"
+  "ISO-8859-1",
+  "es"
 };
 
 const SequenceModel Iso_8859_15SpanishModel =
@@ -187,7 +188,8 @@ const SequenceModel Iso_8859_15SpanishModel =
   33,
   (float)0.9970385677528184,
   PR_TRUE,
-  "ISO-8859-15"
+  "ISO-8859-15",
+  "es"
 };
 
 const SequenceModel Windows_1252SpanishModel =
@@ -197,5 +199,6 @@ const SequenceModel Windows_1252SpanishModel =
   33,
   (float)0.9970385677528184,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "es"
 };

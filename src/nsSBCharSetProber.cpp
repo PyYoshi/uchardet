@@ -145,6 +145,13 @@ const char* nsSingleByteCharSetProber::GetCharSetName()
   return mNameProber->GetCharSetName();
 }
 
+const char* nsSingleByteCharSetProber::GetLanguage()
+{
+  if (!mNameProber)
+    return mModel->langName;
+  return mNameProber->GetLanguage();
+}
+
 #ifdef DEBUG_chardet
 void nsSingleByteCharSetProber::DumpStatus()
 {

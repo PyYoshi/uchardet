@@ -182,7 +182,8 @@ const SequenceModel Iso_8859_10LithuanianModel =
   38,
   (float)0.9928710196247589,
   PR_TRUE,
-  "ISO-8859-10"
+  "ISO-8859-10",
+  "lt"
 };
 
 const SequenceModel Iso_8859_4LithuanianModel =
@@ -192,7 +193,8 @@ const SequenceModel Iso_8859_4LithuanianModel =
   38,
   (float)0.9928710196247589,
   PR_TRUE,
-  "ISO-8859-4"
+  "ISO-8859-4",
+  "lt"
 };
 
 const SequenceModel Iso_8859_13LithuanianModel =
@@ -202,5 +204,6 @@ const SequenceModel Iso_8859_13LithuanianModel =
   38,
   (float)0.9928710196247589,
   PR_TRUE,
-  "ISO-8859-13"
+  "ISO-8859-13",
+  "lt"
 };

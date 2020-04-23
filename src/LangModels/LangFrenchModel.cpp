@@ -182,7 +182,8 @@ const SequenceModel Windows_1252FrenchModel =
   38,
   (float)0.997057879992383,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "fr"
 };
 
 const SequenceModel Iso_8859_1FrenchModel =
@@ -192,7 +193,8 @@ const SequenceModel Iso_8859_1FrenchModel =
   38,
   (float)0.997057879992383,
   PR_TRUE,
-  "ISO-8859-1"
+  "ISO-8859-1",
+  "fr"
 };
 
 const SequenceModel Iso_8859_15FrenchModel =
@@ -202,5 +204,6 @@ const SequenceModel Iso_8859_15FrenchModel =
   38,
   (float)0.997057879992383,
   PR_TRUE,
-  "ISO-8859-15"
+  "ISO-8859-15",
+  "fr"
 };

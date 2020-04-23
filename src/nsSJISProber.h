@@ -58,6 +58,7 @@ public:
   virtual ~nsSJISProber(void){delete mCodingSM;}
   nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
   const char* GetCharSetName() {return "SHIFT_JIS";}
+  const char* GetLanguage() {return "ja";}
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
   float     GetConfidence(void);

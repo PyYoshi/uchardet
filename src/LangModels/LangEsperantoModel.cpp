@@ -137,5 +137,6 @@ const SequenceModel Iso_8859_3EsperantoModel =
   35,
   (float)0.9942980632768038,
   PR_FALSE,
-  "ISO-8859-3"
+  "ISO-8859-3",
+  "eo"
 };

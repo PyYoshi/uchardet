@@ -251,7 +251,8 @@ const SequenceModel Tis_620ThaiModel =
   64,
   (float)0.8815720594354438,
   PR_FALSE,
-  "TIS-620"
+  "TIS-620",
+  "th"
 };
 
 const SequenceModel Iso_8859_11ThaiModel =
@@ -261,5 +262,6 @@ const SequenceModel Iso_8859_11ThaiModel =
   64,
   (float)0.8815720594354438,
   PR_FALSE,
-  "ISO-8859-11"
+  "ISO-8859-11",
+  "th"
 };

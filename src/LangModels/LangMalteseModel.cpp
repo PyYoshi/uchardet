@@ -133,5 +133,6 @@ const SequenceModel Iso_8859_3MalteseModel =
   31,
   (float)0.9959115850692665,
   PR_TRUE,
-  "ISO-8859-3"
+  "ISO-8859-3",
+  "mt"
 };

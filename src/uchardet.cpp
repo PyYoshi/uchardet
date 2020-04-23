@@ -65,6 +65,7 @@ public:
     }
 
     virtual void Report(const char *encoding,
+                        const char *language,
                         float       confidence)
     {
         std::vector<UChardetCandidate>::iterator it;
@@ -72,7 +73,8 @@ public:
 
         for (it = candidates.begin(); it != candidates.end(); it++)
         {
-            if (strcmp(it->encoding, encoding) == 0)
+            if (strcmp(it->encoding, encoding) == 0 &&
+                it->language && language && strcmp(it->language, language) == 0)
             {
                 /* Already reported. Bail out or update the confidence
                  * when needed.
@@ -91,6 +93,7 @@ public:
 
         candidate = UChardetCandidate();
         candidate.encoding   = strdup(encoding);
+        candidate.language   = language ? strdup(language) : NULL;
         candidate.confidence = confidence;
 
         for (it = candidates.begin(); it != candidates.end(); it++)
@@ -107,7 +110,11 @@ public:
 
         nsUniversalDetector::Reset();
         for (it = candidates.begin(); it != candidates.end(); it++)
+        {
             free(it->encoding);
+            if (it->language)
+                free(it->language);
+        }
         candidates.clear();
     }
 
@@ -125,6 +132,12 @@ public:
     {
         return (candidates.size() > i) ? candidates[i].confidence : 0.0;
     }
+
+    const char* GetLanguage(size_t i) const
+    {
+        return (candidates.size() > i) ? candidates[i].language : NULL;
+    }
+
 };
 
 uchardet_t uchardet_new(void)
@@ -177,4 +190,10 @@ const char * uchardet_get_encoding (uchardet_t ud,
                                     size_t     candidate)
 {
     return reinterpret_cast<HandleUniversalDetector*>(ud)->GetCharset(candidate);
+}
+
+const char * uchardet_get_language (uchardet_t ud,
+                                    size_t     candidate)
+{
+    return reinterpret_cast<HandleUniversalDetector*>(ud)->GetLanguage(candidate);
 }

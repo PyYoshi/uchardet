@@ -215,7 +215,8 @@ const SequenceModel Iso_8859_2SloveneModel =
   29,
   (float)0.9983524317161332,
   PR_TRUE,
-  "ISO-8859-2"
+  "ISO-8859-2",
+  "sl"
 };
 
 const SequenceModel Iso_8859_16SloveneModel =
@@ -225,7 +226,8 @@ const SequenceModel Iso_8859_16SloveneModel =
   29,
   (float)0.9983524317161332,
   PR_TRUE,
-  "ISO-8859-16"
+  "ISO-8859-16",
+  "sl"
 };
 
 const SequenceModel Windows_1250SloveneModel =
@@ -235,7 +237,8 @@ const SequenceModel Windows_1250SloveneModel =
   29,
   (float)0.9983524317161332,
   PR_TRUE,
-  "WINDOWS-1250"
+  "WINDOWS-1250",
+  "sl"
 };
 
 const SequenceModel Mac_CentraleuropeSloveneModel =
@@ -245,7 +248,8 @@ const SequenceModel Mac_CentraleuropeSloveneModel =
   29,
   (float)0.9983524317161332,
   PR_TRUE,
-  "MAC-CENTRALEUROPE"
+  "MAC-CENTRALEUROPE",
+  "sl"
 };
 
 const SequenceModel Ibm852SloveneModel =
@@ -255,5 +259,6 @@ const SequenceModel Ibm852SloveneModel =
   29,
   (float)0.9983524317161332,
   PR_TRUE,
-  "IBM852"
+  "IBM852",
+  "sl"
 };

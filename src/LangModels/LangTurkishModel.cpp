@@ -159,7 +159,8 @@ const SequenceModel Iso_8859_3TurkishModel =
   36,
   (float)0.991865243864388,
   PR_FALSE,
-  "ISO-8859-3"
+  "ISO-8859-3",
+  "tr"
 };
 
 const SequenceModel Iso_8859_9TurkishModel =
@@ -169,5 +170,6 @@ const SequenceModel Iso_8859_9TurkishModel =
   36,
   (float)0.991865243864388,
   PR_FALSE,
-  "ISO-8859-9"
+  "ISO-8859-9",
+  "tr"
 };

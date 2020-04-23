@@ -38,6 +38,8 @@
 #ifndef nsEscCharSetProber_h__
 #define nsEscCharSetProber_h__
 
+#include <cstddef>
+
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 
@@ -49,6 +51,7 @@ public:
   virtual ~nsEscCharSetProber(void);
   nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
   const char* GetCharSetName() {return mDetectedCharset;}
+  const char* GetLanguage() {return NULL;}
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
   float     GetConfidence(void){return (float)0.99;}

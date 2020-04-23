@@ -9,6 +9,7 @@ set(
     uchardet_get_candidates
     uchardet_get_encoding
     uchardet_get_confidence
+    uchardet_get_language
 )
 
 set (LINK_FLAGS "")

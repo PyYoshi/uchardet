@@ -57,6 +57,7 @@ public:
    * Korean documents are actually created with this character set.
    */
   const char* GetCharSetName() {return "UHC";}
+  const char* GetLanguage() {return "ko";}
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
   float     GetConfidence(void);

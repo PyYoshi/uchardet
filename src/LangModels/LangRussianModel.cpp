@@ -307,7 +307,8 @@ const SequenceModel Koi8rRussianModel =
   64,
   (float)0.976601,
   PR_FALSE,
-  "KOI8-R"
+  "KOI8-R",
+  "ru"
 };
 
 const SequenceModel Win1251RussianModel =
@@ -317,7 +318,8 @@ const SequenceModel Win1251RussianModel =
   64,
   (float)0.976601,
   PR_FALSE,
-  "WINDOWS-1251"
+  "WINDOWS-1251",
+  "ru"
 };
 
 const SequenceModel Latin5RussianModel =
@@ -327,7 +329,8 @@ const SequenceModel Latin5RussianModel =
   64,
   (float)0.976601,
   PR_FALSE,
-  "ISO-8859-5"
+  "ISO-8859-5",
+  "ru"
 };
 
 const SequenceModel MacCyrillicRussianModel =
@@ -337,7 +340,8 @@ const SequenceModel MacCyrillicRussianModel =
   64,
   (float)0.976601,
   PR_FALSE,
-  "MAC-CYRILLIC"
+  "MAC-CYRILLIC",
+  "ru"
 };
 
 const SequenceModel Ibm866RussianModel =
@@ -347,7 +351,8 @@ const SequenceModel Ibm866RussianModel =
   64,
   (float)0.976601,
   PR_FALSE,
-  "IBM866"
+  "IBM866",
+  "ru"
 };
 
 const SequenceModel Ibm855RussianModel =
@@ -357,5 +362,6 @@ const SequenceModel Ibm855RussianModel =
   64,
   (float)0.976601,
   PR_FALSE,
-  "IBM855"
+  "IBM855",
+  "ru"
 };

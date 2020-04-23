@@ -154,7 +154,8 @@ const SequenceModel Windows_1252GermanModel =
   31,
   (float)0.9934041448127945,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "de"
 };
 
 const SequenceModel Iso_8859_1GermanModel =
@@ -164,5 +165,6 @@ const SequenceModel Iso_8859_1GermanModel =
   31,
   (float)0.9934041448127945,
   PR_TRUE,
-  "ISO-8859-1"
+  "ISO-8859-1",
+  "de"
 };

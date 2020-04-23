@@ -203,7 +203,8 @@ const SequenceModel Iso_8859_1PortugueseModel =
   38,
   (float)0.9953179582313172,
   PR_TRUE,
-  "ISO-8859-1"
+  "ISO-8859-1",
+  "pt"
 };
 
 const SequenceModel Iso_8859_9PortugueseModel =
@@ -213,7 +214,8 @@ const SequenceModel Iso_8859_9PortugueseModel =
   38,
   (float)0.9953179582313172,
   PR_TRUE,
-  "ISO-8859-9"
+  "ISO-8859-9",
+  "pt"
 };
 
 const SequenceModel Iso_8859_15PortugueseModel =
@@ -223,7 +225,8 @@ const SequenceModel Iso_8859_15PortugueseModel =
   38,
   (float)0.9953179582313172,
   PR_TRUE,
-  "ISO-8859-15"
+  "ISO-8859-15",
+  "pt"
 };
 
 const SequenceModel Windows_1252PortugueseModel =
@@ -233,5 +236,6 @@ const SequenceModel Windows_1252PortugueseModel =
   38,
   (float)0.9953179582313172,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "pt"
 };

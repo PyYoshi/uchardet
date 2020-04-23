@@ -196,7 +196,8 @@ const SequenceModel Iso_8859_1IrishModel =
   31,
   (float)0.9974076651249096,
   PR_TRUE,
-  "ISO-8859-1"
+  "ISO-8859-1",
+  "ga"
 };
 
 const SequenceModel Windows_1252IrishModel =
@@ -206,7 +207,8 @@ const SequenceModel Windows_1252IrishModel =
   31,
   (float)0.9974076651249096,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "ga"
 };
 
 const SequenceModel Iso_8859_15IrishModel =
@@ -216,7 +218,8 @@ const SequenceModel Iso_8859_15IrishModel =
   31,
   (float)0.9974076651249096,
   PR_TRUE,
-  "ISO-8859-15"
+  "ISO-8859-15",
+  "ga"
 };
 
 const SequenceModel Iso_8859_9IrishModel =
@@ -226,5 +229,6 @@ const SequenceModel Iso_8859_9IrishModel =
   31,
   (float)0.9974076651249096,
   PR_TRUE,
-  "ISO-8859-9"
+  "ISO-8859-9",
+  "ga"
 };

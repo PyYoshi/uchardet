@@ -305,7 +305,7 @@ void nsUniversalDetector::DataEnd()
        * when finding them.
        */
       mDone = PR_TRUE;
-      Report(mDetectedCharset, 1.0);
+      Report(mDetectedCharset, NULL, 1.0);
       return;
   }
 
@@ -323,7 +323,9 @@ void nsUniversalDetector::DataEnd()
 
           if (proberConfidence > MINIMUM_THRESHOLD)
               /* Only report what we are confident in. */
-              Report(mCharSetProbers[i]->GetCharSetName(), proberConfidence);
+              Report(mCharSetProbers[i]->GetCharSetName(),
+                     mCharSetProbers[i]->GetLanguage(),
+                     proberConfidence);
         }
       }
     }

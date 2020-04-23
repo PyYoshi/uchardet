@@ -75,6 +75,7 @@ typedef struct
   float  mTypicalPositiveRatio;     // = freqSeqs / totalSeqs
   PRBool keepEnglishLetter;         // says if this script contains English characters (not implemented)
   const char* const charsetName;
+  const char* const langName;
 } SequenceModel;
 
 
@@ -86,6 +87,7 @@ public:
     :mModel(model), mReversed(reversed), mNameProber(nameProber) { Reset(); }
 
   virtual const char* GetCharSetName();
+  virtual const char* GetLanguage();
   virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
   virtual nsProbingState GetState(void) {return mState;}
   virtual void      Reset(void);

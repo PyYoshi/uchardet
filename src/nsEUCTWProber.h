@@ -51,6 +51,7 @@ public:
   virtual ~nsEUCTWProber(void){delete mCodingSM;}
   nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
   const char* GetCharSetName() {return "EUC-TW";}
+  const char* GetLanguage() {return "zh";}
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
   float     GetConfidence(void);

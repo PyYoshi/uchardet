@@ -196,7 +196,8 @@ const SequenceModel Iso_8859_15DanishModel =
   31,
   (float)0.9958348814328518,
   PR_TRUE,
-  "ISO-8859-15"
+  "ISO-8859-15",
+  "da"
 };
 
 const SequenceModel Iso_8859_1DanishModel =
@@ -206,7 +207,8 @@ const SequenceModel Iso_8859_1DanishModel =
   31,
   (float)0.9958348814328518,
   PR_TRUE,
-  "ISO-8859-1"
+  "ISO-8859-1",
+  "da"
 };
 
 const SequenceModel Windows_1252DanishModel =
@@ -216,7 +218,8 @@ const SequenceModel Windows_1252DanishModel =
   31,
   (float)0.9958348814328518,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "da"
 };
 
 const SequenceModel Ibm865DanishModel =

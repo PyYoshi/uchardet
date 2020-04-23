@@ -198,7 +198,8 @@ const SequenceModel Iso_8859_16RomanianModel =
   33,
   (float)0.997762564143313,
   PR_TRUE,
-  "ISO-8859-16"
+  "ISO-8859-16",
+  "ro"
 };
 
 const SequenceModel Iso_8859_2RomanianModel =
@@ -208,7 +209,8 @@ const SequenceModel Iso_8859_2RomanianModel =
   33,
   (float)0.997762564143313,
   PR_TRUE,
-  "ISO-8859-2"
+  "ISO-8859-2",
+  "ro"
 };
 
 const SequenceModel Windows_1250RomanianModel =
@@ -218,7 +220,8 @@ const SequenceModel Windows_1250RomanianModel =
   33,
   (float)0.997762564143313,
   PR_TRUE,
-  "WINDOWS-1250"
+  "WINDOWS-1250",
+  "ro"
 };
 
 const SequenceModel Ibm852RomanianModel =
@@ -228,5 +231,6 @@ const SequenceModel Ibm852RomanianModel =
   33,
   (float)0.997762564143313,
   PR_TRUE,
-  "IBM852"
+  "IBM852",
+  "ro"
 };

@@ -215,7 +215,8 @@ const SequenceModel Windows_1253GreekModel =
   46,
   (float)0.958419074626211,
   PR_FALSE,
-  "WINDOWS-1253"
+  "WINDOWS-1253",
+  "el"
 };
 
 const SequenceModel Iso_8859_7GreekModel =
@@ -225,5 +226,6 @@ const SequenceModel Iso_8859_7GreekModel =
   46,
   (float)0.958419074626211,
   PR_FALSE,
-  "ISO-8859-7"
+  "ISO-8859-7",
+  "el"
 };

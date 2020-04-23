@@ -237,7 +237,8 @@ const SequenceModel Iso_8859_15FinnishModel =
   30,
   (float)0.9985378147555799,
   PR_TRUE,
-  "ISO-8859-15"
+  "ISO-8859-15",
+  "fi"
 };
 
 const SequenceModel Windows_1252FinnishModel =
@@ -247,7 +248,8 @@ const SequenceModel Windows_1252FinnishModel =
   30,
   (float)0.9985378147555799,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "fi"
 };
 
 const SequenceModel Iso_8859_4FinnishModel =
@@ -257,7 +259,8 @@ const SequenceModel Iso_8859_4FinnishModel =
   30,
   (float)0.9985378147555799,
   PR_TRUE,
-  "ISO-8859-4"
+  "ISO-8859-4",
+  "fi"
 };
 
 const SequenceModel Iso_8859_13FinnishModel =
@@ -267,7 +270,8 @@ const SequenceModel Iso_8859_13FinnishModel =
   30,
   (float)0.9985378147555799,
   PR_TRUE,
-  "ISO-8859-13"
+  "ISO-8859-13",
+  "fi"
 };
 
 const SequenceModel Iso_8859_9FinnishModel =
@@ -277,7 +281,8 @@ const SequenceModel Iso_8859_9FinnishModel =
   30,
   (float)0.9985378147555799,
   PR_TRUE,
-  "ISO-8859-9"
+  "ISO-8859-9",
+  "fi"
 };
 
 const SequenceModel Iso_8859_1FinnishModel =
@@ -287,5 +292,6 @@ const SequenceModel Iso_8859_1FinnishModel =
   30,
   (float)0.9985378147555799,
   PR_TRUE,
-  "ISO-8859-1"
+  "ISO-8859-1",
+  "fi"
 };

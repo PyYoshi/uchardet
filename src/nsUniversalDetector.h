@@ -69,7 +69,8 @@ public:
    virtual void DataEnd(void);
 
 protected:
-   virtual void Report(const char* aCharset,
+   virtual void Report(const char *encoding,
+                       const char *language,
                        float       confidence) = 0;
    virtual void Reset();
    nsInputState  mInputState;

@@ -251,7 +251,8 @@ const SequenceModel Iso_8859_6ArabicModel =
   64,
   (float)0.9696025116913417,
   PR_FALSE,
-  "ISO-8859-6"
+  "ISO-8859-6",
+  "ar"
 };
 
 const SequenceModel Windows_1256ArabicModel =
@@ -261,5 +262,6 @@ const SequenceModel Windows_1256ArabicModel =
   64,
   (float)0.9696025116913417,
   PR_FALSE,
-  "WINDOWS-1256"
+  "WINDOWS-1256",
+  "ar"
 };

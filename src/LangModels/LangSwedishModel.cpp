@@ -217,7 +217,8 @@ const SequenceModel Windows_1252SwedishModel =
   31,
   (float)0.997323508584682,
   PR_TRUE,
-  "WINDOWS-1252"
+  "WINDOWS-1252",
+  "sv"
 };
 
 const SequenceModel Iso_8859_9SwedishModel =
@@ -227,7 +228,8 @@ const SequenceModel Iso_8859_9SwedishModel =
   31,
   (float)0.997323508584682,
   PR_TRUE,
-  "ISO-8859-9"
+  "ISO-8859-9",
+  "sv"
 };
 
 const SequenceModel Iso_8859_1SwedishModel =
@@ -237,7 +239,8 @@ const SequenceModel Iso_8859_1SwedishModel =
   31,
   (float)0.997323508584682,
   PR_TRUE,
-  "ISO-8859-1"
+  "ISO-8859-1",
+  "sv"
 };
 
 const SequenceModel Iso_8859_4SwedishModel =
@@ -247,7 +250,8 @@ const SequenceModel Iso_8859_4SwedishModel =
   31,
   (float)0.997323508584682,
   PR_TRUE,
-  "ISO-8859-4"
+  "ISO-8859-4",
+  "sv"
 };
 
 const SequenceModel Iso_8859_15SwedishModel =
@@ -257,5 +261,6 @@ const SequenceModel Iso_8859_15SwedishModel =
   31,
   (float)0.997323508584682,
   PR_TRUE,
-  "ISO-8859-15"
+  "ISO-8859-15",
+  "sv"
 };

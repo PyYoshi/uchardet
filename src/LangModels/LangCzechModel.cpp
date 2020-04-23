@@ -247,7 +247,8 @@ const SequenceModel Windows_1250CzechModel =
   41,
   (float)0.9786035192432675,
   PR_TRUE,
-  "WINDOWS-1250"
+  "WINDOWS-1250",
+  "cs"
 };
 
 const SequenceModel Mac_CentraleuropeCzechModel =
@@ -257,7 +258,8 @@ const SequenceModel Mac_CentraleuropeCzechModel =
   41,
   (float)0.9786035192432675,
   PR_TRUE,
-  "MAC-CENTRALEUROPE"
+  "MAC-CENTRALEUROPE",
+  "cs"
 };
 
 const SequenceModel Ibm852CzechModel =
@@ -267,7 +269,8 @@ const SequenceModel Ibm852CzechModel =
   41,
   (float)0.9786035192432675,
   PR_TRUE,
-  "IBM852"
+  "IBM852",
+  "cs"
 };
 
 const SequenceModel Iso_8859_2CzechModel =
@@ -277,5 +280,6 @@ const SequenceModel Iso_8859_2CzechModel =
   41,
   (float)0.9786035192432675,
   PR_TRUE,
-  "ISO-8859-2"
+  "ISO-8859-2",
+  "cs"
 };

@@ -233,7 +233,8 @@ const SequenceModel Windows_1258VietnameseModel =
   55,
   (float)0.9321889118082535,
   PR_FALSE,
-  "WINDOWS-1258"
+  "WINDOWS-1258",
+  "vi"
 };
 
 const SequenceModel VisciiVietnameseModel =
@@ -243,5 +244,6 @@ const SequenceModel VisciiVietnameseModel =
   55,
   (float)0.9321889118082535,
   PR_FALSE,
-  "VISCII"
+  "VISCII",
+  "vi"
 };

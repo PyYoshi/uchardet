@@ -183,7 +183,8 @@ const SequenceModel Iso_8859_4LatvianModel =
   39,
   (float)0.9904102202220861,
   PR_TRUE,
-  "ISO-8859-4"
+  "ISO-8859-4",
+  "lv"
 };
 
 const SequenceModel Iso_8859_10LatvianModel =
@@ -193,7 +194,8 @@ const SequenceModel Iso_8859_10LatvianModel =
   39,
   (float)0.9904102202220861,
   PR_TRUE,
-  "ISO-8859-10"
+  "ISO-8859-10",
+  "lv"
 };
 
 const SequenceModel Iso_8859_13LatvianModel =
@@ -203,5 +205,6 @@ const SequenceModel Iso_8859_13LatvianModel =
   39,
   (float)0.9904102202220861,
   PR_TRUE,
-  "ISO-8859-13"
+  "ISO-8859-13",
+  "lv"
 };

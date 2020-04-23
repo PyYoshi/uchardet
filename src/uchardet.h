@@ -120,6 +120,8 @@ UCHARDET_INTERFACE float        uchardet_get_confidence (uchardet_t ud,
                                                          size_t     candidate);
 UCHARDET_INTERFACE const char * uchardet_get_encoding   (uchardet_t ud,
                                                          size_t     candidate);
+UCHARDET_INTERFACE const char * uchardet_get_language   (uchardet_t ud,
+                                                         size_t     candidate);
 
 
 #ifdef __cplusplus
