@@ -237,10 +237,10 @@ Here is a working "module" section to include in your Flatpak's json manifest:
 
 ```
 uchardet Command Line Tool
-Version 0.0.6
+Version 0.0.7
 
 Authors: BYVoid, Jehan
-Bug Report: https://bugs.freedesktop.org/enter_bug.cgi?product=uchardet
+Bug Report: https://gitlab.freedesktop.org/uchardet/uchardet/-/issues
 
 Usage:
  uchardet [Options] [File]...

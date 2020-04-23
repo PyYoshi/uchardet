@@ -10,7 +10,7 @@ set (PACKAGE_URL https://www.freedesktop.org/wiki/Software/uchardet/)
 set (PACKAGE_BUGREPORT https://gitlab.freedesktop.org/uchardet/uchardet/-/issues)
 set (UCHARDET_VERSION_MAJOR 0)
 set (UCHARDET_VERSION_MINOR 0)
-set (UCHARDET_VERSION_REVISION 6)
+set (UCHARDET_VERSION_REVISION 7)
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
 	set (version_suffix .debug)
