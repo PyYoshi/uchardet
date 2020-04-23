@@ -74,9 +74,15 @@ static void detect(FILE *fp,
         printf("\n");
         for (i = 0; i < candidates; i++)
         {
-            printf("\t%s (%f)\n",
-                   uchardet_get_encoding(handle, i),
-                   uchardet_get_confidence(handle, i));
+            if (uchardet_get_language(handle, i))
+                printf("\t%s / %s (%f)\n",
+                        uchardet_get_encoding(handle, i),
+                        uchardet_get_language(handle, i),
+                        uchardet_get_confidence(handle, i));
+            else
+                printf("\t%s (%f)\n",
+                        uchardet_get_encoding(handle, i),
+                        uchardet_get_confidence(handle, i));
         }
     }
     else
