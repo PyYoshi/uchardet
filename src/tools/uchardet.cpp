@@ -47,7 +47,8 @@
 
 static char buffer[BUFFER_SIZE];
 
-static void detect(FILE * fp)
+static void detect(FILE *fp,
+                   bool  verbose)
 {
     uchardet_t handle = uchardet_new();
 
@@ -65,11 +66,27 @@ static void detect(FILE * fp)
     }
     uchardet_data_end(handle);
 
-    const char * charset = uchardet_get_charset(handle);
-    if (*charset)
-    	printf("%s\n", charset);
-	else
-		printf("unknown\n");
+    if (verbose)
+    {
+        size_t candidates = uchardet_get_candidates(handle);
+        size_t i;
+
+        printf("\n");
+        for (i = 0; i < candidates; i++)
+        {
+            printf("\t%s (%f)\n",
+                   uchardet_get_encoding(handle, i),
+                   uchardet_get_confidence(handle, i));
+        }
+    }
+    else
+    {
+        const char * charset = uchardet_get_encoding(handle, 0);
+        if (*charset)
+            printf("%s\n", charset);
+        else
+            printf("unknown\n");
+    }
 	
     uchardet_delete(handle);
 }
@@ -94,6 +111,7 @@ static void show_usage()
     printf("Options:\n");
     printf(" -v, --version         Print version and build information.\n");
     printf(" -h, --help            Print this help.\n");
+    printf(" -v, --verbose         Show all candidates and their confidence value.\n");
     printf("\n");
 }
 
@@ -103,12 +121,14 @@ int main(int argc, char ** argv)
     {
         { "version", no_argument, NULL, 'v' },
         { "help", no_argument, NULL, 'h' },
+        { "verbose", no_argument, NULL, 'V' },
         { 0, 0, 0, 0 },
     };
     bool end_options = false;
+    bool verbose     = false;
 
     static int oc;
-    while((oc = getopt_long(argc, argv, "vh", longopts, NULL)) != -1)
+    while((oc = getopt_long(argc, argv, "vhV", longopts, NULL)) != -1)
     {
         switch (oc)
         {
@@ -118,6 +138,9 @@ int main(int argc, char ** argv)
         case 'h':
             show_usage();
             return 0;
+        case 'V':
+            verbose = true;
+            break;
         case '?':
             printf("Please use %s --help.\n", argv[0]);
             return 1;
@@ -130,13 +153,18 @@ int main(int argc, char ** argv)
         (argc == 2 && strcmp(argv[1], "--") == 0))
     {
         // No file arg, use stdin by default
-        detect(f);
+        detect(f, verbose);
     }
     for (int i = 1; i < argc; i++)
     {
         const char *filename = argv[i];
 
-        if (! end_options && strcmp(filename, "--") == 0)
+        if (strcmp(filename, "-V") == 0 ||
+                strcmp(filename, "--verbose") == 0)
+        {
+            continue;
+        }
+        else if (! end_options && strcmp(filename, "--") == 0)
         {
             end_options = true;
             continue;
@@ -153,7 +181,7 @@ int main(int argc, char ** argv)
         {
             printf("%s: ", filename);
         }
-        detect(f);
+        detect(f, verbose);
     }
 
     return error_seen;
