@@ -111,9 +111,19 @@ public:
         candidates.clear();
     }
 
-    const char* GetCharset() const
+    size_t GetCandidates() const
     {
-        return (candidates.size() > 0) ? candidates[0].encoding : "";
+        return candidates.size();
+    }
+
+    const char* GetCharset(size_t i) const
+    {
+        return (candidates.size() > i) ? candidates[i].encoding : "";
+    }
+
+    float GetConfidence(size_t i) const
+    {
+        return (candidates.size() > i) ? candidates[i].confidence : 0.0;
     }
 };
 
@@ -149,5 +159,22 @@ void uchardet_reset(uchardet_t ud)
 
 const char* uchardet_get_charset(uchardet_t ud)
 {
-    return reinterpret_cast<HandleUniversalDetector*>(ud)->GetCharset();
+    return reinterpret_cast<HandleUniversalDetector*>(ud)->GetCharset(0);
+}
+
+size_t uchardet_get_candidates (uchardet_t ud)
+{
+    return reinterpret_cast<HandleUniversalDetector*>(ud)->GetCandidates();
+}
+
+float uchardet_get_confidence (uchardet_t ud,
+                               size_t     candidate)
+{
+    return reinterpret_cast<HandleUniversalDetector*>(ud)->GetConfidence(candidate);
+}
+
+const char * uchardet_get_encoding (uchardet_t ud,
+                                    size_t     candidate)
+{
+    return reinterpret_cast<HandleUniversalDetector*>(ud)->GetCharset(candidate);
 }
