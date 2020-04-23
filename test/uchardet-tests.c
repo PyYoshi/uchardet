@@ -67,7 +67,7 @@ detect(FILE *fp)
     }
     uchardet_data_end(handle);
 
-    charset = strdup(uchardet_get_charset(handle));
+    charset = strdup(uchardet_get_encoding(handle, 0));
     for (i = 0; charset[i]; i++)
     {
         /* Our test files are lowercase. */
