@@ -301,9 +301,12 @@ void nsUniversalDetector::DataEnd()
 
   if (mDetectedCharset)
   {
-    mDone = PR_TRUE;
-    Report(mDetectedCharset);
-    return;
+      /* These cases are limited enough that we are always confident
+       * when finding them.
+       */
+      mDone = PR_TRUE;
+      Report(mDetectedCharset, 1.0);
+      return;
   }
 
   switch (mInputState)
@@ -311,24 +314,18 @@ void nsUniversalDetector::DataEnd()
   case eHighbyte:
     {
       float proberConfidence;
-      float maxProberConfidence = (float)0.0;
-      PRInt32 maxProber = 0;
 
       for (PRInt32 i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
       {
         if (mCharSetProbers[i])
         {
           proberConfidence = mCharSetProbers[i]->GetConfidence();
-          if (proberConfidence > maxProberConfidence)
-          {
-            maxProberConfidence = proberConfidence;
-            maxProber = i;
-          }
+
+          if (proberConfidence > MINIMUM_THRESHOLD)
+              /* Only report what we are confident in. */
+              Report(mCharSetProbers[i]->GetCharSetName(), proberConfidence);
         }
       }
-      //do not report anything because we are not confident of it, that's in fact a negative answer
-      if (maxProberConfidence > MINIMUM_THRESHOLD)
-        Report(mCharSetProbers[maxProber]->GetCharSetName());
     }
     break;
   case eEscAscii:

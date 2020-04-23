@@ -37,45 +37,83 @@
 #include "uchardet.h"
 #include <string.h>
 #include <stdlib.h>
+#include <vector>
 #include "nscore.h"
 #include "nsUniversalDetector.h"
+
+typedef struct _UChardetCandidate
+{
+    char  *encoding;
+    char  *language;
+    float  confidence;
+} UChardetCandidate;
 
 class HandleUniversalDetector : public nsUniversalDetector
 {
 protected:
-    char *m_charset;
+    std::vector<UChardetCandidate> candidates;
 
 public:
     HandleUniversalDetector()
     : nsUniversalDetector(NS_FILTER_ALL)
-    , m_charset(0)
     {
     }
 
     virtual ~HandleUniversalDetector()
     {
-        if (m_charset)
-            free(m_charset);
+        Reset();
     }
 
-    virtual void Report(const char* charset)
+    virtual void Report(const char *encoding,
+                        float       confidence)
     {
-        if (m_charset)
-            free(m_charset);
-        m_charset = strdup(charset);
+        std::vector<UChardetCandidate>::iterator it;
+        UChardetCandidate                        candidate;
+
+        for (it = candidates.begin(); it != candidates.end(); it++)
+        {
+            if (strcmp(it->encoding, encoding) == 0)
+            {
+                /* Already reported. Bail out or update the confidence
+                 * when needed.
+                 */
+                if (confidence > it->confidence)
+                {
+                    candidates.erase(it);
+                    break;
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+
+        candidate = UChardetCandidate();
+        candidate.encoding   = strdup(encoding);
+        candidate.confidence = confidence;
+
+        for (it = candidates.begin(); it != candidates.end(); it++)
+        {
+            if (it->confidence < confidence)
+                break;
+        }
+        candidates.insert(it, candidate);
     }
 
     virtual void Reset()
     {
+        std::vector<UChardetCandidate>::iterator it;
+
         nsUniversalDetector::Reset();
-        if (m_charset)
-            free(m_charset);
-        m_charset = strdup("");
+        for (it = candidates.begin(); it != candidates.end(); it++)
+            free(it->encoding);
+        candidates.clear();
     }
 
     const char* GetCharset() const
     {
-        return m_charset? m_charset : "";
+        return (candidates.size() > 0) ? candidates[0].encoding : "";
     }
 };
 
