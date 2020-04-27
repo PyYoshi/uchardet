@@ -47,11 +47,10 @@
 
 static char buffer[BUFFER_SIZE];
 
-static void detect(FILE *fp,
-                   bool  verbose)
+static void detect(uchardet_t  handle,
+                   FILE       *fp,
+                   bool        verbose)
 {
-    uchardet_t handle = uchardet_new();
-
     while (1)
     {
         size_t len = fread(buffer, 1, BUFFER_SIZE, fp);
@@ -93,8 +92,8 @@ static void detect(FILE *fp,
         else
             printf("unknown\n");
     }
-	
-    uchardet_delete(handle);
+
+    uchardet_reset(handle);
 }
 
 static void show_version()
@@ -118,37 +117,68 @@ static void show_usage()
     printf(" -v, --version         Print version and build information.\n");
     printf(" -h, --help            Print this help.\n");
     printf(" -V, --verbose         Show all candidates and their confidence value.\n");
+    printf(" -w, --weight          Tweak language weights.\n");
     printf("\n");
 }
 
 int main(int argc, char ** argv)
 {
+    uchardet_t handle;
     static struct option longopts[] =
     {
         { "version", no_argument, NULL, 'v' },
         { "help", no_argument, NULL, 'h' },
         { "verbose", no_argument, NULL, 'V' },
+        { "weight", required_argument, NULL, 'w' },
         { 0, 0, 0, 0 },
     };
-    bool end_options = false;
-    bool verbose     = false;
+    bool end_options        = false;
+    bool ignore_next_option = false;
+    bool verbose            = false;
 
     static int oc;
-    while((oc = getopt_long(argc, argv, "vhV", longopts, NULL)) != -1)
+
+    handle = uchardet_new();
+    while((oc = getopt_long(argc, argv, "vhVw:", longopts, NULL)) != -1)
     {
         switch (oc)
         {
         case 'v':
             show_version();
+            uchardet_delete(handle);
             return 0;
         case 'h':
             show_usage();
+            uchardet_delete(handle);
             return 0;
         case 'V':
             verbose = true;
             break;
+        case 'w':
+            {
+                char *lang_weight;
+                char *saveptr;
+                char *comma;
+
+                lang_weight = strtok_r (optarg, ",", &saveptr);
+                do
+                {
+                    comma = strchr (lang_weight, ':');
+                    if (! comma)
+                    {
+                        printf("-w format is lang1:weight1,lang2:weight2...\n");
+                        uchardet_delete(handle);
+                        return 1;
+                    }
+                    *comma = '\0';
+                    uchardet_weigh_language(handle, lang_weight, strtof (comma + 1, NULL));
+                }
+                while ((lang_weight = strtok_r (NULL, ",", &saveptr)));
+            }
+            break;
         case '?':
             printf("Please use %s --help.\n", argv[0]);
+            uchardet_delete(handle);
             return 1;
         }
     }
@@ -159,21 +189,48 @@ int main(int argc, char ** argv)
         (argc == 2 && strcmp(argv[1], "--") == 0))
     {
         // No file arg, use stdin by default
-        detect(f, verbose);
+        detect(handle, f, verbose);
     }
     for (int i = 1; i < argc; i++)
     {
         const char *filename = argv[i];
 
-        if (strcmp(filename, "-V") == 0 ||
-                strcmp(filename, "--verbose") == 0)
+        if (ignore_next_option)
         {
+            ignore_next_option = false;
             continue;
         }
         else if (! end_options && strcmp(filename, "--") == 0)
         {
             end_options = true;
             continue;
+        }
+
+        if (! end_options)
+        {
+            if (strcmp(filename, "-V") == 0 ||
+                strcmp(filename, "--verbose") == 0)
+            {
+                continue;
+            }
+            else if (strcmp(filename, "-w") == 0 ||
+                     strcmp(filename, "--weight") == 0)
+            {
+                ignore_next_option = true;
+                continue;
+            }
+            else if (*filename == '-' &&
+                     (*(filename + 1) == 'w' ||
+                      (*(filename + 1) == '-' && *(filename + 2) == 'w')))
+            {
+                /* Some ugly trick to recognize -wlang:weight as well as
+                 * --weight=lang:weight patterns.
+                 * Obviously assuming that we have no other long option
+                 * starting with 'w'. If we end up having one, this
+                 * should be updated.
+                 */
+                continue;
+            }
         }
 
         f = fopen(filename, "r");
@@ -187,8 +244,10 @@ int main(int argc, char ** argv)
         {
             printf("%s: ", filename);
         }
-        detect(f, verbose);
+        detect(handle, f, verbose);
     }
+
+    uchardet_delete(handle);
 
     return error_seen;
 }
