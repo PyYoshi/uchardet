@@ -117,7 +117,7 @@ static void show_usage()
     printf("Options:\n");
     printf(" -v, --version         Print version and build information.\n");
     printf(" -h, --help            Print this help.\n");
-    printf(" -v, --verbose         Show all candidates and their confidence value.\n");
+    printf(" -V, --verbose         Show all candidates and their confidence value.\n");
     printf("\n");
 }
 
