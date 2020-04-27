@@ -10,6 +10,8 @@ set(
     uchardet_get_encoding
     uchardet_get_confidence
     uchardet_get_language
+    uchardet_set_default_weight
+    uchardet_weigh_language
 )
 
 set (LINK_FLAGS "")

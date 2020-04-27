@@ -123,6 +123,11 @@ UCHARDET_INTERFACE const char * uchardet_get_encoding   (uchardet_t ud,
 UCHARDET_INTERFACE const char * uchardet_get_language   (uchardet_t ud,
                                                          size_t     candidate);
 
+UCHARDET_INTERFACE void         uchardet_weigh_language (uchardet_t  ud,
+                                                         const char *language,
+                                                         float       weight);
+UCHARDET_INTERFACE void         uchardet_set_default_weight (uchardet_t  ud,
+                                                             float       weight);
 
 #ifdef __cplusplus
 }

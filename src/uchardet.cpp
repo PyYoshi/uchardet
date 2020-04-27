@@ -37,6 +37,8 @@
 #include "uchardet.h"
 #include <string.h>
 #include <stdlib.h>
+#include <map>
+#include <string>
 #include <vector>
 #include "nscore.h"
 #include "nsUniversalDetector.h"
@@ -52,10 +54,13 @@ class HandleUniversalDetector : public nsUniversalDetector
 {
 protected:
     std::vector<UChardetCandidate> candidates;
+    std::vector<UChardetCandidate> weighed_candidates;
+    std::map<std::string, float> weights;
+    float default_weight;
 
 public:
     HandleUniversalDetector()
-    : nsUniversalDetector(NS_FILTER_ALL)
+    : nsUniversalDetector(NS_FILTER_ALL), default_weight(1.0)
     {
     }
 
@@ -102,6 +107,9 @@ public:
                 break;
         }
         candidates.insert(it, candidate);
+
+        if (weights.size() > 0)
+            WeighCandidates();
     }
 
     virtual void Reset()
@@ -123,21 +131,75 @@ public:
         return candidates.size();
     }
 
-    const char* GetCharset(size_t i) const
+    const char* GetCharset(size_t i)
     {
+        if (weights.size() > 0)
+            return (weighed_candidates.size() > i) ? weighed_candidates[i].encoding : "";
         return (candidates.size() > i) ? candidates[i].encoding : "";
     }
 
-    float GetConfidence(size_t i) const
+    float GetConfidence(size_t i)
     {
+        if (weights.size() > 0)
+            return (weighed_candidates.size() > i) ? weighed_candidates[i].confidence : 0.0;
         return (candidates.size() > i) ? candidates[i].confidence : 0.0;
     }
 
-    const char* GetLanguage(size_t i) const
+    const char* GetLanguage(size_t i)
     {
+        if (weights.size() > 0)
+            return (weighed_candidates.size() > i) ? weighed_candidates[i].language : NULL;
         return (candidates.size() > i) ? candidates[i].language : NULL;
     }
 
+    void WeighLanguage(const char *language,
+                       float       weight)
+    {
+        weights[language] = weight;
+        WeighCandidates();
+    }
+
+    void WeighDefault(float weight)
+    {
+        default_weight = weight;
+        WeighCandidates();
+    }
+
+private:
+
+    void WeighCandidates()
+    {
+        std::vector<UChardetCandidate>::iterator it;
+        std::vector<UChardetCandidate>::iterator it2;
+        UChardetCandidate                        candidate;
+
+        weighed_candidates.clear();
+        for (it = candidates.begin(); it != candidates.end(); it++)
+        {
+            std::map<std::string, float>::iterator weight_it;
+            float                                  confidence;
+
+            confidence = it->confidence * default_weight;
+            if (it->language)
+            {
+                weight_it = weights.find(it->language);
+                if (weight_it != weights.end())
+                    confidence = weight_it->second * it->confidence;
+            }
+
+            candidate = UChardetCandidate();
+            candidate.encoding   = it->encoding;
+            candidate.language   = it->language;
+            candidate.confidence = confidence;
+
+            for (it2 = weighed_candidates.begin(); it2 != weighed_candidates.end(); it2++)
+            {
+                if (it2->confidence < confidence)
+                    break;
+            }
+            weighed_candidates.insert(it2, candidate);
+        }
+    }
 };
 
 uchardet_t uchardet_new(void)
@@ -196,4 +258,17 @@ const char * uchardet_get_language (uchardet_t ud,
                                     size_t     candidate)
 {
     return reinterpret_cast<HandleUniversalDetector*>(ud)->GetLanguage(candidate);
+}
+
+void uchardet_weigh_language (uchardet_t  ud,
+                              const char *language,
+                              float       weight)
+{
+    reinterpret_cast<HandleUniversalDetector*>(ud)->WeighLanguage(language, weight);
+}
+
+void uchardet_set_default_weight (uchardet_t  ud,
+                                  float       weight)
+{
+    reinterpret_cast<HandleUniversalDetector*>(ud)->WeighDefault(weight);
 }
