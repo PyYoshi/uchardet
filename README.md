@@ -4,10 +4,6 @@
 
 uchardet started as a C language binding of the original C++ implementation of the universal charset detection library by Mozilla. It can now detect more charsets, and more reliably than the original implementation.
 
-The original code of universalchardet is available at http://lxr.mozilla.org/seamonkey/source/extensions/universalchardet/
-
-Techniques used by universalchardet are described at http://www.mozilla.org/projects/intl/UniversalCharsetDetection.html
-
 ## Supported Languages/Encodings
 
   * International (Unicode)
@@ -194,7 +190,8 @@ to use MinGW-w64 instead of MinGW, in particular to build both 32 and
 64-bit DLL libraries).
 
 Note also that it is very easily cross-buildable (for instance from a
-GNU/Linux machine).
+GNU/Linux machine; [crossroad](https://pypi.org/project/crossroad/) may
+help, this is what we use in our CI).
 
 ### Build from source
 
@@ -254,8 +251,41 @@ Options:
 
 See [uchardet.h](https://gitlab.freedesktop.org/uchardet/uchardet/-/blob/master/src/uchardet.h)
 
+## History
+
+As said in introduction, this was initially a project of Mozilla to
+allow better detection of page encodings, and it used to be part of
+Firefox. If not mistaken, this is not the case anymore (probably because
+nowadays most websites better announce their encoding, and also UTF-8 is
+much more widely spread).
+
+Techniques used by universalchardet are described at https://www-archive.mozilla.org/projects/intl/universalcharsetdetection
+
+It is to be noted that a lot has changed since the original code, yet
+the base concept is still around, basing detection not just on encoding
+rules, but importantly on analysis of character statistics in languages.
+
+Original code by Mozilla does not seem to be found anymore anywhere, but
+it's probably not too far from the initial commit of this repository.
+
+Mozilla code was extracted and packaged into a standalone library under
+the name `uchardet` by BYVoid in 2011, in a personal repository.
+Starting 2015, I (i.e. Jehan) started contributing, "standardized"
+the output to be iconv-compatible, added various encoding/language
+support and streamlined generation of sources for new support of
+encoding/languages by using texts from Wikipedia as statistics source on
+languages through Python scripts. Then I soon became co-maintainer.
+In 2016, `uchardet` became a freedesktop project.
+
 ## Related Projects
 
+Some of these are bindings of `uchardet`, others are forks of the same
+initial code, which has diverged over time, others are native port in
+other languages.
+This list is not exhaustive and only meant as point of interest. We
+don't follow the status for these projects.
+
+  * [R-uchardet](https://cran.r-project.org/package=uchardet) R binding on CRAN
   * [python-chardet](https://github.com/chardet/chardet) Python port
   * [ruby-rchardet](http://rubyforge.org/projects/chardet/) Ruby port
   * [juniversalchardet](http://code.google.com/p/juniversalchardet/) Java port of universalchardet
@@ -272,6 +302,7 @@ See [uchardet.h](https://gitlab.freedesktop.org/uchardet/uchardet/-/blob/master/
 * [Tepl](https://wiki.gnome.org/Projects/Tepl)
 * [Nextcloud IOS app](https://github.com/nextcloud/ios)
 * [Codelite](https://codelite.org)
+* [QtAV](https://www.qtav.org/)
 * …
 
 ## Licenses
