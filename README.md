@@ -177,6 +177,10 @@ uchardet started as a C language binding of the original C++ implementation of t
 ### Mac
 
     brew install uchardet
+  
+  or
+
+    port install uchardet
 
 ### Windows
 
