@@ -39,7 +39,7 @@
 
 void  nsJohabProber::Reset(void)
 {
-  mCodingSM->Reset(); 
+  mCodingSM->Reset();
   mState = eDetecting;
   mDistributionAnalyser.Reset(mIsPreferredLanguage);
   //mContextAnalyser.Reset();
@@ -47,7 +47,7 @@ void  nsJohabProber::Reset(void)
 
 nsProbingState nsJohabProber::HandleData(const char* aBuf, PRUint32 aLen)
 {
-  nsSMState codingState;
+  PRUint32 codingState;
 
   for (PRUint32 i = 0; i < aLen; i++)
   {

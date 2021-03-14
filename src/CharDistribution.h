@@ -164,7 +164,7 @@ class JohabDistributionAnalysis : public CharDistributionAnalysis
 public:
   JohabDistributionAnalysis();
 protected:
-  //for Johab encoding, we are interested 
+  //for Johab encoding, we are interested
   //  first  byte range: 0x88 -- 0xd3
   //  second byte range: 0x41 -- 0xfe
   //no validation needed here. State machine has done that
