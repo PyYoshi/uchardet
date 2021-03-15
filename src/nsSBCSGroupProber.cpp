@@ -253,7 +253,9 @@ void  nsSBCSGroupProber::Reset(void)
 }
 
 
-nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
+                                             int** codePointBuffer,
+                                             int*  codePointBufferIdx)
 {
   nsProbingState st;
   PRUint32 i;
@@ -276,7 +278,7 @@ nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
   {
      if (!mIsActive[i])
        continue;
-     st = mProbers[i]->HandleData(newBuf1, newLen1);
+     st = mProbers[i]->HandleData(newBuf1, newLen1, codePointBuffer, codePointBufferIdx);
      if (st == eFoundIt)
      {
        mBestGuess = i;

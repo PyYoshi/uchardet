@@ -81,6 +81,8 @@ protected:
    PRBool  mGotData;
    char    mLastChar;
    const char *  mDetectedCharset;
+   const char *  mDetectedLanguage;
+   float         mDetectedConfidence;
    PRInt32 mBestGuess;
    PRUint32 mLanguageFilter;
 

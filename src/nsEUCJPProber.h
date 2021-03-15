@@ -55,7 +55,9 @@ public:
   {mCodingSM = new nsCodingStateMachine(&EUCJPSMModel);
     Reset();}
   virtual ~nsEUCJPProber(void){delete mCodingSM;}
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
+                            int** codePointBuffer,
+                            int*  codePointBufferIdx);
   const char* GetCharSetName() {return "EUC-JP";}
   const char* GetLanguage() {return "ja";}
   nsProbingState GetState(void) {return mState;}

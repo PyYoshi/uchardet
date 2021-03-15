@@ -41,6 +41,7 @@
 #include <cstddef>
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
+#include "nsLanguageDetector.h"
 
 class nsUTF8Prober: public nsCharSetProber {
 public:
@@ -48,7 +49,9 @@ public:
                 mCodingSM = new nsCodingStateMachine(&UTF8SMModel);
                 Reset(); }
   virtual ~nsUTF8Prober(){delete mCodingSM;}
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
+                            int** codePointBuffer,
+                            int*  codePointBufferIdx);
   const char* GetCharSetName() {return "UTF-8";}
   const char* GetLanguage() {return NULL;}
   nsProbingState GetState(void) {return mState;}
@@ -56,11 +59,14 @@ public:
   float     GetConfidence(void);
   void      SetOpion() {}
 
+  virtual bool DecodeToUnicode() {return true;}
+
 protected:
   nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
   PRUint32 mNumOfMBChar;
+
+  int currentCodePoint;
 };
 
 #endif /* nsUTF8Prober_h__ */
-

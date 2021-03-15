@@ -58,7 +58,12 @@ const char *ProberName[] =
 nsMBCSGroupProber::nsMBCSGroupProber(PRUint32 aLanguageFilter)
 {
   for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
-    mProbers[i] = nsnull;
+  {
+    mProbers[i]            = nsnull;
+    codePointBuffer[i]     = nsnull;
+    codePointBufferSize[i] = 0;
+    codePointBufferIdx[i]  = 0;
+  }
 
   mProbers[0] = new nsUTF8Prober();
   if (aLanguageFilter & NS_FILTER_JAPANESE) 
@@ -75,6 +80,24 @@ nsMBCSGroupProber::nsMBCSGroupProber(PRUint32 aLanguageFilter)
     mProbers[5] = new nsBig5Prober(aLanguageFilter == NS_FILTER_CHINESE_TRADITIONAL);
     mProbers[6] = new nsEUCTWProber(aLanguageFilter == NS_FILTER_CHINESE_TRADITIONAL);
   }
+
+  for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
+  {
+    if (mProbers[i]->DecodeToUnicode())
+    {
+      langDetectors[i][0] = new nsLanguageDetector(&FrenchModel);
+      langDetectors[i][1] = new nsLanguageDetector(&ItalianModel);
+      langDetectors[i][2] = new nsLanguageDetector(&DanishModel);
+      langDetectors[i][3] = new nsLanguageDetector(&GermanModel);
+      langDetectors[i][4] = new nsLanguageDetector(&ArabicModel);
+      langDetectors[i][5] = new nsLanguageDetector(&SpanishModel);
+    }
+    else
+    {
+      for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+        langDetectors[i][j] = nsnull;
+    }
+  }
   Reset();
 }
 
@@ -83,6 +106,13 @@ nsMBCSGroupProber::~nsMBCSGroupProber()
   for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
   {
     delete mProbers[i];
+
+    if (codePointBufferSize[i] != 0)
+      delete [] codePointBuffer[i];
+
+    for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+      if (langDetectors[i][j])
+        delete langDetectors[i][j];
   }
 }
 
@@ -99,17 +129,35 @@ const char* nsMBCSGroupProber::GetCharSetName()
 
 const char* nsMBCSGroupProber::GetLanguage(void)
 {
+  const char* maxLang       = NULL;
+  int         maxLangIdx    = -1;
+  float       maxConfidence = 0.0;
+
   if (mBestGuess == -1)
-  {
-    GetConfidence();
-  }
-  if (mBestGuess == -1)
-      return NULL;
+    return NULL;
   else
-      return mProbers[mBestGuess]->GetLanguage();
+    maxLang = mProbers[mBestGuess]->GetLanguage();
+
+  if (maxLang == NULL && mProbers[mBestGuess]->DecodeToUnicode())
+  {
+    for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+    {
+      float conf = langDetectors[mBestGuess][j]->GetConfidence();
+
+      if (conf > maxConfidence)
+      {
+        maxLangIdx = j;
+        maxConfidence = conf;
+      }
+    }
+    if (maxLangIdx != -1)
+      maxLang = langDetectors[mBestGuess][maxLangIdx]->GetLanguage();
+  }
+
+  return maxLang;
 }
 
-void  nsMBCSGroupProber::Reset(void)
+void nsMBCSGroupProber::Reset(void)
 {
   mActiveNum = 0;
   for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
@@ -119,6 +167,13 @@ void  nsMBCSGroupProber::Reset(void)
       mProbers[i]->Reset();
       mIsActive[i] = PR_TRUE;
       ++mActiveNum;
+
+      if (codePointBufferSize[i] == 0 && mProbers[i]->DecodeToUnicode())
+      {
+        codePointBufferSize[i] = 1024;
+        codePointBuffer[i] = new int[codePointBufferSize[i]];
+      }
+      codePointBufferIdx[i] = 0;
     }
     else
       mIsActive[i] = PR_FALSE;
@@ -128,7 +183,9 @@ void  nsMBCSGroupProber::Reset(void)
   mKeepNext = 0;
 }
 
-nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
+                                             int** cpBuffer,
+                                             int*  cpBufferIdx)
 {
   nsProbingState st;
   PRUint32 start = 0;
@@ -151,7 +208,20 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
         {
           if (!mIsActive[i])
             continue;
-          st = mProbers[i]->HandleData(aBuf + start, pos + 1 - start);
+
+          if (codePointBuffer[i])
+            st = mProbers[i]->HandleData(aBuf + start, pos + 1 - start,
+                                         &(codePointBuffer[i]), &(codePointBufferIdx[i]));
+          else
+            st = mProbers[i]->HandleData(aBuf + start, pos + 1 - start, NULL, NULL);
+
+          if (codePointBufferIdx[i] > 0 && codePointBuffer[i])
+          {
+            for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+              langDetectors[i][j]->HandleData(codePointBuffer[i], codePointBufferIdx[i]);
+            codePointBufferIdx[i] = 0;
+          }
+
           if (st == eFoundIt)
           {
             mBestGuess = i;
@@ -161,6 +231,12 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
         }
       }
     }
+    else
+    {
+      for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
+        if (codePointBuffer[i])
+          codePointBuffer[i][(codePointBufferIdx[i])++] = aBuf[pos];
+    }
   }
 
   if (keepNext) {
@@ -168,7 +244,20 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
     {
       if (!mIsActive[i])
         continue;
-      st = mProbers[i]->HandleData(aBuf + start, aLen - start);
+
+      if (codePointBuffer[i])
+        st = mProbers[i]->HandleData(aBuf + start, aLen - start,
+                                     &(codePointBuffer[i]), &(codePointBufferIdx[i]));
+      else
+        st = mProbers[i]->HandleData(aBuf + start, aLen - start, NULL, NULL);
+
+      if (codePointBufferIdx[i] > 0 && codePointBuffer[i])
+      {
+        for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+          langDetectors[i][j]->HandleData(codePointBuffer[i], codePointBufferIdx[i]);
+        codePointBufferIdx[i] = 0;
+      }
+
       if (st == eFoundIt)
       {
         mBestGuess = i;

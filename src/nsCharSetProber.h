@@ -55,7 +55,10 @@ public:
   virtual ~nsCharSetProber() {}
   virtual const char* GetCharSetName() = 0;
   virtual const char* GetLanguage() = 0;
-  virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen) = 0;
+  virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
+                                    int** codePointBuffer,
+                                    int*  codePointBufferIdx) = 0;
+  virtual bool DecodeToUnicode() {return false;}
   virtual nsProbingState GetState(void) = 0;
   virtual void      Reset(void)  = 0;
   virtual float     GetConfidence(void) = 0;

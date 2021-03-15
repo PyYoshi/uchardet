@@ -49,7 +49,9 @@ class nsLatin1Prober: public nsCharSetProber {
 public:
   nsLatin1Prober(void){Reset();}
   virtual ~nsLatin1Prober(void){}
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
+                            int** codePointBuffer,
+                            int*  codePointBufferIdx);
   const char* GetCharSetName() {return "WINDOWS-1252";}
   const char* GetLanguage() {return NULL;}
   nsProbingState GetState(void) {return mState;}

@@ -50,7 +50,9 @@ void  nsSJISProber::Reset(void)
   mDistributionAnalyser.Reset(mIsPreferredLanguage);
 }
 
-nsProbingState nsSJISProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsSJISProber::HandleData(const char* aBuf, PRUint32 aLen,
+                                        int** codePointBuffer,
+                                        int*  codePointBufferIdx)
 {
   PRUint32 codingState;
 

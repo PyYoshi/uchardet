@@ -38,7 +38,9 @@
 #include <stdio.h>
 #include "nsSBCharSetProber.h"
 
-nsProbingState nsSingleByteCharSetProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsSingleByteCharSetProber::HandleData(const char* aBuf, PRUint32 aLen,
+                                                     int** codePointBuffer,
+                                                     int*  codePointBufferIdx)
 {
   unsigned char order;
 

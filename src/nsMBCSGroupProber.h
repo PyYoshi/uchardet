@@ -48,12 +48,15 @@
 #include "nsEUCTWProber.h"
 
 #define NUM_OF_PROBERS    7
+#define NUM_OF_LANGUAGES  6
 
 class nsMBCSGroupProber: public nsCharSetProber {
 public:
   nsMBCSGroupProber(PRUint32 aLanguageFilter);
   virtual ~nsMBCSGroupProber();
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
+                            int** codePointBuffer,
+                            int*  codePointBufferIdx);
   const char* GetCharSetName();
   const char* GetLanguage();
   nsProbingState GetState(void) {return mState;}
@@ -75,6 +78,12 @@ protected:
   PRInt32 mBestGuess;
   PRUint32 mActiveNum;
   PRUint32 mKeepNext;
+
+  int *codePointBuffer[NUM_OF_PROBERS];
+  int  codePointBufferSize[NUM_OF_PROBERS];
+  int  codePointBufferIdx[NUM_OF_PROBERS];
+
+  nsLanguageDetector *langDetectors[NUM_OF_PROBERS][NUM_OF_LANGUAGES];
 };
 
 #endif /* nsMBCSGroupProber_h__ */

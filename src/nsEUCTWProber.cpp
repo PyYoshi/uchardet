@@ -45,7 +45,9 @@ void  nsEUCTWProber::Reset(void)
   //mContextAnalyser.Reset();
 }
 
-nsProbingState nsEUCTWProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsEUCTWProber::HandleData(const char* aBuf, PRUint32 aLen,
+                                         int** codePointBuffer,
+                                         int*  codePointBufferIdx)
 {
   PRUint32 codingState;
 

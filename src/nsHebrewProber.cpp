@@ -106,7 +106,9 @@ PRBool nsHebrewProber::isNonFinal(char c)
  * The input buffer should not contain any white spaces that are not (' ')
  * or any low-ascii punctuation marks. 
  */
-nsProbingState nsHebrewProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsHebrewProber::HandleData(const char* aBuf, PRUint32 aLen,
+                                          int** codePointBuffer,
+                                          int*  codePointBufferIdx)
 {
   // Both model probers say it's not them. No reason to continue.
   if (GetState() == eNotMe)

@@ -48,7 +48,9 @@ public:
   nsHebrewProber(void) :mLogicalProb(0), mVisualProb(0) { Reset(); }
 
   virtual ~nsHebrewProber(void) {}
-  virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
+                                    int** codePointBuffer,
+                                    int*  codePointBufferIdx);
   virtual const char *GetCharSetName();
   virtual const char *GetLanguage(void) { return "he"; }
   virtual void Reset(void);

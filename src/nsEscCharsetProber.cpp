@@ -73,7 +73,9 @@ void nsEscCharSetProber::Reset(void)
   mDetectedCharset = nsnull;
 }
 
-nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, PRUint32 aLen,
+                                              int** codePointBuffer,
+                                              int*  codePointBufferIdx)
 {
   PRUint32 codingState;
   PRInt32 j;

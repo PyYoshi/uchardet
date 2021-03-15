@@ -50,7 +50,9 @@ public:
     Reset();
   }
   virtual ~nsEUCKRProber(void){delete mCodingSM;}
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
+                            int** codePointBuffer,
+                            int*  codePointBufferIdx);
   /* "Unified Hangul Code", also called "CP949" or "Windows-949" is a
    * superset of EUC-KR. Though not fully ok to return UHC here (a
    * separate prober would be better), it is acceptable, since many

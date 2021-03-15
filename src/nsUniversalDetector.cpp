@@ -55,6 +55,8 @@ nsUniversalDetector::nsUniversalDetector(PRUint32 aLanguageFilter)
 
   mStart = PR_TRUE;
   mDetectedCharset = nsnull;
+  mDetectedLanguage = nsnull;
+  mDetectedConfidence = 0.0;
   mGotData = PR_FALSE;
   mInputState = ePureAscii;
   mLastChar = '\0';
@@ -83,6 +85,8 @@ nsUniversalDetector::Reset()
 
   mStart = PR_TRUE;
   mDetectedCharset = nsnull;
+  mDetectedLanguage = nsnull;
+  mDetectedConfidence = 0.0;
   mGotData = PR_FALSE;
   mInputState = ePureAscii;
   mLastChar = '\0';
@@ -118,13 +122,19 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
         {
         case '\xEF':
           if (('\xBB' == aBuf[1]) && ('\xBF' == aBuf[2]))
+          {
             /* EF BB BF: UTF-8 encoded BOM. */
             mDetectedCharset = "UTF-8";
+            mDetectedConfidence = 0.99;
+          }
         break;
         case '\xFE':
           if ('\xFF' == aBuf[1])
+          {
             /* FE FF: UTF-16, big endian BOM. */
             mDetectedCharset = "UTF-16";
+            mDetectedConfidence = 0.99;
+          }
         break;
         case '\xFF':
           if ('\xFE' == aBuf[1])
@@ -135,11 +145,13 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
             {
                 /* FF FE 00 00: UTF-32 (LE). */
                 mDetectedCharset = "UTF-32";
+                mDetectedConfidence = 0.99;
             }
             else
             {
                 /* FF FE: UTF-16, little endian BOM. */
                 mDetectedCharset = "UTF-16";
+                mDetectedConfidence = 0.99;
             }
           }
           break;
@@ -151,6 +163,7 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
           {
               /* 00 00 FE FF: UTF-32 (BE). */
               mDetectedCharset = "UTF-32";
+              mDetectedConfidence = 0.99;
           }
           break;
         }
@@ -236,11 +249,12 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
       if (nsnull == mEscCharSetProber)
         return NS_ERROR_OUT_OF_MEMORY;
     }
-    st = mEscCharSetProber->HandleData(aBuf, aLen);
+    st = mEscCharSetProber->HandleData(aBuf, aLen, NULL, NULL);
     if (st == eFoundIt)
     {
       mDone = PR_TRUE;
       mDetectedCharset = mEscCharSetProber->GetCharSetName();
+      mDetectedConfidence = mEscCharSetProber->GetConfidence();
     }
     break;
   case eHighbyte:
@@ -248,11 +262,13 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
     {
       if (mCharSetProbers[i])
       {
-        st = mCharSetProbers[i]->HandleData(aBuf, aLen);
+        st = mCharSetProbers[i]->HandleData(aBuf, aLen, NULL, NULL);
         if (st == eFoundIt)
         {
           mDone = PR_TRUE;
           mDetectedCharset = mCharSetProbers[i]->GetCharSetName();
+          mDetectedLanguage = mCharSetProbers[i]->GetLanguage();
+          mDetectedConfidence = mCharSetProbers[i]->GetConfidence();
           return NS_OK;
         }
       }
@@ -305,7 +321,7 @@ void nsUniversalDetector::DataEnd()
        * when finding them.
        */
       mDone = PR_TRUE;
-      Report(mDetectedCharset, NULL, 1.0);
+      Report(mDetectedCharset, mDetectedLanguage, mDetectedConfidence);
       return;
   }
 

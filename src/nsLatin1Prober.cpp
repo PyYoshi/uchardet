@@ -114,7 +114,9 @@ void  nsLatin1Prober::Reset(void)
 }
 
 
-nsProbingState nsLatin1Prober::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsLatin1Prober::HandleData(const char* aBuf, PRUint32 aLen,
+                                          int** codePointBuffer,
+                                          int*  codePointBufferIdx)
 {
   char *newBuf1 = 0;
   PRUint32 newLen1 = 0;

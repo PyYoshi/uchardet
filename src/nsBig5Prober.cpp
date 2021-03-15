@@ -44,7 +44,9 @@ void  nsBig5Prober::Reset(void)
   mDistributionAnalyser.Reset(mIsPreferredLanguage);
 }
 
-nsProbingState nsBig5Prober::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsBig5Prober::HandleData(const char* aBuf, PRUint32 aLen,
+                                        int** codePointBuffer,
+                                        int*  codePointBufferIdx)
 {
   PRUint32 codingState;
 

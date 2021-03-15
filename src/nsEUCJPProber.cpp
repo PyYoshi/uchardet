@@ -50,7 +50,9 @@ void  nsEUCJPProber::Reset(void)
   mDistributionAnalyser.Reset(mIsPreferredLanguage);
 }
 
-nsProbingState nsEUCJPProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsEUCJPProber::HandleData(const char* aBuf, PRUint32 aLen,
+                                         int** codePointBuffer,
+                                         int*  codePointBufferIdx)
 {
   PRUint32 codingState;
 
