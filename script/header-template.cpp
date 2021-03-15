@@ -36,3 +36,4 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "../nsSBCharSetProber.h"
+#include "../nsLanguageDetector.h"

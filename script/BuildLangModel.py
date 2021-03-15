@@ -43,6 +43,7 @@ import unicodedata
 import subprocess
 import wikipedia
 import importlib
+import math
 import optparse
 import datetime
 import operator
@@ -452,6 +453,57 @@ for charset in charsets:
     CTOM_str += ' */\n\n'
     c_code += CTOM_str
 
+## UNICODE frequency.
+
+# Since we can't map the full character table from encoding to order,
+# just create a list from the most common characters from the language.
+# The list is ordered by unicode code points (hence can be used
+# generically for various encoding scheme as it is not encoding
+# specific) allowing to search from code points efficiently by a divide
+# and conqueer search algorithm.
+# Each code point is immediately followed by its order.
+
+# Keep the freq_count more frequent characters.
+sorted_chars = [(char, freq, order) for order, (char, freq) in
+                enumerate(sorted_ratios)][:freq_count]
+max_order = len(sorted_chars)
+
+# Add equivalency characters.
+equivalent = []
+if lang.case_mapping:
+    for char, ratio, order in sorted_chars:
+        uppercased = chr(char).upper()
+        try:
+          if char != ord(uppercased):
+              equivalent += [(ord(uppercased), ratio, order)]
+        except TypeError:
+          # This happens for some case such as 'SS' as uppercase of 'ß'.
+          # Just ignore such cases.
+          sys.stderr.write("Ignoring '{}' as uppercase equivalent of '{}'.\n".format(uppercased, char))
+    sorted_chars += equivalent
+
+# Order by code point.
+sorted_chars = sorted(sorted_chars, key=operator.itemgetter(0))
+
+CTOM_str = 'static const int Unicode_Char_size = {};\n'.format(len(sorted_chars))
+
+CTOM_str += 'static const unsigned int Unicode_CharOrder[]'
+CTOM_str += ' =\n{'
+column = 0
+
+max_char_width  = math.floor(math.log10(sorted_chars[-1][0])) + 1
+max_order_width = math.floor(math.log10(max_order)) + 1
+
+for char, ratio, order in sorted_chars:
+    if column % 8 == 0:
+        CTOM_str += '\n '
+    column += 1
+    CTOM_str += '{}{:>{width}}, '.format('' if column % 8 == 0 else ' ', char, width=max_char_width)
+    CTOM_str += '{:>{width}},'.format(order, width=max_order_width)
+
+CTOM_str += '\n};\n\n'
+c_code += CTOM_str
+
 ########### SEQUENCES ###########
 
 ratios = {}
@@ -533,10 +585,21 @@ for charset in charsets:
     SM_str += '\n  {},'.format(freq_count)
     SM_str += '\n  (float){},'.format(ratio_512)
     SM_str += '\n  {},'.format('PR_TRUE' if lang.use_ascii else 'PR_FALSE')
-    SM_str += '\n  "{},"'.format(charset)
+    SM_str += '\n  "{}",'.format(charset)
     SM_str += '\n  "{}"'.format(lang.code)
     SM_str += '\n};'
     c_code += SM_str
+
+SM_str = '\n\nconst LanguageModel {}Model ='.format(language_c)
+SM_str += '\n{'
+SM_str += '\n  "{}",'.format(lang.code)
+SM_str += '\n  Unicode_CharOrder,'
+SM_str += '\n  {},'.format(len(sorted_chars)) # Order is wrong!
+SM_str += '\n  {}LangModel,'.format(language_c)
+SM_str += '\n  {},'.format(freq_count)
+SM_str += '\n  (float){},'.format(ratio_512)
+SM_str += '\n};'
+c_code += SM_str
 
 c_code += '\n'
 
