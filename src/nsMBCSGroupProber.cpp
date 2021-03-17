@@ -196,6 +196,12 @@ void nsMBCSGroupProber::Reset(void)
         codePointBuffer[i] = new int[codePointBufferSize[i]];
       }
       codePointBufferIdx[i] = 0;
+
+      for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+      {
+        if (langDetectors[i][j])
+          langDetectors[i][j]->Reset();
+      }
     }
     else
       mIsActive[i] = PR_FALSE;
