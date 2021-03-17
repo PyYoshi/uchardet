@@ -209,29 +209,29 @@ nsSBCSGroupProber::~nsSBCSGroupProber()
 }
 
 
-const char* nsSBCSGroupProber::GetCharSetName()
+const char* nsSBCSGroupProber::GetCharSetName(int candidate)
 {
   //if we have no answer yet
   if (mBestGuess == -1)
   {
-    GetConfidence();
+    GetConfidence(0);
     //no charset seems positive
     if (mBestGuess == -1)
       //we will use default.
       mBestGuess = 0;
   }
-  return mProbers[mBestGuess]->GetCharSetName();
+  return mProbers[mBestGuess]->GetCharSetName(0);
 }
 
-const char* nsSBCSGroupProber::GetLanguage()
+const char* nsSBCSGroupProber::GetLanguage(int candidate)
 {
   if (mBestGuess == -1)
   {
-    GetConfidence();
+    GetConfidence(0);
     if (mBestGuess == -1)
       mBestGuess = 0;
   }
-  return mProbers[mBestGuess]->GetLanguage();
+  return mProbers[mBestGuess]->GetLanguage(0);
 }
 
 void  nsSBCSGroupProber::Reset(void)
@@ -303,7 +303,7 @@ done:
   return mState;
 }
 
-float nsSBCSGroupProber::GetConfidence(void)
+float nsSBCSGroupProber::GetConfidence(int candidate)
 {
   PRUint32 i;
   float bestConf = 0.0, cf;
@@ -319,7 +319,7 @@ float nsSBCSGroupProber::GetConfidence(void)
     {
       if (!mIsActive[i])
         continue;
-      cf = mProbers[i]->GetConfidence();
+      cf = mProbers[i]->GetConfidence(0);
       if (bestConf < cf)
       {
         bestConf = cf;
@@ -336,16 +336,16 @@ void nsSBCSGroupProber::DumpStatus()
   PRUint32 i;
   float cf;
   
-  cf = GetConfidence();
+  cf = GetConfidence(0);
   printf(" SBCS Group Prober --------begin status \r\n");
   for (i = 0; i < NUM_OF_SBCS_PROBERS; i++)
   {
     if (!mIsActive[i])
-      printf("  inactive: [%s] (i.e. confidence is too low).\r\n", mProbers[i]->GetCharSetName());
+      printf("  inactive: [%s] (i.e. confidence is too low).\r\n", mProbers[i]->GetCharSetName(0));
     else
       mProbers[i]->DumpStatus();
   }
   printf(" SBCS Group found best match [%s] confidence %f.\r\n",  
-         mProbers[mBestGuess]->GetCharSetName(), cf);
+         mProbers[mBestGuess]->GetCharSetName(0), cf);
 }
 #endif

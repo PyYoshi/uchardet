@@ -53,15 +53,16 @@ typedef enum {
 class nsCharSetProber {
 public:
   virtual ~nsCharSetProber() {}
-  virtual const char* GetCharSetName() = 0;
-  virtual const char* GetLanguage() = 0;
+  virtual int GetCandidates() = 0;
+  virtual const char* GetCharSetName(int candidate) = 0;
+  virtual const char* GetLanguage(int candidate) = 0;
   virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
                                     int** codePointBuffer,
                                     int*  codePointBufferIdx) = 0;
   virtual bool DecodeToUnicode() {return false;}
   virtual nsProbingState GetState(void) = 0;
   virtual void      Reset(void)  = 0;
-  virtual float     GetConfidence(void) = 0;
+  virtual float     GetConfidence(int candidate) = 0;
   virtual void      SetOpion() = 0;
 
 #ifdef DEBUG_chardet

@@ -253,8 +253,8 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
     if (st == eFoundIt)
     {
       mDone = PR_TRUE;
-      mDetectedCharset = mEscCharSetProber->GetCharSetName();
-      mDetectedConfidence = mEscCharSetProber->GetConfidence();
+      mDetectedCharset = mEscCharSetProber->GetCharSetName(0);
+      mDetectedConfidence = mEscCharSetProber->GetConfidence(0);
     }
     break;
   case eHighbyte:
@@ -266,9 +266,9 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
         if (st == eFoundIt)
         {
           mDone = PR_TRUE;
-          mDetectedCharset = mCharSetProbers[i]->GetCharSetName();
-          mDetectedLanguage = mCharSetProbers[i]->GetLanguage();
-          mDetectedConfidence = mCharSetProbers[i]->GetConfidence();
+          mDetectedCharset = mCharSetProbers[i]->GetCharSetName(0);
+          mDetectedLanguage = mCharSetProbers[i]->GetLanguage(0);
+          mDetectedConfidence = mCharSetProbers[i]->GetConfidence(0);
           return NS_OK;
         }
       }
@@ -335,12 +335,12 @@ void nsUniversalDetector::DataEnd()
       {
         if (mCharSetProbers[i])
         {
-          proberConfidence = mCharSetProbers[i]->GetConfidence();
+          proberConfidence = mCharSetProbers[i]->GetConfidence(0);
 
           if (proberConfidence > MINIMUM_THRESHOLD)
               /* Only report what we are confident in. */
-              Report(mCharSetProbers[i]->GetCharSetName(),
-                     mCharSetProbers[i]->GetLanguage(),
+              Report(mCharSetProbers[i]->GetCharSetName(0),
+                     mCharSetProbers[i]->GetLanguage(0),
                      proberConfidence);
         }
       }

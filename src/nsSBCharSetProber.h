@@ -86,14 +86,15 @@ public:
   nsSingleByteCharSetProber(const SequenceModel *model, PRBool reversed, nsCharSetProber* nameProber)
     :mModel(model), mReversed(reversed), mNameProber(nameProber) { Reset(); }
 
-  virtual const char* GetCharSetName();
-  virtual const char* GetLanguage();
+  virtual int GetCandidates() { return 1; }
+  virtual const char* GetCharSetName(int candidate);
+  virtual const char* GetLanguage(int candidate);
   virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
                                     int** codePointBuffer,
                                     int*  codePointBufferIdx);
   virtual nsProbingState GetState(void) {return mState;}
   virtual void      Reset(void);
-  virtual float     GetConfidence(void);
+  virtual float     GetConfidence(int candidate);
   virtual void      SetOpion() {}
   
   // This feature is not implemented yet. any current language model

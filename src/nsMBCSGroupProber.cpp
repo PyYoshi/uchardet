@@ -138,18 +138,18 @@ nsMBCSGroupProber::~nsMBCSGroupProber()
   }
 }
 
-const char* nsMBCSGroupProber::GetCharSetName()
+const char* nsMBCSGroupProber::GetCharSetName(int candidate)
 {
   if (mBestGuess == -1)
   {
-    GetConfidence();
+    GetConfidence(0);
     if (mBestGuess == -1)
       mBestGuess = 0;
   }
-  return mProbers[mBestGuess]->GetCharSetName();
+  return mProbers[mBestGuess]->GetCharSetName(0);
 }
 
-const char* nsMBCSGroupProber::GetLanguage(void)
+const char* nsMBCSGroupProber::GetLanguage(int candidate)
 {
   const char* maxLang       = NULL;
   int         maxLangIdx    = -1;
@@ -158,7 +158,7 @@ const char* nsMBCSGroupProber::GetLanguage(void)
   if (mBestGuess == -1)
     return NULL;
   else
-    maxLang = mProbers[mBestGuess]->GetLanguage();
+    maxLang = mProbers[mBestGuess]->GetLanguage(0);
 
   if (maxLang == NULL && mProbers[mBestGuess]->DecodeToUnicode())
   {
@@ -299,7 +299,7 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
   return mState;
 }
 
-float nsMBCSGroupProber::GetConfidence(void)
+float nsMBCSGroupProber::GetConfidence(int candidate)
 {
   PRUint32 i;
   float bestConf = 0.0, cf;
@@ -316,7 +316,7 @@ float nsMBCSGroupProber::GetConfidence(void)
 
       if (!mIsActive[i])
         continue;
-      cf = mProbers[i]->GetConfidence();
+      cf = mProbers[i]->GetConfidence(0);
 
       if (mProbers[i]->DecodeToUnicode())
       {
@@ -346,14 +346,14 @@ void nsMBCSGroupProber::DumpStatus()
   PRUint32 i;
   float cf;
   
-  GetConfidence();
+  GetConfidence(0);
   for (i = 0; i < NUM_OF_PROBERS; i++)
   {
     if (!mIsActive[i])
       printf("  MBCS inactive: [%s] (confidence is too low).\r\n", ProberName[i]);
     else
     {
-      cf = mProbers[i]->GetConfidence();
+      cf = mProbers[i]->GetConfidence(0);
       printf("  MBCS %1.3f: [%s]\r\n", cf, ProberName[i]);
     }
   }
@@ -366,7 +366,7 @@ void nsMBCSGroupProber::GetDetectorState(nsUniversalDetector::DetectorState (&st
   for (PRUint32 i = 0; i < NUM_OF_PROBERS; ++i) {
     states[offset].name = ProberName[i];
     states[offset].isActive = mIsActive[i];
-    states[offset].confidence = mIsActive[i] ? mProbers[i]->GetConfidence() : 0.0;
+    states[offset].confidence = mIsActive[i] ? mProbers[i]->GetConfidence(0) : 0.0;
     ++offset;
   }
 }

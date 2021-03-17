@@ -52,11 +52,12 @@ public:
   nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
                             int** codePointBuffer,
                             int*  codePointBufferIdx);
-  const char* GetCharSetName() {return mDetectedCharset;}
-  const char* GetLanguage() {return NULL;}
+  virtual int GetCandidates() { return 1; }
+  const char* GetCharSetName(int) {return mDetectedCharset;}
+  const char* GetLanguage(int) {return NULL;}
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
-  float     GetConfidence(void){return (float)0.99;}
+  float     GetConfidence(int){return (float)0.99;}
   void      SetOpion() {}
 
 protected:

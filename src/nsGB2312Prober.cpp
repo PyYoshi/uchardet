@@ -81,7 +81,7 @@ nsProbingState nsGB18030Prober::HandleData(const char* aBuf, PRUint32 aLen,
   mLastChar[0] = aBuf[aLen-1];
 
   if (mState == eDetecting)
-    if (mDistributionAnalyser.GotEnoughData() && GetConfidence() > SHORTCUT_THRESHOLD)
+    if (mDistributionAnalyser.GotEnoughData() && GetConfidence(0) > SHORTCUT_THRESHOLD)
       mState = eFoundIt;
 //    else
 //      mDistributionAnalyser.HandleData(aBuf, aLen);
@@ -89,7 +89,7 @@ nsProbingState nsGB18030Prober::HandleData(const char* aBuf, PRUint32 aLen,
   return mState;
 }
 
-float nsGB18030Prober::GetConfidence(void)
+float nsGB18030Prober::GetConfidence(int candidate)
 {
   float distribCf = mDistributionAnalyser.GetConfidence();
 

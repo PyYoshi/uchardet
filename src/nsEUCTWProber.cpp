@@ -76,7 +76,7 @@ nsProbingState nsEUCTWProber::HandleData(const char* aBuf, PRUint32 aLen,
   mLastChar[0] = aBuf[aLen-1];
 
   if (mState == eDetecting)
-    if (mDistributionAnalyser.GotEnoughData() && GetConfidence() > SHORTCUT_THRESHOLD)
+    if (mDistributionAnalyser.GotEnoughData() && GetConfidence(0) > SHORTCUT_THRESHOLD)
       mState = eFoundIt;
 //    else
 //      mDistributionAnalyser.HandleData(aBuf, aLen);
@@ -84,7 +84,7 @@ nsProbingState nsEUCTWProber::HandleData(const char* aBuf, PRUint32 aLen,
   return mState;
 }
 
-float nsEUCTWProber::GetConfidence(void)
+float nsEUCTWProber::GetConfidence(int candidate)
 {
   float distribCf = mDistributionAnalyser.GetConfidence();
 

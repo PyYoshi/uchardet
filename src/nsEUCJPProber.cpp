@@ -85,13 +85,13 @@ nsProbingState nsEUCJPProber::HandleData(const char* aBuf, PRUint32 aLen,
   mLastChar[0] = aBuf[aLen-1];
 
   if (mState == eDetecting)
-    if (mContextAnalyser.GotEnoughData() && GetConfidence() > SHORTCUT_THRESHOLD)
+    if (mContextAnalyser.GotEnoughData() && GetConfidence(0) > SHORTCUT_THRESHOLD)
       mState = eFoundIt;
 
   return mState;
 }
 
-float nsEUCJPProber::GetConfidence(void)
+float nsEUCJPProber::GetConfidence(int candidate)
 {
   float contxtCf = mContextAnalyser.GetConfidence();
   float distribCf = mDistributionAnalyser.GetConfidence();

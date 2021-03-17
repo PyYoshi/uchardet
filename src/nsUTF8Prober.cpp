@@ -88,14 +88,14 @@ nsProbingState nsUTF8Prober::HandleData(const char* aBuf, PRUint32 aLen,
   }
 
   if (mState == eDetecting)
-    if (GetConfidence() > SHORTCUT_THRESHOLD)
+    if (GetConfidence(0) > SHORTCUT_THRESHOLD)
       mState = eFoundIt;
   return mState;
 }
 
 #define ONE_CHAR_PROB   (float)0.50
 
-float nsUTF8Prober::GetConfidence(void)
+float nsUTF8Prober::GetConfidence(int candidate)
 {
   float unlike = (float)0.99;
 

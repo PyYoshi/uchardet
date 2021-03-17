@@ -51,13 +51,14 @@ public:
   virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
                                     int** codePointBuffer,
                                     int*  codePointBufferIdx);
-  virtual const char *GetCharSetName();
-  virtual const char *GetLanguage(void) { return "he"; }
+  virtual int GetCandidates() { return 1; }
+  virtual const char *GetCharSetName(int candidate);
+  virtual const char *GetLanguage(int) { return "he"; }
   virtual void Reset(void);
 
   virtual nsProbingState GetState(void);
 
-  virtual float     GetConfidence(void) { return (float)0.0; }
+  virtual float     GetConfidence(int) { return (float)0.0; }
   virtual void      SetOpion() {}
 
   void SetModelProbers(nsCharSetProber *logicalPrb, nsCharSetProber *visualPrb) 

@@ -82,7 +82,7 @@ nsProbingState nsSingleByteCharSetProber::HandleData(const char* aBuf, PRUint32 
   if (mState == eDetecting)
     if (mTotalSeqs > SB_ENOUGH_REL_THRESHOLD)
     {
-      float cf = GetConfidence();
+      float cf = GetConfidence(0);
       if (cf > POSITIVE_SHORTCUT_THRESHOLD)
         mState = eFoundIt;
       else if (cf < NEGATIVE_SHORTCUT_THRESHOLD)
@@ -106,7 +106,7 @@ void  nsSingleByteCharSetProber::Reset(void)
 
 //#define NEGATIVE_APPROACH 1
 
-float nsSingleByteCharSetProber::GetConfidence(void)
+float nsSingleByteCharSetProber::GetConfidence(int candidate)
 {
 #ifdef NEGATIVE_APPROACH
   if (mTotalSeqs > 0)
@@ -140,23 +140,23 @@ float nsSingleByteCharSetProber::GetConfidence(void)
 #endif
 }
 
-const char* nsSingleByteCharSetProber::GetCharSetName()
+const char* nsSingleByteCharSetProber::GetCharSetName(int candidate)
 {
   if (!mNameProber)
     return mModel->charsetName;
-  return mNameProber->GetCharSetName();
+  return mNameProber->GetCharSetName(0);
 }
 
-const char* nsSingleByteCharSetProber::GetLanguage()
+const char* nsSingleByteCharSetProber::GetLanguage(int candidate)
 {
   if (!mNameProber)
     return mModel->langName;
-  return mNameProber->GetLanguage();
+  return mNameProber->GetLanguage(0);
 }
 
 #ifdef DEBUG_chardet
 void nsSingleByteCharSetProber::DumpStatus()
 {
-  printf("  SBCS: %1.3f [%s]\r\n", GetConfidence(), GetCharSetName());
+  printf("  SBCS: %1.3f [%s]\r\n", GetConfidence(0), GetCharSetName(0));
 }
 #endif

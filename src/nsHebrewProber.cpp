@@ -144,7 +144,7 @@ nsProbingState nsHebrewProber::HandleData(const char* aBuf, PRUint32 aLen,
 }
 
 // Make the decision: is it Logical or Visual?
-const char* nsHebrewProber::GetCharSetName()
+const char* nsHebrewProber::GetCharSetName(int candidate)
 {
   // If the final letter score distance is dominant enough, rely on it.
   PRInt32 finalsub = mFinalCharLogicalScore - mFinalCharVisualScore;
@@ -154,7 +154,7 @@ const char* nsHebrewProber::GetCharSetName()
     return VISUAL_HEBREW_NAME;
 
   // It's not dominant enough, try to rely on the model scores instead.
-  float modelsub = mLogicalProb->GetConfidence() - mVisualProb->GetConfidence();
+  float modelsub = mLogicalProb->GetConfidence(0) - mVisualProb->GetConfidence(0);
   if (modelsub > MIN_MODEL_DISTANCE)
     return LOGICAL_HEBREW_NAME;
   if (modelsub < -(MIN_MODEL_DISTANCE))

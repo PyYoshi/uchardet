@@ -57,11 +57,12 @@ public:
   nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
                             int** codePointBuffer,
                             int*  codePointBufferIdx);
-  const char* GetCharSetName();
-  const char* GetLanguage();
+  int GetCandidates() { return 1; }
+  const char* GetCharSetName(int candidate);
+  const char* GetLanguage(int candidate);
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
-  float     GetConfidence(void);
+  float     GetConfidence(int candidate);
   void      SetOpion() {}
 
 #ifdef DEBUG_chardet
