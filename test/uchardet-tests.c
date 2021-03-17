@@ -35,6 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,11 +45,10 @@
 
 #define BUFFER_SIZE 65536
 
-char *
-detect(FILE *fp)
+void
+detect(FILE *fp, char **charset, char **lang)
 {
     uchardet_t  handle = uchardet_new();
-    char       *charset;
     char        buffer[BUFFER_SIZE];
     int         i;
 
@@ -67,16 +67,18 @@ detect(FILE *fp)
     }
     uchardet_data_end(handle);
 
-    charset = strdup(uchardet_get_encoding(handle, 0));
-    for (i = 0; charset[i]; i++)
+    *charset = strdup(uchardet_get_encoding(handle, 0));
+    if (uchardet_get_language(handle, 0))
+      *lang = strdup(uchardet_get_language(handle, 0));
+    else
+      *lang = NULL;
+    for (i = 0; (*charset)[i]; i++)
     {
         /* Our test files are lowercase. */
-        charset[i] = tolower(charset[i]);
+        (*charset)[i] = tolower((*charset)[i]);
     }
 
     uchardet_delete(handle);
-
-    return charset;
 }
 
 int
@@ -84,9 +86,13 @@ main(int argc, char ** argv)
 {
     FILE *f;
     char *filename;
+    char *path;
     char *expected_charset;
+    char *expected_lang = NULL;
     char *charset;
-    int   success;
+    char *lang;
+    /* In a unit test, 0 means success, other returned values mean failure. */
+    int   success = 1;
 
     if (argc != 2)
     {
@@ -108,27 +114,41 @@ main(int argc, char ** argv)
         return 1;
     }
 
-    expected_charset = strrchr(filename, '/');
-    if (expected_charset == NULL)
-    {
-        expected_charset = filename;
-    }
-    else
-    {
-        expected_charset++;
-    }
+    path = realpath(filename, NULL);
+    assert(path);
+    expected_charset = strrchr(path, '/');
+    assert(expected_charset);
+    *expected_charset = '\0';
+    expected_charset++;
     expected_charset = strtok(expected_charset, ".");
 
-    charset = detect(f);
+    expected_lang = strrchr(path, '/');
+    assert(expected_lang);
+    expected_lang++;
+
+    detect(f, &charset, &lang);
     fclose (f);
 
-    /* In a unit test, 0 means success, other returned values mean failure. */
-    success = (strcmp(charset, expected_charset) != 0);
-    if (success) {
-        fprintf(stderr, "Got %s, expected %s\n", charset, expected_charset);
+    /* No lang detection is a failure, except for a few charset for
+     * which we still don't detect languages.
+     * TODO.
+     * */
+    if (strcmp(expected_charset, "ascii") == 0 ||
+        strcmp(expected_charset, "utf-16") == 0 ||
+        strcmp(expected_charset, "utf-16") == 0 ||
+        strcmp(expected_charset, "utf-32") == 0)
+    {
+      success = (strcmp(charset, expected_charset) != 0);
+    }
+    else if (lang)
+    {
+      success = (strcmp(charset, expected_charset) != 0) +
+                (strcmp(lang, expected_lang) != 0);
     }
 
+    free(path);
     free(charset);
+    free(lang);
     free(filename);
 
     return success;
