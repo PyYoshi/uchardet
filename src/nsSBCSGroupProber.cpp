@@ -63,8 +63,8 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   // Notice: Any change in these indexes - 10,11,12 must be reflected
   // in the code below as well.
   mProbers[10] = hebprober;
-  mProbers[11] = new nsSingleByteCharSetProber(&Win1255Model, PR_FALSE, hebprober); // Logical Hebrew
-  mProbers[12] = new nsSingleByteCharSetProber(&Win1255Model, PR_TRUE, hebprober); // Visual Hebrew
+  mProbers[11] = new nsSingleByteCharSetProber(&Windows_1255HebrewModel, PR_FALSE, hebprober); // Logical Hebrew
+  mProbers[12] = new nsSingleByteCharSetProber(&Windows_1255HebrewModel, PR_TRUE, hebprober); // Visual Hebrew
   // Tell the Hebrew prober about the logical and visual probers
   if (mProbers[10] && mProbers[11] && mProbers[12]) // all are not null
   {

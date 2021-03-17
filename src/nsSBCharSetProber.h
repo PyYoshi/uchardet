@@ -149,7 +149,7 @@ extern const SequenceModel Win1251BulgarianModel;
 extern const SequenceModel Iso_8859_2HungarianModel;
 extern const SequenceModel Windows_1250HungarianModel;
 
-extern const SequenceModel Win1255Model;
+extern const SequenceModel Windows_1255HebrewModel;
 
 extern const SequenceModel Tis_620ThaiModel;
 extern const SequenceModel Iso_8859_11ThaiModel;
