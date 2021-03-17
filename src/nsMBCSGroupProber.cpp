@@ -85,12 +85,34 @@ nsMBCSGroupProber::nsMBCSGroupProber(PRUint32 aLanguageFilter)
   {
     if (mProbers[i]->DecodeToUnicode())
     {
-      langDetectors[i][0] = new nsLanguageDetector(&FrenchModel);
-      langDetectors[i][1] = new nsLanguageDetector(&ItalianModel);
-      langDetectors[i][2] = new nsLanguageDetector(&DanishModel);
-      langDetectors[i][3] = new nsLanguageDetector(&GermanModel);
-      langDetectors[i][4] = new nsLanguageDetector(&ArabicModel);
-      langDetectors[i][5] = new nsLanguageDetector(&SpanishModel);
+      int j = 0;
+
+      langDetectors[i][j++] = new nsLanguageDetector(&ArabicModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&CroatianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&CzechModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&DanishModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&EsperantoModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&EstonianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&FinnishModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&FrenchModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&GermanModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&GreekModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&HungarianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&IrishModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&ItalianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&LatvianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&LithuanianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&MalteseModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&PolishModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&PortugueseModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&RomanianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&SlovakModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&SloveneModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&SpanishModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&SwedishModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&ThaiModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&TurkishModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&VietnameseModel);
     }
     else
     {
