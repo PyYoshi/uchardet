@@ -55,6 +55,7 @@ nsEscCharSetProber::nsEscCharSetProber(PRUint32 aLanguageFilter)
   mActiveSM = NUM_OF_ESC_CHARSETS;
   mState = eDetecting;
   mDetectedCharset = nsnull;
+  mDetectedLang    = nsnull;
 }
 
 nsEscCharSetProber::~nsEscCharSetProber(void)
@@ -71,8 +72,10 @@ void nsEscCharSetProber::Reset(void)
       mCodingSM[i]->Reset();
   mActiveSM = NUM_OF_ESC_CHARSETS;
   mDetectedCharset = nsnull;
+  mDetectedLang    = nsnull;
 }
 
+#include <cstdio>
 nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, PRUint32 aLen,
                                               int** codePointBuffer,
                                               int*  codePointBufferIdx)
@@ -90,8 +93,19 @@ nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, PRUint32 aLen,
         codingState = mCodingSM[j]->NextState(aBuf[i]);
         if (codingState == eItsMe)
         {
+          const SMModel *model = mCodingSM[j]->GetCodingStateMachine();
+
           mState = eFoundIt;
-          mDetectedCharset = mCodingSM[j]->GetCodingStateMachine();
+          mDetectedCharset = model->name;
+
+          if (model == &HZSMModel ||
+              model == &ISO2022CNSMModel)
+            mDetectedLang = "zh";
+          else if (model == &ISO2022JPSMModel)
+            mDetectedLang = "ja";
+          else if (model == &ISO2022KRSMModel)
+            mDetectedLang = "ko";
+
           return mState;
         }
       }
@@ -100,4 +114,3 @@ nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, PRUint32 aLen,
 
   return mState;
 }
-

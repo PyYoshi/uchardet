@@ -54,7 +54,7 @@ public:
                             int*  codePointBufferIdx);
   virtual int GetCandidates() { return 1; }
   const char* GetCharSetName(int) {return mDetectedCharset;}
-  const char* GetLanguage(int) {return NULL;}
+  const char* GetLanguage(int) {return mDetectedLang;}
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
   float     GetConfidence(int){return (float)0.99;}
@@ -67,6 +67,7 @@ protected:
   PRUint32    mActiveSM;
   nsProbingState mState;
   const char *  mDetectedCharset;
+  const char *  mDetectedLang;
 };
 
 #endif /* nsEscCharSetProber_h__ */

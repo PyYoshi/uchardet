@@ -248,6 +248,7 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
     {
       shortcutCharset = mEscCharSetProber->GetCharSetName(0);
       shortcutConfidence = mEscCharSetProber->GetConfidence(0);
+      shortcutLanguage = mEscCharSetProber->GetLanguage(0);
       mDone = PR_TRUE;
     }
     break;
@@ -313,7 +314,7 @@ void nsUniversalDetector::DataEnd()
        * when finding them.
        */
       mDone = PR_TRUE;
-      Report(shortcutCharset, NULL, shortcutConfidence);
+      Report(shortcutCharset, shortcutLanguage, shortcutConfidence);
       return;
   }
 

@@ -264,4 +264,3 @@ const SMModel ISO2022KRSMModel = {
   ISO2022KRCharLenTable,
   "ISO-2022-KR",
 };
-

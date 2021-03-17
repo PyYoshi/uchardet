@@ -81,6 +81,7 @@ protected:
    PRBool  mGotData;
    char    mLastChar;
    const char *  shortcutCharset;
+   const char *  shortcutLanguage;
    float         shortcutConfidence;
 
    PRInt32 mBestGuess;

@@ -77,7 +77,7 @@ public:
   }
   PRUint32  GetCurrentCharLen(void) {return mCurrentCharLen;}
   void      Reset(void) {mCurrentState = eStart;}
-  const char * GetCodingStateMachine() {return mModel->name;}
+  const SMModel* GetCodingStateMachine() {return mModel;}
 
 protected:
   PRUint32 mCurrentState;
