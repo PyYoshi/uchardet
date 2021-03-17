@@ -50,11 +50,15 @@ public:
     Reset();
   }
   virtual ~nsJohabProber(void){delete mCodingSM;}
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
-  const char* GetCharSetName() {return "Johab";}
+  nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
+                            int** cpBuffer,
+                            int*  cpBufferIdx);
+  int         GetCandidates() {return 1;}
+  const char* GetCharSetName(int) {return "Johab";}
+  const char* GetLanguage(int) {return "ko";}
   nsProbingState GetState(void) {return mState;}
   void      Reset(void);
-  float     GetConfidence(void);
+  float     GetConfidence(int candidate);
   void      SetOpion() {}
 
 protected:
