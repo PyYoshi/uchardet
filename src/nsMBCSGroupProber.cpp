@@ -306,16 +306,30 @@ float nsMBCSGroupProber::GetConfidence(void)
 
   switch (mState)
   {
-  case eFoundIt:
-    return (float)0.99;
   case eNotMe:
     return (float)0.01;
+  case eFoundIt:
   default:
     for (i = 0; i < NUM_OF_PROBERS; i++)
     {
+      float bestLangConf = 0.0;
+
       if (!mIsActive[i])
         continue;
       cf = mProbers[i]->GetConfidence();
+
+      if (mProbers[i]->DecodeToUnicode())
+      {
+        for (int j = 0; j < NUM_OF_LANGUAGES; j++)
+        {
+            float langConf = langDetectors[i][j]->GetConfidence();
+
+            if (bestLangConf < langConf)
+              bestLangConf = langConf;
+        }
+        cf *= bestLangConf;
+      }
+
       if (bestConf < cf)
       {
         bestConf = cf;
