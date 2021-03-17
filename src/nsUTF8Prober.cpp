@@ -45,6 +45,8 @@ void  nsUTF8Prober::Reset(void)
   currentCodePoint = 0;
 }
 
+#define ENOUGH_CHAR_THRESHOLD 256
+
 nsProbingState nsUTF8Prober::HandleData(const char* aBuf, PRUint32 aLen,
                                         int** codePointBuffer,
                                         int*  codePointBufferIdx)
@@ -88,7 +90,7 @@ nsProbingState nsUTF8Prober::HandleData(const char* aBuf, PRUint32 aLen,
   }
 
   if (mState == eDetecting)
-    if (GetConfidence(0) > SHORTCUT_THRESHOLD)
+    if (mNumOfMBChar > ENOUGH_CHAR_THRESHOLD && GetConfidence(0) > SHORTCUT_THRESHOLD)
       mState = eFoundIt;
   return mState;
 }
