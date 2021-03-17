@@ -43,7 +43,7 @@
 #include "EUCTWFreq.tab"
 #include "GB2312Freq.tab"
 
-#define SURE_YES 0.99f
+#define SURE_YES 0.7f
 #define SURE_NO  0.01f
 
 //return confidence base on received data
