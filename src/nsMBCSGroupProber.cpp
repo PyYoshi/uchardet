@@ -138,45 +138,87 @@ nsMBCSGroupProber::~nsMBCSGroupProber()
   }
 }
 
+#define CANDIDATE_THRESHOLD 0.3f
+
+int nsMBCSGroupProber::GetCandidates()
+{
+  int num_candidates = 0;
+
+  CheckCandidates();
+
+  for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
+    for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+      if (candidates[i][j])
+        num_candidates++;
+
+  return num_candidates;
+}
+
 const char* nsMBCSGroupProber::GetCharSetName(int candidate)
 {
-  if (mBestGuess == -1)
-  {
-    GetConfidence(0);
-    if (mBestGuess == -1)
-      mBestGuess = 0;
-  }
-  return mProbers[mBestGuess]->GetCharSetName(0);
+  int num_candidates = GetCandidates();
+  int candidate_it   = 0;
+
+  if (num_candidates == 0)
+    return NULL;
+  else if (candidate >= num_candidates)
+    /* Just show the first candidate. */
+    candidate = 0;
+
+  for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
+    for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+      if (candidates[i][j])
+      {
+        if (candidate == candidate_it)
+        {
+          /* We assume that probers included in the nsMBCSGroupProber
+           * return only one candidate themselves.
+           * */
+          return mProbers[i]->GetCharSetName(0);
+        }
+        candidate_it++;
+      }
+
+  /* Should not happen. */
+  return NULL;
 }
 
 const char* nsMBCSGroupProber::GetLanguage(int candidate)
 {
-  const char* maxLang       = NULL;
-  int         maxLangIdx    = -1;
-  float       maxConfidence = 0.0;
+  const char* lang   = NULL;
+  int num_candidates = GetCandidates();
+  int candidate_it   = 0;
 
-  if (mBestGuess == -1)
+  if (num_candidates == 0)
     return NULL;
-  else
-    maxLang = mProbers[mBestGuess]->GetLanguage(0);
+  else if (candidate >= num_candidates)
+    /* Just show the first candidate. */
+    candidate = 0;
 
-  if (maxLang == NULL && mProbers[mBestGuess]->DecodeToUnicode())
-  {
+  for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
     for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
-    {
-      float conf = langDetectors[mBestGuess][j]->GetConfidence();
-
-      if (conf > maxConfidence)
+      if (candidates[i][j])
       {
-        maxLangIdx = j;
-        maxConfidence = conf;
-      }
-    }
-    if (maxLangIdx != -1)
-      maxLang = langDetectors[mBestGuess][maxLangIdx]->GetLanguage();
-  }
+        if (candidate == candidate_it)
+        {
+          /* We assume that probers included in the nsMBCSGroupProber
+           * return only one candidate themselves.
+           * */
+          lang = mProbers[i]->GetLanguage(0);
 
-  return maxLang;
+          if (! lang)
+          {
+            /* The prober does not come with its own language. */
+            if (langDetectors[i][j])
+              lang = langDetectors[i][j]->GetLanguage();
+          }
+
+          return lang;
+        }
+        candidate_it++;
+      }
+
+  return lang;
 }
 
 void nsMBCSGroupProber::Reset(void)
@@ -196,17 +238,18 @@ void nsMBCSGroupProber::Reset(void)
         codePointBuffer[i] = new int[codePointBufferSize[i]];
       }
       codePointBufferIdx[i] = 0;
-
-      for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
-      {
-        if (langDetectors[i][j])
-          langDetectors[i][j]->Reset();
-      }
     }
     else
       mIsActive[i] = PR_FALSE;
+
+    for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+    {
+      if (langDetectors[i][j])
+        langDetectors[i][j]->Reset();
+
+      candidates[i][j] = false;
+    }
   }
-  mBestGuess = -1;
   mState = eDetecting;
   mKeepNext = 0;
 }
@@ -252,9 +295,21 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
 
           if (st == eFoundIt)
           {
-            mBestGuess = i;
-            mState = eFoundIt;
-            return mState;
+            float cf = mProbers[i]->GetConfidence(0);
+
+            for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+            {
+              float langConf = langDetectors[i][j]->GetConfidence();
+
+              if (cf * langConf > CANDIDATE_THRESHOLD)
+              {
+                /* There is at least one (charset, lang) couple for
+                 * which the confidence is high enough.
+                 */
+                mState = eFoundIt;
+                return mState;
+              }
+            }
           }
         }
       }
@@ -288,9 +343,21 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
 
       if (st == eFoundIt)
       {
-        mBestGuess = i;
-        mState = eFoundIt;
-        return mState;
+        float cf = mProbers[i]->GetConfidence(0);
+
+        for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+        {
+          float langConf = langDetectors[i][j]->GetConfidence();
+
+          if (cf * langConf > CANDIDATE_THRESHOLD)
+          {
+            /* There is at least one (charset, lang) couple for
+             * which the confidence is high enough.
+             */
+            mState = eFoundIt;
+            return mState;
+          }
+        }
       }
     }
   }
@@ -299,10 +366,49 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
   return mState;
 }
 
+void nsMBCSGroupProber::CheckCandidates()
+{
+  for (int i = 0; i < NUM_OF_PROBERS; i++)
+  {
+    if (! mIsActive[i])
+    {
+      for (int j = 0; j < NUM_OF_LANGUAGES; j++)
+        candidates[i][j] = false;
+    }
+    else
+    {
+      float cf = mProbers[i]->GetConfidence(0);
+
+      if (mProbers[i]->DecodeToUnicode())
+      {
+        for (int j = 0; j < NUM_OF_LANGUAGES; j++)
+        {
+          float langConf = langDetectors[i][j]->GetConfidence();
+
+          candidates[i][j] = (cf * langConf > CANDIDATE_THRESHOLD);
+        }
+      }
+      else
+      {
+        for (int j = 0; j < NUM_OF_LANGUAGES; j++)
+          candidates[i][j] = (cf > CANDIDATE_THRESHOLD);
+      }
+    }
+  }
+}
+
 float nsMBCSGroupProber::GetConfidence(int candidate)
 {
+  int num_candidates = GetCandidates();
+  int candidate_it   = 0;
+
   PRUint32 i;
-  float bestConf = 0.0, cf;
+
+  if (num_candidates == 0)
+    return 0.0;
+  else if (candidate >= num_candidates)
+    /* Just show the first candidate. */
+    candidate = 0;
 
   switch (mState)
   {
@@ -312,32 +418,26 @@ float nsMBCSGroupProber::GetConfidence(int candidate)
   default:
     for (i = 0; i < NUM_OF_PROBERS; i++)
     {
-      float bestLangConf = 0.0;
-
-      if (!mIsActive[i])
-        continue;
-      cf = mProbers[i]->GetConfidence(0);
-
-      if (mProbers[i]->DecodeToUnicode())
-      {
-        for (int j = 0; j < NUM_OF_LANGUAGES; j++)
+      for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+        if (candidates[i][j])
         {
-            float langConf = langDetectors[i][j]->GetConfidence();
+          if (candidate == candidate_it)
+          {
+            float cf       = mProbers[i]->GetConfidence(0);
+            float langConf = 1.0;
 
-            if (bestLangConf < langConf)
-              bestLangConf = langConf;
+            if (langDetectors[i][j])
+              langConf = langDetectors[i][j]->GetConfidence();
+
+            return cf * langConf;
+          }
+          candidate_it++;
         }
-        cf *= bestLangConf;
-      }
-
-      if (bestConf < cf)
-      {
-        bestConf = cf;
-        mBestGuess = i;
-      }
     }
   }
-  return bestConf;
+
+  /* Should not happen. */
+  return 0.0;
 }
 
 #ifdef DEBUG_chardet

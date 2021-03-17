@@ -54,9 +54,6 @@ nsUniversalDetector::nsUniversalDetector(PRUint32 aLanguageFilter)
   mEscCharSetProber = nsnull;
 
   mStart = PR_TRUE;
-  mDetectedCharset = nsnull;
-  mDetectedLanguage = nsnull;
-  mDetectedConfidence = 0.0;
   mGotData = PR_FALSE;
   mInputState = ePureAscii;
   mLastChar = '\0';
@@ -84,9 +81,6 @@ nsUniversalDetector::Reset()
   mInTag = PR_FALSE;
 
   mStart = PR_TRUE;
-  mDetectedCharset = nsnull;
-  mDetectedLanguage = nsnull;
-  mDetectedConfidence = 0.0;
   mGotData = PR_FALSE;
   mInputState = ePureAscii;
   mLastChar = '\0';
@@ -124,16 +118,16 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
           if (('\xBB' == aBuf[1]) && ('\xBF' == aBuf[2]))
           {
             /* EF BB BF: UTF-8 encoded BOM. */
-            mDetectedCharset = "UTF-8";
-            mDetectedConfidence = 0.99;
+            shortcutCharset = "UTF-8";
+            shortcutConfidence = 0.99;
           }
         break;
         case '\xFE':
           if ('\xFF' == aBuf[1])
           {
             /* FE FF: UTF-16, big endian BOM. */
-            mDetectedCharset = "UTF-16";
-            mDetectedConfidence = 0.99;
+            shortcutCharset = "UTF-16";
+            shortcutConfidence = 0.99;
           }
         break;
         case '\xFF':
@@ -144,14 +138,14 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
                 aBuf[3] == '\x00')
             {
                 /* FF FE 00 00: UTF-32 (LE). */
-                mDetectedCharset = "UTF-32";
-                mDetectedConfidence = 0.99;
+                shortcutCharset = "UTF-32";
+                shortcutConfidence = 0.99;
             }
             else
             {
                 /* FF FE: UTF-16, little endian BOM. */
-                mDetectedCharset = "UTF-16";
-                mDetectedConfidence = 0.99;
+                shortcutCharset = "UTF-16";
+                shortcutConfidence = 0.99;
             }
           }
           break;
@@ -162,14 +156,14 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
               aBuf[3] == '\xFF')
           {
               /* 00 00 FE FF: UTF-32 (BE). */
-              mDetectedCharset = "UTF-32";
-              mDetectedConfidence = 0.99;
+              shortcutCharset = "UTF-32";
+              shortcutConfidence = 0.99;
           }
           break;
         }
     }
 
-    if (mDetectedCharset)
+    if (shortcutCharset)
     {
         mDone = PR_TRUE;
         return NS_OK;
@@ -252,9 +246,9 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
     st = mEscCharSetProber->HandleData(aBuf, aLen, NULL, NULL);
     if (st == eFoundIt)
     {
+      shortcutCharset = mEscCharSetProber->GetCharSetName(0);
+      shortcutConfidence = mEscCharSetProber->GetConfidence(0);
       mDone = PR_TRUE;
-      mDetectedCharset = mEscCharSetProber->GetCharSetName(0);
-      mDetectedConfidence = mEscCharSetProber->GetConfidence(0);
     }
     break;
   case eHighbyte:
@@ -266,9 +260,6 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
         if (st == eFoundIt)
         {
           mDone = PR_TRUE;
-          mDetectedCharset = mCharSetProbers[i]->GetCharSetName(0);
-          mDetectedLanguage = mCharSetProbers[i]->GetLanguage(0);
-          mDetectedConfidence = mCharSetProbers[i]->GetConfidence(0);
           return NS_OK;
         }
       }
@@ -292,7 +283,7 @@ void nsUniversalDetector::DataEnd()
     return;
   }
 
-  if (! mDetectedCharset)
+  if (! shortcutCharset)
   {
     switch (mInputState)
     {
@@ -302,26 +293,27 @@ void nsUniversalDetector::DataEnd()
       {
           /* ISO-8859-1 is a good result candidate for ASCII + NBSP.
            * (though it could have been any ISO-8859 encoding). */
-          mDetectedCharset = "ISO-8859-1";
+          shortcutCharset = "ISO-8859-1";
       }
       else
       {
           /* ASCII with the ESC character (or the sequence "~{") is still
            * ASCII until proven otherwise. */
-          mDetectedCharset = "ASCII";
+          shortcutCharset = "ASCII";
       }
+      shortcutConfidence = 0.99;
     default:
       break;
     }
   }
 
-  if (mDetectedCharset)
+  if (shortcutCharset)
   {
       /* These cases are limited enough that we are always confident
        * when finding them.
        */
       mDone = PR_TRUE;
-      Report(mDetectedCharset, mDetectedLanguage, mDetectedConfidence);
+      Report(shortcutCharset, NULL, shortcutConfidence);
       return;
   }
 
@@ -335,13 +327,20 @@ void nsUniversalDetector::DataEnd()
       {
         if (mCharSetProbers[i])
         {
-          proberConfidence = mCharSetProbers[i]->GetConfidence(0);
+          int n_candidates = mCharSetProbers[i]->GetCandidates();
 
-          if (proberConfidence > MINIMUM_THRESHOLD)
-              /* Only report what we are confident in. */
-              Report(mCharSetProbers[i]->GetCharSetName(0),
-                     mCharSetProbers[i]->GetLanguage(0),
-                     proberConfidence);
+          for (int c = 0; c < n_candidates; c++)
+          {
+            proberConfidence = mCharSetProbers[i]->GetConfidence(c);
+
+            if (proberConfidence > MINIMUM_THRESHOLD)
+            {
+                /* Only report what we are confident in. */
+                Report(mCharSetProbers[i]->GetCharSetName(c),
+                       mCharSetProbers[i]->GetLanguage(c),
+                       proberConfidence);
+            }
+          }
         }
       }
     }

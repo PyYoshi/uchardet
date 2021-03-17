@@ -57,7 +57,7 @@ public:
   nsProbingState HandleData(const char* aBuf, PRUint32 aLen,
                             int** codePointBuffer,
                             int*  codePointBufferIdx);
-  int GetCandidates() { return 1; }
+  int         GetCandidates();
   const char* GetCharSetName(int candidate);
   const char* GetLanguage(int candidate);
   nsProbingState GetState(void) {return mState;}
@@ -76,15 +76,19 @@ protected:
   nsProbingState mState;
   nsCharSetProber* mProbers[NUM_OF_PROBERS];
   PRBool          mIsActive[NUM_OF_PROBERS];
-  PRInt32 mBestGuess;
   PRUint32 mActiveNum;
   PRUint32 mKeepNext;
+
+  PRBool   candidates[NUM_OF_PROBERS][NUM_OF_LANGUAGES];
 
   int *codePointBuffer[NUM_OF_PROBERS];
   int  codePointBufferSize[NUM_OF_PROBERS];
   int  codePointBufferIdx[NUM_OF_PROBERS];
 
   nsLanguageDetector *langDetectors[NUM_OF_PROBERS][NUM_OF_LANGUAGES];
+
+private:
+  void CheckCandidates();
 };
 
 #endif /* nsMBCSGroupProber_h__ */

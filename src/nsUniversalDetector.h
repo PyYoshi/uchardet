@@ -80,9 +80,9 @@ protected:
    PRBool  mStart;
    PRBool  mGotData;
    char    mLastChar;
-   const char *  mDetectedCharset;
-   const char *  mDetectedLanguage;
-   float         mDetectedConfidence;
+   const char *  shortcutCharset;
+   float         shortcutConfidence;
+
    PRInt32 mBestGuess;
    PRUint32 mLanguageFilter;
 
