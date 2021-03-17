@@ -116,21 +116,17 @@ float nsLanguageDetector::GetConfidence(void)
   float r;
 
   if (mTotalSeqs > 0) {
-    /* Create a "logical" number of sequences rather than real, but
-     * weighing the various sequences.
-     * Basically positive sequences will boost the confidence, probable
-     * sequence a bit, but not so much, neutral sequences will not be
-     * integrated in the confidence.
-     * Negative sequences will negatively impact the confidence as much
-     * as positive sequence positively impact it.
+    /* Positive sequences will boost the confidence, probable sequence
+     * only a bit but not so much, neutral sequences will stall the
+     * confidence.
+     * Negative sequences will negatively impact the confidence.
      */
-    int positiveSeqs = mSeqCounters[LANG_POSITIVE_CAT] * 4;
-    int probableSeqs = mSeqCounters[LANG_PROBABLE_CAT];
-    int neutralSeqs  = mSeqCounters[LANG_NEUTRAL_CAT];
-    int negativeSeqs = mSeqCounters[LANG_NEGATIVE_CAT] * 4;
-    int totalSeqs    = positiveSeqs + probableSeqs + neutralSeqs + negativeSeqs;
+    float positiveSeqs = mSeqCounters[LANG_POSITIVE_CAT];
+    float probableSeqs = mSeqCounters[LANG_PROBABLE_CAT];
+    //float neutralSeqs  = mSeqCounters[LANG_NEUTRAL_CAT];
+    float negativeSeqs = mSeqCounters[LANG_NEGATIVE_CAT];
 
-    r = ((float)1.0) * (positiveSeqs + probableSeqs - negativeSeqs) / totalSeqs / mModel->mTypicalPositiveRatio;
+    r = (positiveSeqs + probableSeqs / 4 - negativeSeqs * 2) / mTotalSeqs;
     /* The more control characters (proportionnaly to the size of the text), the
      * less confident we become in the current language.
      */
