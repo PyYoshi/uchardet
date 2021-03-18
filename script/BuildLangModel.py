@@ -115,6 +115,10 @@ if not hasattr(lang, 'custom_case_mapping'):
     lang.custom_case_mapping = None
 if not hasattr(lang, 'alphabet') or lang.alphabet is None:
     lang.alphabet = None
+if not hasattr(lang, 'unicode_ranges') or lang.unicode_ranges is None:
+    lang.unicode_ranges = None
+if not hasattr(lang, 'frequent_ranges') or lang.frequent_ranges is None:
+    lang.frequent_ranges = None
 
 def local_lowercase(text, lang):
     lowercased = ''
@@ -150,6 +154,28 @@ if lang.alphabet is not None:
             #else:
                 #alphabet.append(l)
     lang.alphabet = list(set(lang.alphabet))
+
+def normalize_codepoint_ranges(input_range):
+  output_range = []
+  if input_range is not None:
+      for start, end in input_range:
+        # Allow to write down characters rather than unicode values.
+        if isinstance(start, str):
+          start = ord(start)
+        if isinstance(end, str):
+          end = ord(end)
+        if not isinstance(start, int) or not isinstance(end, int):
+          sys.stderr.write("Expected unicode range in char or int: {}-{}.\n".format(start, end))
+        if start > end:
+          sys.stderr.write("Wrong unicode range: {}-{}.\n".format(start, end))
+        else:
+          output_range += [(start, end)]
+      if len(output_range) == 0:
+        output_range = None
+  return output_range
+
+lang.unicode_ranges = normalize_codepoint_ranges(lang.unicode_ranges)
+lang.frequent_ranges = normalize_codepoint_ranges(lang.frequent_ranges)
 
 # Starting processing.
 wikipedia.set_lang(lang.wikipedia_code)
@@ -187,10 +213,17 @@ def process_text(content, lang):
     # In python 3, strings are UTF-8.
     # Looping through them return expected characters.
     for char in content:
+        unicode_value = ord(char)
         is_letter = False
-        if ord(char) in characters:
-            characters[ord(char)] += 1
+        if unicode_value in characters:
+            characters[unicode_value] += 1
             is_letter = True
+        elif lang.unicode_ranges is not None:
+            for start, end in lang.unicode_ranges:
+              if unicode_value >= start and unicode_value <= end:
+                characters[unicode_value] = 1
+                is_letter = True
+                break
         else:
             # We save the character if it is at least in one of the
             # language encodings and its not a special character.
@@ -221,16 +254,16 @@ def process_text(content, lang):
                 # Not sure if that is a bug or expected.
                 codepoint = ord(codepoint)
                 if charsets[charset].charmap[codepoint] == LET:
-                    characters[ord(char)] = 1
+                    characters[unicode_value] = 1
                     is_letter = True
                     break
         if is_letter:
             if prev_char is not None:
-                if (prev_char, ord(char)) in sequences:
-                    sequences[(prev_char, ord(char))] += 1
+                if (prev_char, unicode_value) in sequences:
+                    sequences[(prev_char, unicode_value)] += 1
                 else:
-                    sequences[(prev_char, ord(char))] = 1
-            prev_char = ord(char)
+                    sequences[(prev_char, unicode_value)] = 1
+            prev_char = unicode_value
         else:
             prev_char = None
 
@@ -329,15 +362,23 @@ accumulated_ratios = 0
 # If there is an alphabet, we make sure all the alphabet characters are in the
 # frequent list, and we stop then. There may therefore be more or less than
 # 64 frequent characters depending on the language.
-if lang.alphabet is None:
+logfd.write('\nMost Frequent characters:')
+if lang.alphabet is None and lang.frequent_ranges is None:
     freq_count = 64
-else:
+    for order, (char, ratio) in enumerate(sorted_ratios):
+        if order >= freq_count:
+            break
+        logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
+        accumulated_ratios += ratio
+elif lang.alphabet is not None:
     freq_count = 0
     for order, (char, ratio) in enumerate(sorted_ratios):
         if len(lang.alphabet) == 0:
             break
         if chr(char) in lang.alphabet:
             lang.alphabet.remove(chr(char))
+        logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
+        accumulated_ratios += ratio
         freq_count += 1
     else:
         if len(lang.alphabet) > 0:
@@ -345,13 +386,36 @@ else:
                   "\n       Please check the configuration or the data."
                   "\n       Missing characters: {}".format(", ".join(lang.alphabet)))
             exit(1)
+elif lang.frequent_ranges is not None:
+    freq_count = 0
+    non_freq_counter = 0
+    non_freq_ratio   = 0
+    for order, (char, ratio) in enumerate(sorted_ratios):
+      for start, end in lang.frequent_ranges:
+        if char >= start and char <= end:
+          freq_count += 1
+          non_freq_counter = 0
+          non_freq_ratio   = 0
+          accumulated_ratios += ratio
+          logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
+          break
+      else:
+        if non_freq_counter >= 2:
+          # We don't try to get necessarily the whole range, but break
+          # when we are getting into known non-frequent area.
+          freq_count         -= non_freq_counter
+          accumulated_ratios -= non_freq_ratio
+          break
+        freq_count         += 1
+        accumulated_ratios += ratio
 
-logfd.write('\nFirst {} characters:'.format(freq_count))
-for order, (char, ratio) in enumerate(sorted_ratios):
-    if order >= freq_count:
+        non_freq_counter   += 1
+        non_freq_ratio     += ratio
+      if accumulated_ratios >= 0.99:
+        if non_freq_counter > 0:
+          freq_count         -= non_freq_counter
+          accumulated_ratios -= non_freq_ratio
         break
-    logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
-    accumulated_ratios += ratio
 
 logfd.write("\n\nThe first {} characters have an accumulated ratio of {}.\n".format(freq_count, accumulated_ratios))
 
@@ -508,37 +572,66 @@ c_code += CTOM_str
 
 ratios = {}
 occurrences = sum(sequences.values())
-ratio_512 = 0
-ratio_1024 = 0
 
+accumulated_seq_count = 0
+order_3 = -1
+order_2 = -1
+ratio_3 = -1
+ratio_2 = -1
+count_512 = -1
+count_1024 = -1
 sorted_seqs = sorted(sequences.items(), key=operator.itemgetter(1),
                      reverse=True)
 for order, ((c1, c2), count) in enumerate(sorted_seqs):
-    if order < 512:
-        ratio_512 += count
-    elif order < 1024:
-        ratio_1024 += count
-    else:
-        break
-ratio_512 /= occurrences
-ratio_1024 /= occurrences
+  accumulated_seq_count += count
+  if order_3 == -1 and accumulated_seq_count / occurrences >= 0.995:
+    order_3 = order
+    ratio_3 = accumulated_seq_count / occurrences
+  elif order_2 == -1 and accumulated_seq_count / occurrences >= 0.999:
+    order_2 = order
+    ratio_2 = accumulated_seq_count / occurrences
+  if order < 512:
+    count_512 += count
+  elif order < 1024:
+    count_1024 += count
+
+  if order_3 != -1 and order_2 != -1:
+    break
+
+if order_3 == -1 or order_2 == -1:
+  # This would probably never happens. It would require a language with
+  # very few possible sequences and each of the sequences are widely
+  # used. Just add this code for completio, but it won't likely ever be
+  # run.
+  order_2 = 512
+  order_3 = 1024
+  ratio_2 = count_512 / occurrences
+  ratio_3 = count_1024 / occurrences
 
 logfd.write("\n{} sequences found.\n".format(len(sorted_seqs)))
 
 c_code += """
 /* Model Table:
- * Total sequences: {}
- * First 512 sequences: {}
- * Next 512 sequences (512-1024): {}
- * Rest: {}
+ * Total considered sequences: {} / {}
+ * - Positive sequences: first {} ({})
+ * - Probable sequences: next {} ({}-{}) ({})
+ * - Neutral sequences: last {} ({})
+ * - Negative sequences: {} (off-ratio)
  * Negative sequences: TODO""".format(len(sorted_seqs),
-                                      ratio_512,
-                                      ratio_1024,
-                                      1 - ratio_512 - ratio_1024)
+                                      freq_count * freq_count,
+                                      order_3, ratio_3,
+                                      order_2 - order_3,
+                                      order_2, order_3,
+                                      ratio_2 - ratio_3,
+                                      freq_count * freq_count - order_2,
+                                      1 - ratio_2,
+                                      freq_count * freq_count - len(sorted_seqs))
 
-logfd.write("\nFirst 512 (typical positive ratio): {}".format(ratio_512))
-logfd.write("\nNext 512 (512-1024): {}".format(ratio))
-logfd.write("\nRest: {}".format(1 - ratio_512 - ratio_1024))
+logfd.write("\nFirst {} (typical positive ratio): {}".format(order_3, ratio_3))
+logfd.write("\nNext {} ({}-{}): {}".format(order_2 - order_3,
+                                           order_2, order_3,
+                                           ratio_2 - ratio_3))
+logfd.write("\nRest: {}".format(1 - ratio_2))
 
 c_code += "\n */\n"
 
@@ -558,9 +651,9 @@ for line in range(0, freq_count):
             if (first_char, second_char) in sequences:
                 for order, (seq, _) in enumerate(sorted_seqs):
                     if seq == (first_char, second_char):
-                        if order < 512:
+                        if order < order_3:
                             LM_str += '3,'
-                        elif order < 1024:
+                        elif order < order_2:
                             LM_str += '2,'
                         else:
                             LM_str += '1,'
@@ -583,7 +676,7 @@ for charset in charsets:
     SM_str += '\n{\n  '
     SM_str += '{}_CharToOrderMap,\n  {}LangModel,'.format(charset_c, language_c)
     SM_str += '\n  {},'.format(freq_count)
-    SM_str += '\n  (float){},'.format(ratio_512)
+    SM_str += '\n  (float){},'.format(ratio_2)
     SM_str += '\n  {},'.format('PR_TRUE' if lang.use_ascii else 'PR_FALSE')
     SM_str += '\n  "{}",'.format(charset)
     SM_str += '\n  "{}"'.format(lang.code)
@@ -597,7 +690,7 @@ SM_str += '\n  Unicode_CharOrder,'
 SM_str += '\n  {},'.format(len(sorted_chars)) # Order is wrong!
 SM_str += '\n  {}LangModel,'.format(language_c)
 SM_str += '\n  {},'.format(freq_count)
-SM_str += '\n  (float){},'.format(ratio_512)
+SM_str += '\n  (float){},'.format(accumulated_ratios)
 SM_str += '\n};'
 c_code += SM_str
 
