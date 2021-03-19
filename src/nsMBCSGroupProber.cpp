@@ -102,9 +102,11 @@ nsMBCSGroupProber::nsMBCSGroupProber(PRUint32 aLanguageFilter)
       langDetectors[i][j++] = new nsLanguageDetector(&GermanModel);
       langDetectors[i][j++] = new nsLanguageDetector(&GreekModel);
       langDetectors[i][j++] = new nsLanguageDetector(&HebrewModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&HindiModel);
       langDetectors[i][j++] = new nsLanguageDetector(&HungarianModel);
       langDetectors[i][j++] = new nsLanguageDetector(&IrishModel);
       langDetectors[i][j++] = new nsLanguageDetector(&ItalianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&KoreanModel);
       langDetectors[i][j++] = new nsLanguageDetector(&LatvianModel);
       langDetectors[i][j++] = new nsLanguageDetector(&LithuanianModel);
       langDetectors[i][j++] = new nsLanguageDetector(&MalteseModel);
@@ -118,7 +120,6 @@ nsMBCSGroupProber::nsMBCSGroupProber(PRUint32 aLanguageFilter)
       langDetectors[i][j++] = new nsLanguageDetector(&ThaiModel);
       langDetectors[i][j++] = new nsLanguageDetector(&TurkishModel);
       langDetectors[i][j++] = new nsLanguageDetector(&VietnameseModel);
-      langDetectors[i][j++] = new nsLanguageDetector(&KoreanModel);
     }
     else
     {

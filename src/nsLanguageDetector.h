@@ -123,6 +123,7 @@ extern const LanguageModel FrenchModel;
 extern const LanguageModel GermanModel;
 extern const LanguageModel GreekModel;
 extern const LanguageModel HebrewModel;
+extern const LanguageModel HindiModel;
 extern const LanguageModel HungarianModel;
 extern const LanguageModel IrishModel;
 extern const LanguageModel ItalianModel;

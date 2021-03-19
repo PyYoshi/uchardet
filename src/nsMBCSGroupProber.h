@@ -49,7 +49,7 @@
 #include "nsEUCTWProber.h"
 
 #define NUM_OF_PROBERS    8
-#define NUM_OF_LANGUAGES  28
+#define NUM_OF_LANGUAGES  29
 
 class nsMBCSGroupProber: public nsCharSetProber {
 public:
