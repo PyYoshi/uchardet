@@ -143,6 +143,11 @@ nsDetectState nsLanguageDetector::HandleData(const int* codePoints, PRUint32 cpL
          * but they will drop a bit the confidence.
          */
         mOutChar++;
+        order = -2;
+
+        if (mLastOrder == -2 || mLastOrder >= 0)
+          /* Adding a non frequent sequence. */
+          mTotalSeqs++;
       }
     }
     else if (order < mModel->freqCharCount)
@@ -153,6 +158,11 @@ nsDetectState nsLanguageDetector::HandleData(const int* codePoints, PRUint32 cpL
       {
         mTotalSeqs++;
         ++(mSeqCounters[mModel->precedenceMatrix[mLastOrder*mModel->freqCharCount+order]]);
+      }
+      else if (mLastOrder == -2)
+      {
+        /* Adding a non frequent sequence. */
+        mTotalSeqs++;
       }
     }
     mLastOrder = order;
