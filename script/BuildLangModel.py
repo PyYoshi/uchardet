@@ -170,8 +170,8 @@ def normalize_codepoint_ranges(input_range):
           sys.stderr.write("Wrong unicode range: {}-{}.\n".format(start, end))
         else:
           output_range += [(start, end)]
-      if len(output_range) == 0:
-        output_range = None
+  if len(output_range) == 0:
+    output_range = None
   return output_range
 
 lang.unicode_ranges = normalize_codepoint_ranges(lang.unicode_ranges)
@@ -218,6 +218,11 @@ def process_text(content, lang):
         if unicode_value in characters:
             characters[unicode_value] += 1
             is_letter = True
+        if lang.use_ascii and \
+           ((unicode_value >= 65 and unicode_value <= 90) or \
+            (unicode_value >= 97 and unicode_value <= 122)):
+          characters[unicode_value] = 1
+          is_letter = True
         elif lang.unicode_ranges is not None:
             for start, end in lang.unicode_ranges:
               if unicode_value >= start and unicode_value <= end:
@@ -364,7 +369,7 @@ accumulated_ratios = 0
 # 64 frequent characters depending on the language.
 logfd.write('\nMost Frequent characters:')
 if lang.alphabet is None and lang.frequent_ranges is None:
-    freq_count = 64
+    freq_count = min(64, len(sorted_ratios))
     for order, (char, ratio) in enumerate(sorted_ratios):
         if order >= freq_count:
             break
