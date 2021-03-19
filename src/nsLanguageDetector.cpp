@@ -48,32 +48,104 @@ nsDetectState nsLanguageDetector::HandleData(const int* codePoints, PRUint32 cpL
     order = GetOrderFromCodePoint(codePoints[i]);
 
     mTotalChar++;
-#if 0
-    /* TODO: detect illegal unicode codepoints. */
-    if (order == ILL)
+
+    if (order == -1)
     {
+      if (codePoints[i] <= 0x1F || codePoints[i] == 0x7F   || /* C0 */
+          (codePoints[i] <= 0x9F && codePoints[i] >= 0x80) || /* C1 */
+          /* Separators: not strictly control characters for the Unicode
+           * standard, but we'll consider as such in our purpose.
+           */
+          codePoints[i] == 0x2028 || codePoints[i] == 0x2029 ||
+          /* Tags: U+E0001 is deprecated but other are still usable as
+           * emoji identifiers. Not sure how to use them.
+           */
+          codePoints[i] == 0xE0001                           ||
+          /* Interlinear annotations. */
+          codePoints[i] == 0xFFF9 || codePoints[i] == 0xFFFA ||
+          codePoints[i] == 0xFFFB                            ||
+          /* Bidirectional text control. */
+          codePoints[i] == 0x061C || codePoints[i] == 0x200E ||
+          codePoints[i] == 0x200F ||
+          (codePoints[i] >= 0x202A && codePoints[i] <= 0x202E) ||
+          (codePoints[i] >= 0x2066 && codePoints[i] <= 0x2069) ||
+          /* Control pictures. */
+          (codePoints[i] >= 0x2400 && codePoints[i] <= 0x2426))
+      {
+        /* XXX: some control characters such as variation selectors may
+         * need to be considered separately (basically just as if they
+         * were not here and simply skipped?). */
+        //mCtrlChar++;
+      }
       /* When encountering an illegal codepoint, no need
        * to continue analyzing data. It means this is not right, hence
        * that the encoding we deducted this codepoint from is wrong.
+       * Unfortunately listing all illegal codePoints in Unicode might be
+       * a daunting task and comparing each characters to all these
+       * illegal codePoints would be a lot of additional work. Is it
+       * really necessary? XXX
        */
-      mState = STATE_UNLIKELY;
-      break;
+      else if (/* Tab, line feed and carriage returns are common enough
+                * that they should be considered as commonly used characters.
+                */
+               codePoints[i] == 0x9 || codePoints[i] == 0xA || codePoints[i] == 0xd ||
+               (codePoints[i] >= 0x20 && codePoints[i] <= 0x40) ||
+               (codePoints[i] >= 0x5B && codePoints[i] <= 0x5F) ||
+               (codePoints[i] >= 0x7B && codePoints[i] <= 0x7E) ||
+               (codePoints[i] >= 0xA0 && codePoints[i] <= 0xA5) ||
+               (codePoints[i] >= 0xA0 && codePoints[i] <= 0xB4) ||
+               (codePoints[i] >= 0xB6 && codePoints[i] <= 0xBF) ||
+               codePoints[i] == 0xD7                            ||
+               codePoints[i] == 0xF7                            ||
+               /* General Punctuation */
+               (codePoints[i] >= 0x2000 && codePoints[i] <= 0x206F) ||
+               /* Vertical Forms */
+               (codePoints[i] >= 0xFE10 && codePoints[i] <= 0xFE1F) ||
+               /* CJK Symbols and Punctuation */
+               (codePoints[i] >= 0x3000 && codePoints[i] <= 0x303F) ||
+               /* Halfwidth and Fullwidth Forms */
+               (codePoints[i] >= 0xFF00 && codePoints[i] <= 0xFFEF))
+       {
+         /* Punctuations, various symbols, even numbers are simply
+          * ignored.
+          * As for halfwidth and fullwidth characters, I'm not sure what
+          * to do with them, but let's go with the same logics of
+          * skipping them, at least for now..
+          */
+         //mVariousBetween++;
+       }
+      else if (/* Common Ctrl except the ones considered as common chars. */
+               (codePoints[i] >= 0x1F600 && codePoints[i] <= 0x1F64F) ||
+               codePoints[i] == 0xFE0E || codePoints[i] == 0xFE0F     ||
+               (codePoints[i] >= 0x1F3FB && codePoints[i] <= 0x1F3FF) ||
+               /* Miscellaneous Symbols */
+               (codePoints[i] >= 0x2600 && codePoints[i] <= 0x26FF) ||
+               /* Supplemental Symbols and Pictographs */
+               (codePoints[i] >= 0x1F90C && codePoints[i] <= 0x1F93A) ||
+               (codePoints[i] >= 0x1F93C && codePoints[i] <= 0x1F945) ||
+               (codePoints[i] >= 0x1F947 && codePoints[i] <= 0x1F978) ||
+               (codePoints[i] >= 0x1F97A && codePoints[i] <= 0x1F9CB) ||
+               (codePoints[i] >= 0x1F9CD && codePoints[i] <= 0x1F9FF) ||
+               /* Miscellaneous Symbols and Pictographs */
+               (codePoints[i] >= 0x1F300 && codePoints[i] <= 0x1F5FF) ||
+               /* Transport and Map Symbols */
+               (codePoints[i] >= 0x1F680 && codePoints[i] <= 0x1F6FF) ||
+               /* Dingbat */
+               (codePoints[i] >= 0x2700 && codePoints[i] <= 0x27BF))
+      {
+        //mEmoticons++;
+      }
+      else
+      {
+        /* All the rest is to be considered as non-frequent characters.
+         * These are not disqualifying (we may also have a text with a bit
+         * of foreign quotes in it or very unusual characters sometimes)
+         * but they will drop a bit the confidence.
+         */
+        mOutChar++;
+      }
     }
-    else if (order == CTR)
-    {
-      /* TODO: also detect ctrl character, as well as symbols and
-       * punctuation, possibly return/line feeds and numbers. See how to
-       * use these to improve language detection logics.
-       * */
-      mCtrlChar++;
-    }
-#endif
-
-    /* Negative order represent non-frequent characters, yet not disqualifying.
-     * We may also have a text with a bit of foreign quotes in it or
-     * very unusual characters sometimes.
-     */
-    if (order >= 0 && order < mModel->freqCharCount)
+    else if (order < mModel->freqCharCount)
     {
       mFreqChar++;
 
@@ -107,10 +179,14 @@ void nsLanguageDetector::Reset(void)
     mSeqCounters[i] = 0;
   mTotalSeqs = 0;
   mTotalChar = 0;
-  mCtrlChar  = 0;
+  //mCtrlChar  = 0;
+  //mEmoticons  = 0;
+  //mVariousBetween  = 0;
   mFreqChar  = 0;
+  mOutChar   = 0;
 }
 
+#include <cstdio>
 float nsLanguageDetector::GetConfidence(void)
 {
   float r;
@@ -127,11 +203,14 @@ float nsLanguageDetector::GetConfidence(void)
     float negativeSeqs = mSeqCounters[LANG_NEGATIVE_CAT];
 
     r = (positiveSeqs + probableSeqs / 4 - negativeSeqs * 2) / mTotalSeqs;
-    /* The more control characters (proportionnaly to the size of the text), the
-     * less confident we become in the current language.
+    /* The more characters outside the expected characters
+     * (proportionnaly to the size of the text), the less confident we
+     * become in the current language.
+     * Note that we removed punctuations and various symbols which are
+     * therefore somehow more "neutral".
      */
-    r = r * (mTotalChar - mCtrlChar) / mTotalChar;
-    r = r * mFreqChar / mTotalChar;
+    r = r * (mTotalChar - mOutChar) / mTotalChar;
+    r = r * mFreqChar / (mFreqChar + mOutChar);
 
     return r;
   }

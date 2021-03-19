@@ -100,9 +100,12 @@ protected:
   PRUint32 mSeqCounters[LANG_NUMBER_OF_SEQ_CAT];
 
   PRUint32 mTotalChar;
-  PRUint32 mCtrlChar;
+  /*PRUint32 mCtrlChar;*/
+  /*PRUint32 mEmoticons;*/
+  /*PRUint32 mVariousBetween;*/
   /* Characters that fall in our sampling range */
   PRUint32 mFreqChar;
+  PRUint32 mOutChar;
 
 private:
 
