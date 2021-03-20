@@ -38,6 +38,8 @@
 #
 # ##### END LICENSE BLOCK #####
 
+## XXX Unused! Replaced by src/nsCJKDetector.cpp XXX
+
 import re
 
 ## Mandatory Properties ##
