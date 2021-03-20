@@ -130,7 +130,7 @@ float nsSingleByteCharSetProber::GetConfidence(int candidate)
     /* The more control characters (proportionnaly to the size of the text), the
      * less confident we become in the current charset.
      */
-    r = r * (mTotalChar - mCtrlChar) / mTotalChar;
+    r = r * ((float) mTotalChar - mCtrlChar) / mTotalChar;
     r = r*mFreqChar/mTotalChar;
     if (r >= (float)1.00)
       r = (float)0.99;
