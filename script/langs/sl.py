@@ -58,6 +58,17 @@ charsets = ['ISO-8859-2', 'ISO-8859-16',
 # exist. Maybe this would have to be separate models for variants of
 # the language.
 alphabet = 'abcčdefghijklmnoprsštuvzž'
+#alphabet = 'abcčdefghijklmnoprsštuvzž' + 'áȃȁéêèẹ́ȇẹ̑ȅə̀ə̏íìȋȉóôòóọ́ȏọ̑ȍúùȗȕŕȓ'
+# Equivalent letters. This is because Slovene use some diacritics but
+# they are so rarely used (in title mostly for Wikipedia) that counting
+# them in the stats would be counter-productive. Moreover they are not
+# letter of their own, but really replace the non-diatrical letter to
+# help with disambiguition. For instance "gol" both means "naked" and
+# "goal" and could sometimes be written "gòl" for the former meaning or
+# "gól" for the latter.
+alphabet_mapping = {'a': 'áȃȁ', 'e': 'éêèẹ́ȇ ẹ̑ȅə̀ə̏', 'i': 'íìȋȉ',
+                    'o': 'óôòóọ́ȏ ọ̑ȍ', 'u': 'úùȗȕ', 'r': 'ŕȓ'}
+
 start_pages = ['Ljubljana']
 wikipedia_code = code
 case_mapping = True

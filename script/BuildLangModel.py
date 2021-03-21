@@ -115,6 +115,8 @@ if not hasattr(lang, 'custom_case_mapping'):
     lang.custom_case_mapping = None
 if not hasattr(lang, 'alphabet') or lang.alphabet is None:
     lang.alphabet = None
+if not hasattr(lang, 'alphabet_mapping') or lang.alphabet_mapping is None:
+    lang.alphabet_mapping = None
 if not hasattr(lang, 'unicode_ranges') or lang.unicode_ranges is None:
     lang.unicode_ranges = None
 if not hasattr(lang, 'frequent_ranges') or lang.frequent_ranges is None:
@@ -154,6 +156,20 @@ if lang.alphabet is not None:
             #else:
                 #alphabet.append(l)
     lang.alphabet = list(set(lang.alphabet))
+
+if lang.alphabet_mapping is not None:
+    alphabet_mapping = {}
+    for char in lang.alphabet_mapping:
+      # Allowing to provide an alphabet in string format rather than list.
+      for alt_char in list(lang.alphabet_mapping[char]):
+        # While it's easier to write from main character to
+        # equivalencies in the language file, we reverse the mapping
+        # for simpler usage.
+        if lang.case_mapping or lang.custom_case_mapping is not None:
+          alphabet_mapping[alt_char] = local_lowercase(char, lang)
+        else:
+          alphabet_mapping[alt_char] = char
+    lang.alphabet_mapping = alphabet_mapping
 
 def normalize_codepoint_ranges(input_range):
   output_range = []
@@ -213,6 +229,11 @@ def process_text(content, lang):
     # In python 3, strings are UTF-8.
     # Looping through them return expected characters.
     for char in content:
+        # Map to main equivalent character.
+        if lang.alphabet_mapping is not None and \
+           char in lang.alphabet_mapping:
+          char = lang.alphabet_mapping[char]
+
         unicode_value = ord(char)
         is_letter = False
         if unicode_value in characters:
@@ -501,6 +522,8 @@ for charset in charsets:
                    # composed lowercase, we lowercase it.
                 if lang.case_mapping or lang.custom_case_mapping is not None:
                     uchar = local_lowercase(uchar, lang)
+                if lang.alphabet_mapping is not None and uchar in lang.alphabet_mapping:
+                    uchar = lang.alphabet_mapping[uchar]
                 for order, (char, ratio) in enumerate(sorted_ratios):
                     if char == ord(uchar):
                         CTOM_str += '{:3},'.format(min(249, order))
@@ -549,7 +572,21 @@ if lang.case_mapping:
           # This happens for some case such as 'SS' as uppercase of 'ß'.
           # Just ignore such cases.
           sys.stderr.write("Ignoring '{}' as uppercase equivalent of '{}'.\n".format(uppercased, char))
-    sorted_chars += equivalent
+
+if lang.alphabet_mapping is not None:
+  for alt_c in lang.alphabet_mapping:
+    for char, ratio, order in sorted_chars:
+      if alt_c == chr(char):
+        sys.stderr.write("ALREADY {}\n".format(alt_c))
+        exit(1)
+      elif char == ord(lang.alphabet_mapping[alt_c]):
+        equivalent += [(ord(alt_c), ratio, order)]
+        break
+    else:
+      sys.stderr.write("Base equivalent for {} not found in frequent characters!\n".format(alt_c))
+      exit(1)
+
+sorted_chars += equivalent
 
 # Order by code point.
 sorted_chars = sorted(sorted_chars, key=operator.itemgetter(0))
