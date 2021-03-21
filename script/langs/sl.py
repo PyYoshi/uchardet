@@ -44,16 +44,20 @@ import re
 
 name = 'Slovene'
 code = 'sl'
-use_ascii = True
+# ASCII is used except q and w, x and y according to Wikipedia.
+use_ascii = False
 charsets = ['ISO-8859-2', 'ISO-8859-16',
             'Windows-1250', 'IBM852', 'MAC-CENTRALEUROPE']
 
 ## Optional Properties ##
 
 # Alphabet characters.
-alphabet = 'čšž'
-# The starred page which was rewarded on the main page when I created
-# the data.
-start_pages = ['XCOM: Enemy Unknown']
+# XXX According to Wikipedia there are 2 incompatible diacritics
+# systems, but both seem barely used on Wikipedia (even though I can see
+# some usage here or there, on some titles), so I assume these don't
+# exist. Maybe this would have to be separate models for variants of
+# the language.
+alphabet = 'abcčdefghijklmnoprsštuvzž'
+start_pages = ['Ljubljana']
 wikipedia_code = code
 case_mapping = True

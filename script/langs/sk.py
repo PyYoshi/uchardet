@@ -58,10 +58,8 @@ charsets = ['ISO-8859-2', 'Windows-1250', 'IBM852', 'MAC-CENTRALEUROPE']
 # If use_ascii=True, there is no need to add any ASCII characters.
 # If case_mapping=True, there is no need to add several cases of a same
 # character (provided Python algorithms know the right cases).
-alphabet = 'áäčďĺľňóŕšťúýž'
-# The starred page which was rewarded on the main page when I created
-# the data.
-start_pages = ['Dôkaz (matematika)']
+alphabet = 'áäčďéíĺľňóôŕšťúýž'
+start_pages = ['Európska_únia']
 # give possibility to select another code for the Wikipedia URL.
 wikipedia_code = code
 # 'a' and 'A' will be considered the same character, and so on.
