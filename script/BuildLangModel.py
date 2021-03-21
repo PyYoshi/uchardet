@@ -218,7 +218,7 @@ def process_text(content, lang):
         if unicode_value in characters:
             characters[unicode_value] += 1
             is_letter = True
-        if lang.use_ascii and \
+        elif lang.use_ascii and \
            ((unicode_value >= 65 and unicode_value <= 90) or \
             (unicode_value >= 97 and unicode_value <= 122)):
           characters[unicode_value] = 1
