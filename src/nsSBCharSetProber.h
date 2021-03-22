@@ -124,6 +124,7 @@ protected:
   PRUint32 mCtrlChar;
   //characters that fall in our sampling range
   PRUint32 mFreqChar;
+  PRUint32 mOutChar;
   
   // Optional auxiliary prober for name decision. created and destroyed by the GroupProber
   nsCharSetProber* mNameProber; 

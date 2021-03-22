@@ -212,7 +212,7 @@ float nsLanguageDetector::GetConfidence(void)
     //float neutralSeqs  = mSeqCounters[LANG_NEUTRAL_CAT];
     float negativeSeqs = mSeqCounters[LANG_NEGATIVE_CAT];
 
-    r = (positiveSeqs + probableSeqs / 4 - negativeSeqs * 2) / mTotalSeqs;
+    r = (positiveSeqs + probableSeqs / 4 - negativeSeqs * 4) / mTotalSeqs / mModel->mTypicalPositiveRatio;
     /* The more characters outside the expected characters
      * (proportionnaly to the size of the text), the less confident we
      * become in the current language.
