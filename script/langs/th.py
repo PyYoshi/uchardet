@@ -49,6 +49,8 @@ charsets = ['ISO-8859-11', 'TIS-620']
 
 ## Optional Properties ##
 
+unicode_ranges = [(0xE01, 0xE3A), (0xE3F, 0xE5B)]
+
 # The start page. Though optional, it is advised to choose one yourself.
 start_pages = ['หน้าหลัก']
 wikipedia_code = code
