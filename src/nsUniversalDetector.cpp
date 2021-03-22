@@ -205,12 +205,19 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
           if (nsnull == mCharSetProbers[1])
             return NS_ERROR_OUT_OF_MEMORY;
         }
-        if (nsnull == mCharSetProbers[2])
+        /* Disabling the generic WINDOWS-1252 (Latin 1) prober for now.
+         * We now have specific per-language models which are much more
+         * efficients and useful. This is where we should direct our
+         * efforts. Probably the whole nsLatin1Prober should disappear
+         * at some point, but let's keep it for now, in case this was an
+         * error.
+         */
+       /* if (nsnull == mCharSetProbers[2])
         {
           mCharSetProbers[2] = new nsLatin1Prober;
           if (nsnull == mCharSetProbers[2])
             return NS_ERROR_OUT_OF_MEMORY;
-        }
+        }*/
       }
     }
     else
