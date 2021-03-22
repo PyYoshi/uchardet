@@ -120,7 +120,10 @@ if not hasattr(lang, 'alphabet_mapping') or lang.alphabet_mapping is None:
 if not hasattr(lang, 'unicode_ranges') or lang.unicode_ranges is None:
     lang.unicode_ranges = None
 if not hasattr(lang, 'frequent_ranges') or lang.frequent_ranges is None:
-    lang.frequent_ranges = None
+    if lang.unicode_ranges is not None:
+      lang.frequent_ranges = lang.unicode_ranges
+    else:
+      lang.frequent_ranges = None
 
 def local_lowercase(text, lang):
     lowercased = ''
@@ -413,34 +416,28 @@ elif lang.alphabet is not None:
                   "\n       Missing characters: {}".format(", ".join(lang.alphabet)))
             exit(1)
 elif lang.frequent_ranges is not None:
+    # How many characters in the frequent range?
+    frequent_ranges_size = 0
+    for start, end in lang.frequent_ranges:
+      frequent_ranges_size += end - start + 1
+
+    # Keep ratio for at least all the characters inside the frequent
+    # ranges.
     freq_count = 0
-    non_freq_counter = 0
-    non_freq_ratio   = 0
     for order, (char, ratio) in enumerate(sorted_ratios):
       for start, end in lang.frequent_ranges:
         if char >= start and char <= end:
           freq_count += 1
-          non_freq_counter = 0
-          non_freq_ratio   = 0
           accumulated_ratios += ratio
           logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
+          frequent_ranges_size -= 1
           break
       else:
-        if non_freq_counter >= 2:
-          # We don't try to get necessarily the whole range, but break
-          # when we are getting into known non-frequent area.
-          freq_count         -= non_freq_counter
-          accumulated_ratios -= non_freq_ratio
-          break
-        freq_count         += 1
+        # A frequent character in the non-frequent range.
+        logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
+        freq_count += 1
         accumulated_ratios += ratio
-
-        non_freq_counter   += 1
-        non_freq_ratio     += ratio
-      if accumulated_ratios >= 0.99:
-        if non_freq_counter > 0:
-          freq_count         -= non_freq_counter
-          accumulated_ratios -= non_freq_ratio
+      if frequent_ranges_size <= 0:
         break
 
 logfd.write("\n\nThe first {} characters have an accumulated ratio of {}.\n".format(freq_count, accumulated_ratios))
