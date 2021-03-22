@@ -59,6 +59,10 @@ nsUniversalDetector::nsUniversalDetector(PRUint32 aLanguageFilter)
   mLastChar = '\0';
   mLanguageFilter = aLanguageFilter;
 
+  shortcutCharset = nullptr;
+  shortcutLanguage = nullptr;
+  shortcutConfidence = 0.01;
+
   PRUint32 i;
   for (i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
     mCharSetProbers[i] = nsnull;
@@ -84,6 +88,10 @@ nsUniversalDetector::Reset()
   mGotData = PR_FALSE;
   mInputState = ePureAscii;
   mLastChar = '\0';
+
+  shortcutCharset = nullptr;
+  shortcutLanguage = nullptr;
+  shortcutConfidence = 0.01;
 
   if (mEscCharSetProber)
     mEscCharSetProber->Reset();
