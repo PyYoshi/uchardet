@@ -45,6 +45,13 @@
 
 #define BUFFER_SIZE 65536
 
+#if defined(_WIN32) || defined(__CYGWIN__)
+#define realpath(filename,unused) _fullpath(NULL, filename, 0)
+#define SEP '\\'
+#else
+#define SEP '/'
+#endif
+
 void
 detect(FILE *fp, char **charset, char **lang)
 {
@@ -116,13 +123,13 @@ main(int argc, char ** argv)
 
     path = realpath(filename, NULL);
     assert(path);
-    expected_charset = strrchr(path, '/');
+    expected_charset = strrchr(path, SEP);
     assert(expected_charset);
     *expected_charset = '\0';
     expected_charset++;
     expected_charset = strtok(expected_charset, ".");
 
-    expected_lang = strrchr(path, '/');
+    expected_lang = strrchr(path, SEP);
     assert(expected_lang);
     expected_lang++;
 
