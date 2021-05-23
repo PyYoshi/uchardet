@@ -179,6 +179,9 @@ extern const SequenceModel Iso_8859_1DanishModel;
 extern const SequenceModel Windows_1252DanishModel;
 extern const SequenceModel Ibm865DanishModel;
 
+extern const SequenceModel Iso_8859_1EnglishModel;
+extern const SequenceModel Windows_1252EnglishModel;
+
 extern const SequenceModel Iso_8859_13LithuanianModel;
 extern const SequenceModel Iso_8859_10LithuanianModel;
 extern const SequenceModel Iso_8859_4LithuanianModel;

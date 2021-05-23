@@ -116,6 +116,7 @@ extern const LanguageModel ArabicModel;
 extern const LanguageModel CroatianModel;
 extern const LanguageModel CzechModel;
 extern const LanguageModel DanishModel;
+extern const LanguageModel EnglishModel;
 extern const LanguageModel EsperantoModel;
 extern const LanguageModel EstonianModel;
 extern const LanguageModel FinnishModel;
