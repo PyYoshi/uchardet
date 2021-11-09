@@ -37,6 +37,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,7 +54,10 @@
 #endif
 
 void
-detect(FILE *fp, char **charset, char **lang)
+detect(FILE *fp,
+       char *expected_charset, char *expected_lang,
+       float *expected_confidence, size_t *expected_candidate,
+       char **charset, char **lang, float *confidence)
 {
     uchardet_t  handle = uchardet_new();
     char        buffer[BUFFER_SIZE];
@@ -79,10 +83,40 @@ detect(FILE *fp, char **charset, char **lang)
       *lang = strdup(uchardet_get_language(handle, 0));
     else
       *lang = NULL;
+    *confidence = uchardet_get_confidence(handle, 0);
     for (i = 0; (*charset)[i]; i++)
     {
         /* Our test files are lowercase. */
         (*charset)[i] = tolower((*charset)[i]);
+    }
+
+    if (strcmp(expected_charset, *charset) != 0 ||
+        *lang == NULL                           ||
+        strcmp(expected_lang, *lang) != 0)
+    {
+        size_t n_candidates = uchardet_get_candidates(handle);
+
+        *expected_confidence = 0.0f;
+        *expected_candidate = SIZE_MAX;
+        for (i = 0; i < n_candidates; i++)
+        {
+            if (uchardet_get_language(handle, i) == NULL)
+                /* Skip this case for now. */
+                continue;
+
+            if (strcasecmp(expected_charset, uchardet_get_encoding(handle, i)) == 0 &&
+                strcasecmp(expected_lang, uchardet_get_language(handle, i)) == 0)
+            {
+                *expected_confidence = uchardet_get_confidence(handle, i);
+                *expected_candidate = i;
+                break;
+            }
+        }
+    }
+    else
+    {
+        *expected_confidence = *confidence;
+        *expected_candidate = 0;
     }
 
     uchardet_delete(handle);
@@ -98,6 +132,9 @@ main(int argc, char ** argv)
     char *expected_lang = NULL;
     char *charset;
     char *lang;
+    float expected_confidence = 0.0f;
+    float confidence = 0.0f;
+    size_t expected_candidate = 0;
     /* In a unit test, 0 means success, other returned values mean failure. */
     int   success = 1;
 
@@ -133,7 +170,7 @@ main(int argc, char ** argv)
     assert(expected_lang);
     expected_lang++;
 
-    detect(f, &charset, &lang);
+    detect(f, expected_charset, expected_lang, &expected_confidence, &expected_candidate, &charset, &lang, &confidence);
     fclose (f);
 
     /* No lang detection is a failure, except for a few charset for
@@ -145,19 +182,35 @@ main(int argc, char ** argv)
         strcmp(expected_charset, "utf-16") == 0 ||
         strcmp(expected_charset, "utf-32") == 0)
     {
-      success = (strcmp(charset, expected_charset) != 0);
+        success = (strcmp(charset, expected_charset) != 0);
     }
     else if (lang)
     {
-      success = (strcmp(charset, expected_charset) != 0) +
-                (strcmp(lang, expected_lang) != 0);
+        success = (strcmp(charset, expected_charset) != 0) +
+                  (strcmp(lang, expected_lang) != 0);
     }
 
-    if (success == 1)
+    if (success != 0)
     {
+        char *candidate_str = NULL;
+
+        if (expected_confidence != 0.0f)
+        {
+            size_t candidate_len;
+
+            candidate_len = snprintf(candidate_str, 0, "%d", expected_candidate + 1);
+            candidate_str = malloc(candidate_len + 1);
+            snprintf(candidate_str, candidate_len + 1, "%d", expected_candidate + 1);
+        }
+
         fprintf(stderr,
-                "uchardet-tests FAILED: found %s/%s - expecting %s/%s\n",
-                lang, charset, expected_lang, expected_charset);
+                "uchardet-tests FAILED: found %s/%s (confidence: %f) - expecting %s/%s (confidence: %f - candidate: %s)\n",
+                lang ? lang : "n/a", charset, confidence,
+                expected_lang, expected_charset, expected_confidence,
+                candidate_str == NULL ? "n/a" : candidate_str);
+
+        if (candidate_str != NULL)
+            free(candidate_str);
     }
 
     free(path);
