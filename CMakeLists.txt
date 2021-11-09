@@ -1,5 +1,5 @@
 ######## Project settings
-cmake_minimum_required(VERSION 2.8.5)
+cmake_minimum_required(VERSION 3.1)
 include(CheckCCompilerFlag)
 set (PACKAGE_NAME uchardet)
 project (${PACKAGE_NAME} CXX C)
@@ -72,3 +72,39 @@ install(
 add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(test)
+
+######## Exported targets
+
+install(
+	EXPORT UchardetTargets
+	FILE ${PACKAGE_NAME}-targets.cmake
+	NAMESPACE ${PACKAGE_NAME}::
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PACKAGE_NAME}
+)
+
+export(
+	EXPORT UchardetTargets
+	FILE "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-targets.cmake"
+	NAMESPACE ${PACKAGE_NAME}::
+)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+	${PACKAGE_NAME}-config-version.cmake
+	VERSION ${UCHARDET_VERSION}
+	COMPATIBILITY AnyNewerVersion
+)
+
+configure_file(
+	${PACKAGE_NAME}-config.cmake.in
+	${PACKAGE_NAME}-config.cmake
+	@ONLY
+)
+
+install (
+	FILES
+		"${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config-version.cmake"
+	DESTINATION
+		${CMAKE_INSTALL_LIBDIR}/cmake/${PACKAGE_NAME}
+)
