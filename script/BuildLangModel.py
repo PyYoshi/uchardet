@@ -322,11 +322,11 @@ def visit_pages(titles, depth, lang, logfd):
 
         visited_pages += [title]
         try:
-            page = wikipedia.page(title)
+            page = wikipedia.page(title, auto_suggest=False)
         except (wikipedia.exceptions.PageError,
-                wikipedia.exceptions.DisambiguationError):
+                wikipedia.exceptions.DisambiguationError) as error:
             # Let's just discard a page when I get an exception.
-            print("Discarding page {}.\n".format(title))
+            print("Discarding page {}: {}\n".format(title, error))
             continue
         logfd.write("\n{} (revision {})".format(title, page.revision_id))
         logfd.flush()
