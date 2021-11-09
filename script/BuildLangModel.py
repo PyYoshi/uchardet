@@ -139,11 +139,14 @@ def local_lowercase(text, lang):
             lowercased += l
     return lowercased
 
+if lang.use_ascii:
+    if lang.alphabet is None:
+        lang.alphabet = [chr(l) for l in range(65, 91)] + [chr(l) for l in range(97, 123)]
+    else:
+        lang.alphabet += [chr(l) for l in range(65, 91)] + [chr(l) for l in range(97, 123)]
 if lang.alphabet is not None:
     # Allowing to provide an alphabet in string format rather than list.
     lang.alphabet = list(lang.alphabet)
-    if lang.use_ascii:
-        lang.alphabet += [chr(l) for l in range(65, 91)] + [chr(l) for l in range(97, 123)]
     if lang.case_mapping or lang.custom_case_mapping is not None:
         lang.alphabet = [local_lowercase(l, lang) for l in lang.alphabet]
         #alphabet = []
@@ -242,11 +245,6 @@ def process_text(content, lang):
         if unicode_value in characters:
             characters[unicode_value] += 1
             is_letter = True
-        elif lang.use_ascii and \
-           ((unicode_value >= 65 and unicode_value <= 90) or \
-            (unicode_value >= 97 and unicode_value <= 122)):
-          characters[unicode_value] = 1
-          is_letter = True
         elif lang.unicode_ranges is not None:
             for start, end in lang.unicode_ranges:
               if unicode_value >= start and unicode_value <= end:
