@@ -153,6 +153,13 @@ main(int argc, char ** argv)
                 (strcmp(lang, expected_lang) != 0);
     }
 
+    if (success == 1)
+    {
+        fprintf(stderr,
+                "uchardet-tests FAILED: found %s/%s - expecting %s/%s\n",
+                lang, charset, expected_lang, expected_charset);
+    }
+
     free(path);
     free(charset);
     free(lang);
