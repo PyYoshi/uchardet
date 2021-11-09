@@ -25,5 +25,14 @@ src/version.script
 src/libuchardet.a
 src/libuchardet.so*
 
+src/tools/uchardet
+test/uchardet-tests
+
+# For Windows (untested)
 src/libuchardet.dll
+
+src/tools/uchardet.exe
+test/uchardet-tests.exe
+
+# For macOS (untested)
 src/libuchardet.dylib
