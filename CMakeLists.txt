@@ -62,7 +62,7 @@ configure_file(
 
 install(
 	FILES
-		${CMAKE_BINARY_DIR}/uchardet.pc
+		${CMAKE_CURRENT_BINARY_DIR}/uchardet.pc
 	DESTINATION
 		${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
