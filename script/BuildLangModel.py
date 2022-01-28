@@ -50,6 +50,7 @@ import requests
 import sys
 import re
 import os
+import random
 
 # Custom modules.
 import charsets.db
@@ -240,12 +241,19 @@ def visit_pages(titles, depth, lang, logfd):
         return
 
     next_titles = []
+    max_titles = int(options.max_page/(options.max_depth * options.max_depth))
     for title in titles:
         if options.max_page is not None and \
            len(visited_pages) > options.max_page:
             return
         if title in visited_pages:
             continue
+
+        # Ugly hack skipping internal pages
+        if 'wiki' in title or 'Wiki' in title:
+            print('Skipping', title)
+            continue
+
         visited_pages += [title]
         try:
             page = wikipedia.page(title)
@@ -258,14 +266,19 @@ def visit_pages(titles, depth, lang, logfd):
         logfd.flush()
 
         process_text(page.content, lang)
+        links = page.links
+        random.shuffle(links)
+        if len(links) > max_titles:
+            links = links[:max_titles]
         try:
-            next_titles += page.links
+            next_titles += links
         except KeyError:
             pass
 
     if depth >= options.max_depth:
         return
 
+    random.shuffle(next_titles)
     visit_pages (next_titles, depth + 1, lang, logfd)
 
 language_c = lang.name.replace('-', '_').title()
