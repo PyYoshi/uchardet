@@ -124,6 +124,9 @@ main(int argc, char ** argv)
 
     /* In a unit test, 0 means success, other returned values mean failure. */
     success = (strcmp(charset, expected_charset) != 0);
+    if (success) {
+        fprintf(stderr, "Got %s, expected %s\n", charset, expected_charset);
+    }
 
     free(charset);
     free(filename);
