@@ -252,5 +252,10 @@ extern const SequenceModel Iso_8859_9SwedishModel;
 extern const SequenceModel Iso_8859_15SwedishModel;
 extern const SequenceModel Windows_1252SwedishModel;
 
+extern const SequenceModel Iso_8859_15NorwegianModel;
+extern const SequenceModel Iso_8859_1NorwegianModel;
+extern const SequenceModel Windows_1252NorwegianModel;
+extern const SequenceModel Ibm865NorwegianModel;
+
 #endif /* nsSingleByteCharSetProber_h__ */
 

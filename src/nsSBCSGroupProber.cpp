@@ -191,6 +191,11 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[98] = new nsSingleByteCharSetProber(&Iso_8859_15SwedishModel);
   mProbers[99] = new nsSingleByteCharSetProber(&Windows_1252SwedishModel);
 
+  mProbers[100] = new nsSingleByteCharSetProber(&Iso_8859_15NorwegianModel);
+  mProbers[101] = new nsSingleByteCharSetProber(&Iso_8859_1NorwegianModel);
+  mProbers[102] = new nsSingleByteCharSetProber(&Windows_1252NorwegianModel);
+  mProbers[103] = new nsSingleByteCharSetProber(&Ibm865NorwegianModel);
+
   Reset();
 }
 
