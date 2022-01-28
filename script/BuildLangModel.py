@@ -255,6 +255,7 @@ def visit_pages(titles, depth, lang, logfd):
             print("Discarding page {}.\n".format(title))
             continue
         logfd.write("\n{} (revision {})".format(title, page.revision_id))
+        logfd.flush()
 
         process_text(page.content, lang)
         try:
@@ -277,6 +278,7 @@ logfd.write('\n- Maximum depth: {}'.format(options.max_depth))
 if options.max_page is not None:
     logfd.write('\n- Max number of pages: {}'.format(options.max_page))
 logfd.write('\n\n== Parsed pages ==\n')
+logfd.flush()
 try:
     visit_pages(lang.start_pages, 0, lang, logfd)
 except requests.exceptions.ConnectionError:
@@ -284,7 +286,7 @@ except requests.exceptions.ConnectionError:
     exit(1)
 logfd.write('\n\n== End of Parsed pages ==')
 logfd.write('\n\n- Wikipedia parsing ended at: {}\n'.format(str(datetime.datetime.now())))
-
+logfd.flush()
 ########### CHARACTERS ###########
 
 # Character ratios.
