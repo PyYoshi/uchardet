@@ -45,9 +45,9 @@
 #endif
 #define BUFFER_SIZE 65536
 
-char buffer[BUFFER_SIZE];
+static char buffer[BUFFER_SIZE];
 
-void detect(FILE * fp)
+static void detect(FILE * fp)
 {
     uchardet_t handle = uchardet_new();
 
@@ -74,7 +74,7 @@ void detect(FILE * fp)
     uchardet_delete(handle);
 }
 
-void show_version()
+static void show_version()
 {
     printf("\n");
     printf("uchardet Command Line Tool\n");
@@ -85,7 +85,7 @@ void show_version()
     printf("\n");
 }
 
-void show_usage()
+static void show_usage()
 {
     show_version();
     printf("Usage:\n");
