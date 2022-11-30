@@ -241,7 +241,10 @@ def visit_pages(titles, depth, lang, logfd):
         return
 
     next_titles = []
-    max_titles = int(options.max_page/(options.max_depth * options.max_depth))
+    if options.max_page is not None:
+      max_titles = int(options.max_page/(options.max_depth * options.max_depth))
+    else:
+      max_titles = sys.maxsize
     for title in titles:
         if options.max_page is not None and \
            len(visited_pages) > options.max_page:
@@ -266,12 +269,12 @@ def visit_pages(titles, depth, lang, logfd):
         logfd.flush()
 
         process_text(page.content, lang)
-        links = page.links
-        random.shuffle(links)
-        if len(links) > max_titles:
-            links = links[:max_titles]
         try:
-            next_titles += links
+          links = page.links
+          random.shuffle(links)
+          if len(links) > max_titles:
+              links = links[:max_titles]
+              next_titles += links
         except KeyError:
             pass
 
@@ -300,6 +303,7 @@ except requests.exceptions.ConnectionError:
 logfd.write('\n\n== End of Parsed pages ==')
 logfd.write('\n\n- Wikipedia parsing ended at: {}\n'.format(str(datetime.datetime.now())))
 logfd.flush()
+
 ########### CHARACTERS ###########
 
 # Character ratios.
