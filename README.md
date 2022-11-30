@@ -35,6 +35,7 @@ uchardet started as a C language binding of the original C++ implementation of t
     * IBM852
     * MAC-CENTRALEUROPE
   * Danish
+    * IBM865
     * ISO-8859-1
     * ISO-8859-15
     * WINDOWS-1252
@@ -99,6 +100,11 @@ uchardet started as a C language binding of the original C++ implementation of t
     * ISO-8859-13
   * Maltese
     * ISO-8859-3
+  * Norwegian
+    * IBM865
+    * ISO-8859-1
+    * ISO-8859-15
+    * WINDOWS-1252
   * Polish:
     * ISO-8859-2
     * ISO-8859-13
