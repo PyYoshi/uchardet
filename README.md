@@ -269,7 +269,7 @@ which implemented such support.
 
 ```
 uchardet Command Line Tool
-Version 0.0.7
+Version 0.0.8
 
 Authors: BYVoid, Jehan
 Bug Report: https://gitlab.freedesktop.org/uchardet/uchardet/-/issues
