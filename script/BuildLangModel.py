@@ -143,6 +143,8 @@ if lang.use_ascii:
     if lang.alphabet is None:
         lang.alphabet = [chr(l) for l in range(65, 91)] + [chr(l) for l in range(97, 123)]
     else:
+        # Allowing to provide an alphabet in string format rather than list.
+        lang.alphabet = list(lang.alphabet)
         lang.alphabet += [chr(l) for l in range(65, 91)] + [chr(l) for l in range(97, 123)]
 if lang.alphabet is not None:
     # Allowing to provide an alphabet in string format rather than list.
