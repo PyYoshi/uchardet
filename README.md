@@ -238,6 +238,31 @@ Here is a working "module" section to include in your Flatpak's json manifest:
 ]
 ```
 
+### Build with CMake exported targets
+
+uchardet installs a standard pkg-config file which will make it easily
+discoverable by any modern build system. Nevertheless if your project also uses
+CMake and you want to discover uchardet installation using CMake exported
+targets, you may find and link uchardet with:
+
+```
+project(sample LANGUAGES C)
+find_package ( uchardet )
+if (uchardet_FOUND)
+  add_executable( sample sample.c )
+  target_link_libraries ( sample PRIVATE uchardet::libuchardet )
+endif ()
+```
+
+Note though that we recommend the library discovery with `pkg-config` because it
+is standard and generic. Therefore it will always work, even if we decided to
+change our own build system (which is not planned right now, but may always
+happen). This is why we advise to use standard `pkg-config` discovery.
+
+Some more CMake specificities may be found in the [commit
+message](https://gitlab.freedesktop.org/uchardet/uchardet/-/commit/d7dad549bd5a3442b92e861bcd2c5cda2adeea27)
+which implemented such support.
+
 ## Usage
 
 ### Command Line
