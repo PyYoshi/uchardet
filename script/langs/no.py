@@ -48,7 +48,7 @@ charsets = ['IBM865', 'ISO-8859-15', 'ISO-8859-1', 'WINDOWS-1252']
 ## Optional Properties ##
 
 # Alphabet characters.
-alphabet = 'æøåéìîàêÆØÅ'
+alphabet = 'æøå'
 # Some pages that should contain most norwegian-norwegian norwegian
 start_pages = ['Norsk', 'Saft', 'Hund']
 wikipedia_code = code
