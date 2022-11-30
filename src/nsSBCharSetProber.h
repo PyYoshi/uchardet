@@ -171,6 +171,7 @@ extern const SequenceModel Windows_1258VietnameseModel;
 extern const SequenceModel Iso_8859_15DanishModel;
 extern const SequenceModel Iso_8859_1DanishModel;
 extern const SequenceModel Windows_1252DanishModel;
+extern const SequenceModel Ibm865DanishModel;
 
 extern const SequenceModel Iso_8859_13LithuanianModel;
 extern const SequenceModel Iso_8859_10LithuanianModel;

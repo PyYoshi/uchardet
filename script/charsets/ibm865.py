@@ -45,7 +45,7 @@ aliases = ['CP865', '865', 'CSIBM865']
 
 language = \
 {
-    'complete': [ 'no', 'dk' ],
+    'complete': [ 'no', 'da' ],
     'incomplete': []
 }
 
