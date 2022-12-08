@@ -183,7 +183,7 @@ uchardet started as a C language binding of the original C++ implementation of t
 ### Mac
 
     brew install uchardet
-  
+
   or
 
     port install uchardet
@@ -300,8 +300,8 @@ It is to be noted that a lot has changed since the original code, yet
 the base concept is still around, basing detection not just on encoding
 rules, but importantly on analysis of character statistics in languages.
 
-Original code by Mozilla does not seem to be found anymore anywhere, but
-it's probably not too far from the initial commit of this repository.
+Original code of `universalchardet` by Mozilla can still be retrieved from the
+[Wayback machine](https://web.archive.org/web/20150730144356/http://lxr.mozilla.org/seamonkey/source/extensions/universalchardet/).
 
 Mozilla code was extracted and packaged into a standalone library under
 the name `uchardet` by BYVoid in 2011, in a personal repository.
