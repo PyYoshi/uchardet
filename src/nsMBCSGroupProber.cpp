@@ -327,8 +327,19 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
     else
     {
       for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
+      {
         if (codePointBuffer[i])
+        {
+          if (codePointBufferIdx[i] == codePointBufferSize[i] - 1)
+          {
+            for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+              langDetectors[i][j]->HandleData(codePointBuffer[i], codePointBufferIdx[i]);
+            codePointBufferIdx[i] = 0;
+          }
+
           codePointBuffer[i][(codePointBufferIdx[i])++] = aBuf[pos];
+        }
+      }
     }
   }
 
