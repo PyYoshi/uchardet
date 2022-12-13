@@ -112,20 +112,20 @@ UCHARDET_INTERFACE void uchardet_reset(uchardet_t ud);
  * @param ud [in] handle of an instance of uchardet
  * @return name of charset on success and "" on failure.
  */
-DEPRECATED("use uchardet_get_candidates() and uchardet_get_encoding() instead (since 0.1.0)")
+DEPRECATED("use uchardet_get_n_candidates() and uchardet_get_encoding() instead (since 0.1.0)")
 UCHARDET_INTERFACE const char * uchardet_get_charset(uchardet_t ud);
 
-UCHARDET_INTERFACE size_t       uchardet_get_candidates (uchardet_t ud);
-UCHARDET_INTERFACE float        uchardet_get_confidence (uchardet_t ud,
-                                                         size_t     candidate);
-UCHARDET_INTERFACE const char * uchardet_get_encoding   (uchardet_t ud,
-                                                         size_t     candidate);
-UCHARDET_INTERFACE const char * uchardet_get_language   (uchardet_t ud,
-                                                         size_t     candidate);
+UCHARDET_INTERFACE size_t       uchardet_get_n_candidates   (uchardet_t ud);
+UCHARDET_INTERFACE float        uchardet_get_confidence     (uchardet_t ud,
+                                                             size_t     candidate);
+UCHARDET_INTERFACE const char * uchardet_get_encoding       (uchardet_t ud,
+                                                             size_t     candidate);
+UCHARDET_INTERFACE const char * uchardet_get_language       (uchardet_t ud,
+                                                             size_t     candidate);
 
-UCHARDET_INTERFACE void         uchardet_weigh_language (uchardet_t  ud,
-                                                         const char *language,
-                                                         float       weight);
+UCHARDET_INTERFACE void         uchardet_weigh_language     (uchardet_t  ud,
+                                                             const char *language,
+                                                             float       weight);
 UCHARDET_INTERFACE void         uchardet_set_default_weight (uchardet_t  ud,
                                                              float       weight);
 

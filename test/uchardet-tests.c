@@ -94,7 +94,7 @@ detect(FILE *fp,
         *lang == NULL                           ||
         strcmp(expected_lang, *lang) != 0)
     {
-        size_t n_candidates = uchardet_get_candidates(handle);
+        size_t n_candidates = uchardet_get_n_candidates(handle);
 
         *expected_confidence = 0.0f;
         *expected_candidate = SIZE_MAX;

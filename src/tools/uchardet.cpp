@@ -67,7 +67,7 @@ static void detect(uchardet_t  handle,
 
     if (verbose)
     {
-        size_t candidates = uchardet_get_candidates(handle);
+        size_t candidates = uchardet_get_n_candidates(handle);
         size_t i;
 
         printf("\n");

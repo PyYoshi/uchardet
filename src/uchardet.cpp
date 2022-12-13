@@ -237,7 +237,7 @@ const char* uchardet_get_charset(uchardet_t ud)
     return reinterpret_cast<HandleUniversalDetector*>(ud)->GetCharset(0);
 }
 
-size_t uchardet_get_candidates (uchardet_t ud)
+size_t uchardet_get_n_candidates (uchardet_t ud)
 {
     return reinterpret_cast<HandleUniversalDetector*>(ud)->GetCandidates();
 }
