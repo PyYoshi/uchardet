@@ -404,10 +404,17 @@ void nsMBCSGroupProber::CheckCandidates()
       {
         for (int j = 0; j < NUM_OF_LANGUAGES; j++)
         {
-          float langConf = langDetectors[i][j]->GetConfidence();
+          float langConf;
 
+          /* Process any remaining language data first. */
+          if (codePointBufferIdx[i] > 0 && codePointBuffer[i])
+            langDetectors[i][j]->HandleData(codePointBuffer[i], codePointBufferIdx[i]);
+
+          /* Now check the confidence in this (charset, lang) couple. */
+          langConf = langDetectors[i][j]->GetConfidence();
           candidates[i][j] = (cf * langConf > CANDIDATE_THRESHOLD);
         }
+        codePointBufferIdx[i] = 0;
       }
       else
       {
