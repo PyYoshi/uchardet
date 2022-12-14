@@ -37,6 +37,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#include <math.h>
 #include "nsLanguageDetector.h"
 
 nsDetectState nsLanguageDetector::HandleData(const int* codePoints, PRUint32 cpLen)
@@ -164,6 +165,11 @@ nsDetectState nsLanguageDetector::HandleData(const int* codePoints, PRUint32 cpL
         /* Adding a non frequent sequence. */
         mTotalSeqs++;
       }
+
+      if (order < mModel->veryFreqCharCount)
+        mVeryFreqChar++;
+      if (order > mModel->lowFreqOrder)
+        mLowFreqChar++;
     }
     mLastOrder = order;
   }
@@ -192,8 +198,10 @@ void nsLanguageDetector::Reset(void)
   //mCtrlChar  = 0;
   //mEmoticons  = 0;
   //mVariousBetween  = 0;
-  mFreqChar  = 0;
-  mOutChar   = 0;
+  mFreqChar     = 0;
+  mVeryFreqChar = 0;
+  mLowFreqChar  = 0;
+  mOutChar      = 0;
 }
 
 #include <cstdio>
@@ -212,7 +220,7 @@ float nsLanguageDetector::GetConfidence(void)
     //float neutralSeqs  = mSeqCounters[LANG_NEUTRAL_CAT];
     float negativeSeqs = mSeqCounters[LANG_NEGATIVE_CAT];
 
-    r = (positiveSeqs + probableSeqs / 4 - negativeSeqs * 4) / mTotalSeqs / mModel->mTypicalPositiveRatio;
+    r = (positiveSeqs + probableSeqs / 4 - negativeSeqs * 4) / mTotalSeqs;
     /* The more characters outside the expected characters
      * (proportionnaly to the size of the text), the less confident we
      * become in the current language.
@@ -221,6 +229,11 @@ float nsLanguageDetector::GetConfidence(void)
      */
     r = r * (mTotalChar - mOutChar) / mTotalChar;
     r = r * mFreqChar / (mFreqChar + mOutChar);
+
+    /* How similar are the very frequent character ratio. */
+    r = r * (1.0 - fabs((float) mVeryFreqChar / mFreqChar - mModel->veryFreqRatio) / 4.0);
+    /* How similar are the very rare character ratio. */
+    r = r * (1.0 - fabs((float) mLowFreqChar / mFreqChar - mModel->lowFreqRatio) / 4.0);
 
     return r;
   }

@@ -67,8 +67,17 @@ typedef struct
    * characters. Yet it maps to this range of orders.
    */
   int                  freqCharCount;
-
-  float                mTypicalPositiveRatio;
+  /* Most languages have 3 or 4 characters which are used more than 40% of the
+   * times. We count how many they are and what ratio they are used.
+   */
+  int                  veryFreqCharCount;
+  float                veryFreqRatio;
+  /* Most languages will have a whole range of characters which in cumulated
+   * total are barely used a few percents of the times. We count how many they
+   * are and what ratio they are used.
+   */
+  int                  lowFreqOrder;
+  float                lowFreqRatio;
 } LanguageModel;
 
 typedef enum {
@@ -105,6 +114,10 @@ protected:
   /*PRUint32 mVariousBetween;*/
   /* Characters that fall in our sampling range */
   PRUint32 mFreqChar;
+  /* Most common characters from our sampling range */
+  PRUint32 mVeryFreqChar;
+  /* Most rare characters from our sampling range */
+  PRUint32 mLowFreqChar;
   PRUint32 mOutChar;
 
 private:
