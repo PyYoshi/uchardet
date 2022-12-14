@@ -392,6 +392,8 @@ accumulated_ratios = 0
 # frequent list, and we stop then. There may therefore be more or less than
 # 64 frequent characters depending on the language.
 logfd.write('\nMost Frequent characters:')
+very_freq_count = 0
+very_freq_ratio = 0
 if lang.alphabet is None and lang.frequent_ranges is None:
     freq_count = min(64, len(sorted_ratios))
     for order, (char, ratio) in enumerate(sorted_ratios):
@@ -399,6 +401,9 @@ if lang.alphabet is None and lang.frequent_ranges is None:
             break
         logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
         accumulated_ratios += ratio
+        if very_freq_ratio < 0.4:
+          very_freq_count += 1
+          very_freq_ratio += ratio
 elif lang.alphabet is not None:
     freq_count = 0
     for order, (char, ratio) in enumerate(sorted_ratios):
@@ -409,6 +414,9 @@ elif lang.alphabet is not None:
         logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
         accumulated_ratios += ratio
         freq_count += 1
+        if accumulated_ratios < 0.4:
+          very_freq_count += 1
+          very_freq_ratio += ratio
     else:
         if len(lang.alphabet) > 0:
             print("Error: alphabet characters are absent from data collection"
@@ -432,6 +440,9 @@ elif lang.frequent_ranges is not None:
           logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
           frequent_ranges_size -= 1
           break
+        if accumulated_ratios < 0.4:
+          very_freq_count += 1
+          very_freq_ratio += ratio
       else:
         # A frequent character in the non-frequent range.
         logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
@@ -440,7 +451,18 @@ elif lang.frequent_ranges is not None:
       if frequent_ranges_size <= 0:
         break
 
+low_freq_order = freq_count - 1
+low_freq_ratio = 0
+for back_order, (char, ratio) in enumerate(reversed(sorted_ratios[:freq_count])):
+  if low_freq_ratio < 0.03:
+    low_freq_ratio += ratio
+    low_freq_order -= 1
+  else:
+    break
+
 logfd.write("\n\nThe first {} characters have an accumulated ratio of {}.\n".format(freq_count, accumulated_ratios))
+logfd.write("The first {} characters have an accumulated ratio of {}.\n".format(very_freq_count, very_freq_ratio))
+logfd.write("All characters whose order is over {} have an accumulated ratio of {}.\n".format(low_freq_order, low_freq_ratio))
 
 with open(current_dir + '/header-template.cpp', 'r') as header_fd:
     c_code = header_fd.read()
@@ -729,7 +751,10 @@ SM_str += '\n  Unicode_CharOrder,'
 SM_str += '\n  {},'.format(len(sorted_chars)) # Order is wrong!
 SM_str += '\n  {}LangModel,'.format(language_c)
 SM_str += '\n  {},'.format(freq_count)
-SM_str += '\n  (float){},'.format(accumulated_ratios)
+SM_str += '\n  {},'.format(very_freq_count)
+SM_str += '\n  (float){},'.format(very_freq_ratio)
+SM_str += '\n  {},'.format(low_freq_order)
+SM_str += '\n  (float){},'.format(low_freq_ratio)
 SM_str += '\n};'
 c_code += SM_str
 
