@@ -414,7 +414,7 @@ elif lang.alphabet is not None:
         logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
         accumulated_ratios += ratio
         freq_count += 1
-        if accumulated_ratios < 0.4:
+        if very_freq_ratio < 0.4:
           very_freq_count += 1
           very_freq_ratio += ratio
     else:
@@ -440,14 +440,16 @@ elif lang.frequent_ranges is not None:
           logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
           frequent_ranges_size -= 1
           break
-        if accumulated_ratios < 0.4:
-          very_freq_count += 1
-          very_freq_ratio += ratio
       else:
         # A frequent character in the non-frequent range.
         logfd.write("\n[{:2}] Char {}: {} %".format(order, chr(char), ratio * 100))
         freq_count += 1
         accumulated_ratios += ratio
+
+      if very_freq_ratio < 0.4:
+        very_freq_count += 1
+        very_freq_ratio += ratio
+
       if frequent_ranges_size <= 0:
         break
 
