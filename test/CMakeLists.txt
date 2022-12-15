@@ -38,8 +38,7 @@ foreach(dir ${dirs})
 			"${lang}:${charset}" STREQUAL "ja:utf-16be"		OR
 			"${lang}:${charset}" STREQUAL "es:iso-8859-15"	OR
 			"${lang}:${charset}" STREQUAL "da:iso-8859-1"	OR
-			"${lang}:${charset}" STREQUAL "he:iso-8859-8"   OR
-			"${lang}:${charset}" STREQUAL "no:utf-8")
+			"${lang}:${charset}" STREQUAL "he:iso-8859-8")
 			message(STATUS "Skipping test ${lang}:${charset} (known broken)")
 		else()
 			add_test(NAME "${lang}:${charset}" COMMAND uchardet-tests ${file})
