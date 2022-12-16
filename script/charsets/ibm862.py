@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # ##### BEGIN LICENSE BLOCK #####
@@ -38,26 +38,34 @@
 #
 # ##### END LICENSE BLOCK #####
 
-import re
+from codepoints import *
 
-## Mandatory Properties ##
+name = 'IBM862'
+aliases = ['CP862', 'OEM 862 (Hebrew)', 'MS-DOS Hebrew']
 
-# The human name for the language, in English.
-name = 'Hebrew'
-# Use 2-letter ISO 639-1 if possible, 3-letter ISO code otherwise,
-# or use another catalog as a last resort.
-code = 'he'
-use_ascii = False
-# The charsets we want to support and create data for.
-charsets = ['ISO-8859-8', 'WINDOWS-1255', 'IBM862']
+language = \
+{
+    'complete': [ 'he' ],
+    'incomplete': []
+}
 
-## Optional Properties ##
-
-# The start page. Though optional, it is advised to choose one yourself.
-start_pages = ['יהדות_בוקרשט']
-# give possibility to select another code for the Wikipedia URL.
-wikipedia_code = code
-# 'a' and 'A' will be considered the same character, and so on.
-# This uses Python algorithm to determine upper/lower-case of a given
-# character.
-case_mapping = False
+#   X0  X1  X2  X3  X4  X5  X6  X7  X8  X9  XA  XB  XC  XD  XE  XF   #
+charmap = \
+[
+    CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,RET,CTR,CTR,RET,CTR,CTR, # 0X
+    CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR,CTR, # 1X
+    SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM, # 2X
+    NUM,NUM,NUM,NUM,NUM,NUM,NUM,NUM,NUM,NUM,SYM,SYM,SYM,SYM,SYM,SYM, # 3X
+    SYM,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET, # 4X
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,SYM,SYM,SYM,SYM,SYM, # 5X
+    SYM,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET, # 6X
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,SYM,SYM,SYM,SYM,CTR, # 7X
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET, # 8X
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,SYM,SYM,SYM,SYM,LET, # 9X
+    LET,LET,LET,LET,LET,LET,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM, # AX
+    SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM, # BX
+    SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM, # CX
+    SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM, # DX
+    LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,LET,SYM,LET,LET,SYM, # EX
+    SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM,SYM, # FX
+]

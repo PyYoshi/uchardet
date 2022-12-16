@@ -83,6 +83,7 @@ uchardet started as a C language binding of the original C++ implementation of t
     * UTF-8
     * ISO-8859-8
     * WINDOWS-1255
+    * IBM862
   * Hindi
     * UTF-8
   * Hungarian:
