@@ -30,6 +30,7 @@ foreach(dir ${dirs})
 	# Iterate through all files.
 	foreach(file ${files})
 		get_filename_component(charset ${file} NAME_WE)
+		get_filename_component(testname ${file} NAME_WLE)
 		# These are tests known to fail (not supported or not efficient
 		# enough). We will have to take a closer look and fix these, but
 		# there is no need to break the whole `make test` right now,
@@ -41,7 +42,7 @@ foreach(dir ${dirs})
 			"${lang}:${charset}" STREQUAL "he:iso-8859-8")
 			message(STATUS "Skipping test ${lang}:${charset} (known broken)")
 		else()
-			add_test(NAME "${lang}:${charset}" COMMAND uchardet-tests ${file})
+			add_test(NAME "${lang}:${testname}" COMMAND uchardet-tests ${file})
 		endif()
 	endforeach()
 endforeach()
