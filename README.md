@@ -26,6 +26,7 @@ uchardet started as a C language binding of the original C++ implementation of t
     * ISO-8859-5
     * WINDOWS-1251
   * Chinese
+    * UTF-8
     * ISO-2022-CN
     * BIG5
     * EUC-TW
@@ -52,6 +53,7 @@ uchardet started as a C language binding of the original C++ implementation of t
     * ISO-8859-15
     * WINDOWS-1252
   * English
+    * UTF-8
     * ASCII
   * Esperanto
     * UTF-8
@@ -109,6 +111,7 @@ uchardet started as a C language binding of the original C++ implementation of t
     * ISO-8859-15
     * WINDOWS-1252
   * Japanese
+    * UTF-8
     * ISO-2022-JP
     * SHIFT_JIS
     * EUC-JP
@@ -136,6 +139,7 @@ uchardet started as a C language binding of the original C++ implementation of t
     * WINDOWS-1251
     * IBM855
   * Norwegian
+    * UTF-8
     * IBM865
     * ISO-8859-1
     * ISO-8859-15
