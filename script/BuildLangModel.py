@@ -537,6 +537,9 @@ for charset in charsets:
                     except FileNotFoundError:
                         print('Error: "{}" is not a supported charset by python and `iconv` is not installed.\n')
                         exit(1)
+                    if len(uchar) == 0:
+                        print('TypeError: iconv failed to return a unicode character for codepoint "{}" in charset {}.\n'.format(hex(cp), charset))
+                        exit(1)
                 #if lang.case_mapping and uchar.isupper() and \
                    #len(unicodedata.normalize('NFC', uchar.lower())) == 1:
                    # Unless we encounter special cases of characters with no
