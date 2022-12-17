@@ -130,6 +130,11 @@ uchardet started as a C language binding of the original C++ implementation of t
   * Maltese
     * UTF-8
     * ISO-8859-3
+  * Macedonian
+    * UTF-8
+    * ISO-8859-5
+    * WINDOWS-1251
+    * IBM855
   * Norwegian
     * IBM865
     * ISO-8859-1

@@ -27,6 +27,7 @@ set(
 	LangModels/LangItalianModel.cpp
     LangModels/LangLithuanianModel.cpp
     LangModels/LangLatvianModel.cpp
+    LangModels/LangMacedonianModel.cpp
     LangModels/LangMalteseModel.cpp
     LangModels/LangPolishModel.cpp
     LangModels/LangPortugueseModel.cpp

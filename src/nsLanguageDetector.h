@@ -145,6 +145,7 @@ extern const LanguageModel IrishModel;
 extern const LanguageModel ItalianModel;
 extern const LanguageModel LatvianModel;
 extern const LanguageModel LithuanianModel;
+extern const LanguageModel MacedonianModel;
 extern const LanguageModel MalteseModel;
 extern const LanguageModel NorwegianModel;
 extern const LanguageModel PolishModel;
