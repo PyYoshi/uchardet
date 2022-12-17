@@ -168,6 +168,10 @@ uchardet started as a C language binding of the original C++ implementation of t
     * MAC-CYRILLIC
     * IBM866
     * IBM855
+  * Serbian
+    * UTF-8
+    * ISO-8859-5
+    * WINDOWS-1251
   * Slovak
     * UTF-8
     * Windows-1250

@@ -119,6 +119,7 @@ nsMBCSGroupProber::nsMBCSGroupProber(PRUint32 aLanguageFilter)
       langDetectors[i][j++] = new nsLanguageDetector(&PortugueseModel);
       langDetectors[i][j++] = new nsLanguageDetector(&RomanianModel);
       langDetectors[i][j++] = new nsLanguageDetector(&RussianModel);
+      langDetectors[i][j++] = new nsLanguageDetector(&SerbianModel);
       langDetectors[i][j++] = new nsLanguageDetector(&SlovakModel);
       langDetectors[i][j++] = new nsLanguageDetector(&SloveneModel);
       langDetectors[i][j++] = new nsLanguageDetector(&SpanishModel);

@@ -219,6 +219,9 @@ nsSBCSGroupProber::nsSBCSGroupProber()
 
   mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1251UkrainianModel);
 
+  mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1251SerbianModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_5SerbianModel);
+
   mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1251MacedonianModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Ibm855MacedonianModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_5MacedonianModel);
