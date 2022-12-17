@@ -126,6 +126,7 @@ private:
 };
 
 extern const LanguageModel ArabicModel;
+extern const LanguageModel BelarusianModel;
 extern const LanguageModel BulgarianModel;
 extern const LanguageModel CroatianModel;
 extern const LanguageModel CzechModel;

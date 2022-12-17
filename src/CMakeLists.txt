@@ -8,6 +8,7 @@ set(
 	CharDistribution.cpp
 	JpCntx.cpp
 	LangModels/LangArabicModel.cpp
+	LangModels/LangBelarusianModel.cpp
 	LangModels/LangBulgarianModel.cpp
     LangModels/LangCroatianModel.cpp
     LangModels/LangCzechModel.cpp
