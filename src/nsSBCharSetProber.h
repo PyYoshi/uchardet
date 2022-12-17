@@ -271,5 +271,6 @@ extern const SequenceModel Iso_8859_1NorwegianModel;
 extern const SequenceModel Windows_1252NorwegianModel;
 extern const SequenceModel Ibm865NorwegianModel;
 
-#endif /* nsSingleByteCharSetProber_h__ */
+extern const SequenceModel Windows_1251UkrainianModel;
 
+#endif /* nsSingleByteCharSetProber_h__ */

@@ -156,6 +156,7 @@ extern const LanguageModel SpanishModel;
 extern const LanguageModel SwedishModel;
 extern const LanguageModel ThaiModel;
 extern const LanguageModel TurkishModel;
+extern const LanguageModel UkrainianModel;
 extern const LanguageModel VietnameseModel;
 
 #endif /* nsLanguageDetector_h__ */

@@ -195,6 +195,9 @@ uchardet started as a C language binding of the original C++ implementation of t
     * UTF-8
     * ISO-8859-3
     * ISO-8859-9
+  * Ukrainian:
+    * UTF-8
+    * WINDOWS-1251
   * Vietnamese:
     * UTF-8
     * VISCII
