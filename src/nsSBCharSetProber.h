@@ -144,8 +144,8 @@ extern const SequenceModel Ibm855RussianModel;
 extern const SequenceModel Iso_8859_7GreekModel;
 extern const SequenceModel Windows_1253GreekModel;
 
-extern const SequenceModel Latin5BulgarianModel;
-extern const SequenceModel Win1251BulgarianModel;
+extern const SequenceModel Iso_8859_5BulgarianModel;
+extern const SequenceModel Windows_1251BulgarianModel;
 
 extern const SequenceModel Iso_8859_2HungarianModel;
 extern const SequenceModel Windows_1250HungarianModel;

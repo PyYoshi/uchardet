@@ -60,8 +60,8 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_7GreekModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1253GreekModel);
 
-  mProbers[n++] = new nsSingleByteCharSetProber(&Latin5BulgarianModel);
-  mProbers[n++] = new nsSingleByteCharSetProber(&Win1251BulgarianModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_5BulgarianModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1251BulgarianModel);
 
   heb_prober_idx = n;
   mProbers[n++] = hebprober;
