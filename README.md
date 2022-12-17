@@ -156,6 +156,7 @@ uchardet started as a C language binding of the original C++ implementation of t
     * Windows-1250
     * IBM852
   * Russian
+    * UTF-8
     * ISO-8859-5
     * KOI8-R
     * WINDOWS-1251

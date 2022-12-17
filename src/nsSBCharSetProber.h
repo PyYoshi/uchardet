@@ -134,10 +134,10 @@ protected:
 extern const SequenceModel Windows_1256ArabicModel;
 extern const SequenceModel Iso_8859_6ArabicModel;
 
-extern const SequenceModel Koi8rRussianModel;
-extern const SequenceModel Win1251RussianModel;
-extern const SequenceModel Latin5RussianModel;
-extern const SequenceModel MacCyrillicRussianModel;
+extern const SequenceModel Koi8_RRussianModel;
+extern const SequenceModel Windows_1251RussianModel;
+extern const SequenceModel Iso_8859_5RussianModel;
+extern const SequenceModel Mac_CyrillicRussianModel;
 extern const SequenceModel Ibm866RussianModel;
 extern const SequenceModel Ibm855RussianModel;
 

@@ -50,10 +50,10 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   PRUint32        heb_prober_idx;
   PRUint32        n = 0;
 
-  mProbers[n++] = new nsSingleByteCharSetProber(&Win1251RussianModel);
-  mProbers[n++] = new nsSingleByteCharSetProber(&Koi8rRussianModel);
-  mProbers[n++] = new nsSingleByteCharSetProber(&Latin5RussianModel);
-  mProbers[n++] = new nsSingleByteCharSetProber(&MacCyrillicRussianModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1251RussianModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Koi8_RRussianModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_5RussianModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Mac_CyrillicRussianModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Ibm866RussianModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Ibm855RussianModel);
 

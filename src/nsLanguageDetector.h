@@ -150,6 +150,7 @@ extern const LanguageModel NorwegianModel;
 extern const LanguageModel PolishModel;
 extern const LanguageModel PortugueseModel;
 extern const LanguageModel RomanianModel;
+extern const LanguageModel RussianModel;
 extern const LanguageModel SlovakModel;
 extern const LanguageModel SloveneModel;
 extern const LanguageModel SpanishModel;
