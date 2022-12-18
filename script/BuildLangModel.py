@@ -340,7 +340,7 @@ for lang_arg in langs:
 
           # Ugly hack skipping internal pages
           if 'wiki' in title or 'Wiki' in title:
-              sys.stderr.write('Skipping', title)
+              sys.stderr.write('Skipping {}'.format(title))
               continue
 
           visited_pages += [title]
