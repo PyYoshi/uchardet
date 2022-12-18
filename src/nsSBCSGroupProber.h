@@ -39,9 +39,6 @@
 #ifndef nsSBCSGroupProber_h__
 #define nsSBCSGroupProber_h__
 
-
-#define NUM_OF_SBCS_PROBERS 117
-
 class nsCharSetProber;
 class nsSBCSGroupProber: public nsCharSetProber {
 public:
@@ -63,12 +60,12 @@ public:
 #endif
 
 protected:
-  nsProbingState mState;
-  nsCharSetProber* mProbers[NUM_OF_SBCS_PROBERS];
-  PRBool          mIsActive[NUM_OF_SBCS_PROBERS];
-  PRInt32 mBestGuess;
-  PRUint32 mActiveNum;
+  nsProbingState    mState;
+  nsCharSetProber **mProbers;
+  PRBool           *mIsActive;
+  PRInt32           mBestGuess;
+  PRUint32          mActiveNum;
+  PRUint32          n_sbcs_probers;
 };
 
 #endif /* nsSBCSGroupProber_h__ */
-

@@ -125,41 +125,4 @@ private:
   int GetOrderFromCodePoint(int codePoint);
 };
 
-extern const LanguageModel ArabicModel;
-extern const LanguageModel BelarusianModel;
-extern const LanguageModel BulgarianModel;
-extern const LanguageModel CroatianModel;
-extern const LanguageModel CzechModel;
-extern const LanguageModel DanishModel;
-extern const LanguageModel EnglishModel;
-extern const LanguageModel EsperantoModel;
-extern const LanguageModel EstonianModel;
-extern const LanguageModel FinnishModel;
-extern const LanguageModel FrenchModel;
-extern const LanguageModel GermanModel;
-extern const LanguageModel GreekModel;
-extern const LanguageModel HebrewModel;
-extern const LanguageModel HindiModel;
-extern const LanguageModel HungarianModel;
-extern const LanguageModel IrishModel;
-extern const LanguageModel ItalianModel;
-extern const LanguageModel LatvianModel;
-extern const LanguageModel LithuanianModel;
-extern const LanguageModel MacedonianModel;
-extern const LanguageModel MalteseModel;
-extern const LanguageModel NorwegianModel;
-extern const LanguageModel PolishModel;
-extern const LanguageModel PortugueseModel;
-extern const LanguageModel RomanianModel;
-extern const LanguageModel RussianModel;
-extern const LanguageModel SerbianModel;
-extern const LanguageModel SlovakModel;
-extern const LanguageModel SloveneModel;
-extern const LanguageModel SpanishModel;
-extern const LanguageModel SwedishModel;
-extern const LanguageModel ThaiModel;
-extern const LanguageModel TurkishModel;
-extern const LanguageModel UkrainianModel;
-extern const LanguageModel VietnameseModel;
-
 #endif /* nsLanguageDetector_h__ */

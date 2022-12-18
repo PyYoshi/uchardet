@@ -48,8 +48,11 @@
 #include "nsBig5Prober.h"
 #include "nsEUCTWProber.h"
 
+#include "nsLanguageDetector-generated.h"
+
 #define NUM_OF_PROBERS    8
-#define NUM_OF_LANGUAGES  37
+/* All the generated language model + the CJK detector.  */
+#define NUM_OF_LANGUAGES  (NUM_OF_LANGUAGE_MODELS + 1)
 
 class nsMBCSGroupProber: public nsCharSetProber {
 public:

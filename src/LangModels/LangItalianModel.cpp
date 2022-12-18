@@ -36,7 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "../nsSBCharSetProber.h"
+#include "../nsSBCharSetProber-generated.h"
 #include "../nsLanguageDetector.h"
+#include "../nsLanguageDetector-generated.h"
 
 /********* Language model for: Italian *********/
 

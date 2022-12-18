@@ -36,10 +36,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#include <assert.h>
 #include <stdio.h>
 #include "prmem.h"
 
 #include "nsSBCharSetProber.h"
+#include "nsSBCharSetProber-generated.h"
 #include "nsSBCSGroupProber.h"
 
 #include "nsHebrewProber.h"
@@ -49,6 +51,14 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   nsHebrewProber *hebprober = new nsHebrewProber();
   PRUint32        heb_prober_idx;
   PRUint32        n = 0;
+
+  /* We create more probers than sequence models because of Hebrew handling,
+   * making Windows_1255HebrewModel and Ibm862HebrewModel used twice, while
+   * Iso_8859_8HebrewModel is currently unused.
+   */
+  n_sbcs_probers = NUM_OF_SEQUENCE_MODELS + 2;
+  mProbers      = new nsCharSetProber*[n_sbcs_probers];
+  mIsActive     = new PRBool[n_sbcs_probers];
 
   mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1251RussianModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Koi8_RRussianModel);
@@ -226,15 +236,19 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[n++] = new nsSingleByteCharSetProber(&Ibm855MacedonianModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_5MacedonianModel);
 
+  assert (n_sbcs_probers == n);
+
   Reset();
 }
 
 nsSBCSGroupProber::~nsSBCSGroupProber()
 {
-  for (PRUint32 i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+  for (PRUint32 i = 0; i < n_sbcs_probers; i++)
   {
     delete mProbers[i];
   }
+  delete mProbers;
+  delete mIsActive;
 }
 
 
@@ -266,7 +280,7 @@ const char* nsSBCSGroupProber::GetLanguage(int candidate)
 void  nsSBCSGroupProber::Reset(void)
 {
   mActiveNum = 0;
-  for (PRUint32 i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+  for (PRUint32 i = 0; i < n_sbcs_probers; i++)
   {
     if (mProbers[i]) // not null
     {
@@ -303,7 +317,7 @@ nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
   if (newLen1 == 0)
     goto done; // Nothing to see here, move on.
 
-  for (i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+  for (i = 0; i < n_sbcs_probers; i++)
   {
      if (!mIsActive[i])
        continue;
@@ -344,7 +358,7 @@ float nsSBCSGroupProber::GetConfidence(int candidate)
   case eNotMe:
     return (float)0.01;  //sure no
   default:
-    for (i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+    for (i = 0; i < n_sbcs_probers; i++)
     {
       if (!mIsActive[i])
         continue;
@@ -367,7 +381,7 @@ void nsSBCSGroupProber::DumpStatus()
   
   cf = GetConfidence(0);
   printf(" SBCS Group Prober --------begin status \r\n");
-  for (i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+  for (i = 0; i < n_sbcs_probers; i++)
   {
     if (!mIsActive[i])
       printf("  inactive: [%s] (i.e. confidence is too low).\r\n", mProbers[i]->GetCharSetName(0));
