@@ -40,6 +40,9 @@ The important name in the charset file are:
 You must install Python 3 and the [`Wikipedia` Python
 tool](https://github.com/goldsmith/Wikipedia).
 
+If requirements change, these will be updated in `requirements.txt`, so that you
+can just run `pip3 install -r requirements.txt`.
+
 ## Run script ##
 
 Let's say you added (or modified) support for French (`fr`), run:
