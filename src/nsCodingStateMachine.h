@@ -88,7 +88,6 @@ protected:
 };
 
 extern const SMModel UTF8SMModel;
-extern const SMModel Big5SMModel;
 extern const SMModel EUCJPSMModel;
 extern const SMModel EUCKRSMModel;
 extern const SMModel JohabSMModel;
