@@ -45,11 +45,11 @@ import re
 name = 'Greek'
 code = 'el'
 use_ascii = False
-charsets = ['ISO-8859-7', 'WINDOWS-1253']
+charsets = ['ISO-8859-7', 'WINDOWS-1253', 'CP737']
 
 ## Optional Properties ##
 
 alphabet = 'αβγδεζηθικλμνξοπρσςτυφχψωάέήίόύώ'
-start_pages = ['Πύλη:Κύρια']
+start_pages = ['Πρωτεύοντα']
 wikipedia_code = code
 case_mapping = True

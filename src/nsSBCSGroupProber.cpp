@@ -69,6 +69,7 @@ nsSBCSGroupProber::nsSBCSGroupProber()
 
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_7GreekModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1253GreekModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Cp737GreekModel);
 
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_5BulgarianModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1251BulgarianModel);
