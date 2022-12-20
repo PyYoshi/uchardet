@@ -38,7 +38,7 @@
 #ifndef nsSingleByteCharSetProber_generated_h__
 #define nsSingleByteCharSetProber_generated_h__
 
-#define NUM_OF_SEQUENCE_MODELS 118
+#define NUM_OF_SEQUENCE_MODELS 120
 
 extern const SequenceModel Iso_8859_6ArabicModel;
 extern const SequenceModel Windows_1256ArabicModel;
@@ -120,6 +120,9 @@ extern const SequenceModel Iso_8859_3ItalianModel;
 extern const SequenceModel Iso_8859_9ItalianModel;
 extern const SequenceModel Iso_8859_15ItalianModel;
 extern const SequenceModel Windows_1252ItalianModel;
+
+extern const SequenceModel Georgian_AcademyGeorgianModel;
+extern const SequenceModel Georgian_PsGeorgianModel;
 
 extern const SequenceModel Iso_8859_4LithuanianModel;
 extern const SequenceModel Iso_8859_10LithuanianModel;

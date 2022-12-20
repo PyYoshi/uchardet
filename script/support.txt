@@ -18,6 +18,7 @@ hi
 hr
 hu
 it
+ka
 lt
 lv
 mk

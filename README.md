@@ -86,6 +86,10 @@ uchardet started as a C language binding of the original C++ implementation of t
     * UTF-8
     * ISO-8859-1
     * WINDOWS-1252
+  * Georgian
+    * UTF-8
+    * GEORGIAN-ACADEMY
+    * GEORGIAN-PS
   * Greek
     * UTF-8
     * ISO-8859-7
