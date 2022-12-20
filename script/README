@@ -16,7 +16,7 @@ to recognize French text encoded in ISO-8859-15, but may fail at
 detecting ISO-8859-15 for non-supported languages.
 
 This is why, though less flexible, it also makes uchardet much more
-accurate than other detection system, as well as making it an efficient
+accurate than other detection systems, as well as making it an efficient
 language recognition system.
 Since many single-byte charsets actually share the same layout (or very
 similar ones), it is actually impossible to have an accurate single-byte
@@ -47,7 +47,7 @@ can just run `pip3 install -r requirements.txt`.
 
 Let's say you added (or modified) support for French (`fr`), run:
 
-> ./BuildLangModel.py fr --max-page=100 --max-depth=4
+> ./BuildLangModel.py fr --max-page=200 --max-depth=4
 
 The options can be changed to any value. Bigger values mean the script
 will process more data, so more processing time now, but uchardet may
@@ -55,12 +55,11 @@ possibly be more accurate in the end.
 
 ## Updating core code ##
 
-If you were only updating data for a language model, you have nothing
+If you were only updating data for an existing language model, you have nothing
 else to do. Just build `uchardet` again and test it.
 
-If you were creating new models though, you will have to add these in
-src/nsSBCSGroupProber.cpp and src/nsSBCharSetProber.h, and increase the
-value of `NUM_OF_SBCS_PROBERS` in src/nsSBCSGroupProber.h.
+If you were creating new models though, you will have to add the sequence models
+in src/nsSBCSGroupProber.cpp and the language model in src/nsMBCSGroupProber.cpp.
 Finally add the new file in src/CMakeLists.txt.
 
 I will be looking to make this step more straightforward in the future.
