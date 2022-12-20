@@ -25,6 +25,10 @@ uchardet started as a C language binding of the original C++ implementation of t
     * UTF-8
     * ISO-8859-5
     * WINDOWS-1251
+  * Catalan
+    * UTF-8
+    * ISO-8859-1
+    * WINDOWS-1252
   * Chinese
     * UTF-8
     * ISO-2022-CN

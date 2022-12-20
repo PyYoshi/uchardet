@@ -10,6 +10,7 @@ set(
 	LangModels/LangArabicModel.cpp
 	LangModels/LangBelarusianModel.cpp
 	LangModels/LangBulgarianModel.cpp
+	LangModels/LangCatalanModel.cpp
     LangModels/LangCroatianModel.cpp
     LangModels/LangCzechModel.cpp
     LangModels/LangEnglishModel.cpp

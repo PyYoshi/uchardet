@@ -237,6 +237,9 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[n++] = new nsSingleByteCharSetProber(&Ibm855MacedonianModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_5MacedonianModel);
 
+  mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_1CatalanModel);
+  mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1252CatalanModel);
+
   assert (n_sbcs_probers == n);
 
   Reset();

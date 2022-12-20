@@ -38,11 +38,12 @@
 #ifndef nsLanguageDetector_h_generated_h__
 #define nsLanguageDetector_h_generated_h__
 
-#define NUM_OF_LANGUAGE_MODELS 36
+#define NUM_OF_LANGUAGE_MODELS 37
 
 extern const LanguageModel ArabicModel;
 extern const LanguageModel BelarusianModel;
 extern const LanguageModel BulgarianModel;
+extern const LanguageModel CatalanModel;
 extern const LanguageModel CzechModel;
 extern const LanguageModel DanishModel;
 extern const LanguageModel GermanModel;
