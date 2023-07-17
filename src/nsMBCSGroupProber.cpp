@@ -295,14 +295,25 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
       {
         for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
         {
+          int sequenceLength;
+
           if (!mIsActive[i])
             continue;
 
+          sequenceLength = pos + 1 - start;
+
+          if (codePointBuffer[i] && codePointBufferIdx[i] + sequenceLength > codePointBufferSize[i])
+          {
+            for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+              langDetectors[i][j]->HandleData(codePointBuffer[i], codePointBufferIdx[i]);
+            codePointBufferIdx[i] = 0;
+          }
+
           if (codePointBuffer[i])
-            st = mProbers[i]->HandleData(aBuf + start, pos + 1 - start,
+            st = mProbers[i]->HandleData(aBuf + start, sequenceLength,
                                          &(codePointBuffer[i]), &(codePointBufferIdx[i]));
           else
-            st = mProbers[i]->HandleData(aBuf + start, pos + 1 - start, NULL, NULL);
+            st = mProbers[i]->HandleData(aBuf + start, sequenceLength, NULL, NULL);
 
           if (codePointBufferIdx[i] > 0 && codePointBuffer[i])
           {
