@@ -254,8 +254,8 @@ nsSBCSGroupProber::~nsSBCSGroupProber()
   {
     delete mProbers[i];
   }
-  delete mProbers;
-  delete mIsActive;
+  delete [] mProbers;
+  delete [] mIsActive;
 }
 
 
