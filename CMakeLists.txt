@@ -13,7 +13,9 @@ set (UCHARDET_VERSION_MINOR 0)
 set (UCHARDET_VERSION_REVISION 8)
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-	set (version_suffix .debug)
+    set(version_suffix .debug)
+    add_compile_options("-fsanitize=address")
+    add_link_options("-fsanitize=address")
 endif (CMAKE_BUILD_TYPE MATCHES Debug)
 
 set (
