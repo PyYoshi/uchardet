@@ -247,31 +247,26 @@ const char* nsLanguageDetector::GetLanguage()
 
 int nsLanguageDetector::GetOrderFromCodePoint(int codePoint)
 {
-  int max = mModel->charOrderTableSize;
+  int min = 0;
+  int max = mModel->charOrderTableSize - 1;
   int i   = max / 2;
-  int c   = mModel->charOrderTable[i * 2];
+  int c;
 
   while ((c = mModel->charOrderTable[i * 2]) != codePoint)
   {
     if (c > codePoint)
     {
-      if (i == 0)
+      if (i == min)
         break;
       max = i - 1;
-      i = i / 2;
-    }
-    else if (i < max - 1)
-    {
-      i += (max - i) / 2;
-    }
-    else if (i == max - 1)
-    {
-      i = max;
     }
     else
     {
-      break;
+      if (i == max)
+        break;
+      min = i + 1;
     }
+    i = min + (max - min) / 2;
   }
 
   return (c == codePoint) ? mModel->charOrderTable[i * 2 + 1] : -1;
