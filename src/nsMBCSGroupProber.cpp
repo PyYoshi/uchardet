@@ -310,17 +310,28 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
           }
 
           if (codePointBuffer[i])
-            st = mProbers[i]->HandleData(aBuf + start, sequenceLength,
-                                         &(codePointBuffer[i]), &(codePointBufferIdx[i]));
-          else
-            st = mProbers[i]->HandleData(aBuf + start, sequenceLength, NULL, NULL);
+            {
+              while (sequenceLength > 0)
+                {
+                  int subLength = (sequenceLength > codePointBufferSize[i]) ? codePointBufferSize[i] : sequenceLength;
 
-          if (codePointBufferIdx[i] > 0 && codePointBuffer[i])
-          {
-            for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
-              langDetectors[i][j]->HandleData(codePointBuffer[i], codePointBufferIdx[i]);
-            codePointBufferIdx[i] = 0;
-          }
+                  st = mProbers[i]->HandleData(aBuf + start, subLength,
+                                               &(codePointBuffer[i]), &(codePointBufferIdx[i]));
+
+                  if (codePointBufferIdx[i] > 0)
+                  {
+                    for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
+                      langDetectors[i][j]->HandleData(codePointBuffer[i], codePointBufferIdx[i]);
+                    codePointBufferIdx[i] = 0;
+                  }
+
+                  sequenceLength -= subLength;
+                }
+            }
+          else
+            {
+              st = mProbers[i]->HandleData(aBuf + start, sequenceLength, NULL, NULL);
+            }
 
           if (st == eFoundIt)
           {
