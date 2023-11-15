@@ -451,6 +451,7 @@ don't follow the status for these projects.
 ## Used by
 
 * [mpv](https://mpv.io/) for subtitle detection
+* [Notepad++](https://notepad-plus-plus.org/) for file encoding detection
 * [Tepl](https://wiki.gnome.org/Projects/Tepl) (gedit…)
 * [Nextcloud IOS app](https://github.com/nextcloud/ios)
 * [Codelite](https://codelite.org)
