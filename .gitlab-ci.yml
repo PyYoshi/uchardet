@@ -6,6 +6,13 @@ stages:
 variables:
   GIT_DEPTH: "1"
 
+# New rule necessary to allow CI to run for merge requests of external contributors.
+# See: https://gitlab.freedesktop.org/freedesktop/freedesktop/-/issues/540
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == 'push'
+
 ## GNU/Linux 64-bit CIs ##
 
 debian/testing-gcc:
