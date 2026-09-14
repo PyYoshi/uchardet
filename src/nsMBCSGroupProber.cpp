@@ -484,6 +484,18 @@ float nsMBCSGroupProber::GetConfidence(int candidate)
             float cf       = mProbers[i]->GetConfidence(0);
             float langConf = 1.0;
 
+            /* Distribution analyzers are capped at 0.7 so that plausible
+             * multibyte encodings do not override stronger sequence models.
+             * Once UTF-8 has been structurally rejected, however, a saturated
+             * GB18030 distribution is stronger evidence than an accidental
+             * SBCS match.  Calibrate it at (not above) the shortcut threshold
+             * here, without adding another per-byte UTF-8 validation pass.
+             */
+            if (i == 3 &&
+                mProbers[0]->GetState() == eNotMe &&
+                cf >= 0.7f)
+              cf = SHORTCUT_THRESHOLD;
+
             if (langDetectors[i][j])
               langConf = langDetectors[i][j]->GetConfidence();
 
