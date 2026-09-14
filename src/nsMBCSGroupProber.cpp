@@ -276,7 +276,7 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
                                              int** cpBuffer,
                                              int*  cpBufferIdx)
 {
-  nsProbingState st;
+  nsProbingState st = eDetecting;
   PRUint32 start = 0;
   PRUint32 keepNext = mKeepNext;
 
