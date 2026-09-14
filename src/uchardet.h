@@ -108,6 +108,13 @@ UCHARDET_INTERFACE void uchardet_data_end(uchardet_t ud);
 UCHARDET_INTERFACE void uchardet_reset(uchardet_t ud);
 
 /**
+ * Test whether the detector has reached a definitive result.
+ * @param ud [in] handle of an instance of uchardet
+ * @return non-zero when no more input is needed.
+ */
+UCHARDET_INTERFACE int uchardet_is_done(uchardet_t ud);
+
+/**
  * Get an iconv-compatible name of the encoding that was detected.
  * @param ud [in] handle of an instance of uchardet
  * @return name of charset on success and "" on failure.

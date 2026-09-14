@@ -131,6 +131,11 @@ public:
         return candidates.size();
     }
 
+    bool IsDone() const
+    {
+        return mDone;
+    }
+
     const char* GetCharset(size_t i)
     {
         if (weights.size() > 0)
@@ -230,6 +235,11 @@ void uchardet_data_end(uchardet_t ud)
 void uchardet_reset(uchardet_t ud)
 {
     reinterpret_cast<HandleUniversalDetector*>(ud)->Reset();
+}
+
+int uchardet_is_done(uchardet_t ud)
+{
+    return reinterpret_cast<HandleUniversalDetector*>(ud)->IsDone();
 }
 
 const char* uchardet_get_charset(uchardet_t ud)
