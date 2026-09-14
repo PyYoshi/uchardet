@@ -61,6 +61,11 @@ nsProbingState nsUTF8Prober::HandleData(const char* aBuf, PRUint32 aLen,
       mState = eFoundIt;
       break;
     }
+    if (codingState == eError)
+    {
+      mState = eNotMe;
+      break;
+    }
     if (codingState == eStart)
     {
       if (mCodingSM->GetCurrentCharLen() >= 2)
