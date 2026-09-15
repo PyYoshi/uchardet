@@ -32,6 +32,7 @@ include(GNUInstallDirs)
 ######## Configuration
 
 option(BUILD_BINARY "Build the CLI tool." ON)
+option(BUILD_BENCHMARK "Build the native benchmark tool." OFF)
 option(BUILD_SHARED_LIBS "Build shared library and link executable to it." ON)
 option(CHECK_SSE2 "Check and enable SSE2 extensions if supported. Disabling SSE on platforms which support it may decrease performances." ON)
 set(TARGET_ARCHITECTURE "" CACHE STRING "Target CPU architecture. It is autodetected if not specified.")
@@ -74,6 +75,9 @@ install(
 add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(test)
+if (BUILD_BENCHMARK)
+    add_subdirectory(benchmark)
+endif ()
 
 ######## Exported targets
 

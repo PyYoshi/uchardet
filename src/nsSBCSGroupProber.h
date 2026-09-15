@@ -66,6 +66,8 @@ protected:
   PRInt32           mBestGuess;
   PRUint32          mActiveNum;
   PRUint32          n_sbcs_probers;
+  char             *mFilterBuffer;
+  PRUint32          mFilterBufferSize;
 };
 
 #endif /* nsSBCSGroupProber_h__ */

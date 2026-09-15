@@ -247,6 +247,10 @@ const char* nsLanguageDetector::GetLanguage()
 
 int nsLanguageDetector::GetOrderFromCodePoint(int codePoint)
 {
+  PRUint32 cacheIndex = ((PRUint32) codePoint) & (LANG_ORDER_CACHE_SIZE - 1);
+  if (codePoint >= 0 && mOrderCacheCodePoint[cacheIndex] == codePoint)
+    return mOrderCacheOrder[cacheIndex];
+
   int min = 0;
   int max = mModel->charOrderTableSize - 1;
   int i   = max / 2;
@@ -269,5 +273,11 @@ int nsLanguageDetector::GetOrderFromCodePoint(int codePoint)
     i = min + (max - min) / 2;
   }
 
-  return (c == codePoint) ? mModel->charOrderTable[i * 2 + 1] : -1;
+  int order = (c == codePoint) ? mModel->charOrderTable[i * 2 + 1] : -1;
+  if (codePoint >= 0)
+  {
+    mOrderCacheCodePoint[cacheIndex] = codePoint;
+    mOrderCacheOrder[cacheIndex] = order;
+  }
+  return order;
 }

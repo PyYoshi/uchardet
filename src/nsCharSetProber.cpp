@@ -42,13 +42,22 @@
 //This filter applies to all scripts which do not use English characters
 PRBool nsCharSetProber::FilterWithoutEnglishLetters(const char* aBuf, PRUint32 aLen, char** newBuf, PRUint32& newLen)
 {
-  char *newptr;
-  char *prevPtr, *curPtr;
-  
-  PRBool meetMSB = PR_FALSE;   
-  newptr = *newBuf = (char*)PR_Malloc(aLen);
-  if (!newptr)
+  *newBuf = (char*)PR_Malloc(aLen);
+  if (!*newBuf)
     return PR_FALSE;
+
+  FilterWithoutEnglishLettersToBuffer(aBuf, aLen, *newBuf, newLen);
+  return PR_TRUE;
+}
+
+void nsCharSetProber::FilterWithoutEnglishLettersToBuffer(const char* aBuf,
+                                                          PRUint32 aLen,
+                                                          char* newBuf,
+                                                          PRUint32& newLen)
+{
+  char *newptr = newBuf;
+  char *prevPtr, *curPtr;
+  PRBool meetMSB = PR_FALSE;
 
   for (curPtr = prevPtr = (char*)aBuf; curPtr < aBuf+aLen; curPtr++)
   {
@@ -74,9 +83,7 @@ PRBool nsCharSetProber::FilterWithoutEnglishLetters(const char* aBuf, PRUint32 a
   if (meetMSB && curPtr > prevPtr) 
     while (prevPtr < curPtr) *newptr++ = *prevPtr++;  
 
-  newLen = (PRUint32) (newptr - *newBuf);
-
-  return PR_TRUE;
+  newLen = (PRUint32) (newptr - newBuf);
 }
 
 //This filter applies to all scripts which contain both English characters and upper ASCII characters.

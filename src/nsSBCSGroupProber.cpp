@@ -52,6 +52,9 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   PRUint32        heb_prober_idx;
   PRUint32        n = 0;
 
+  mFilterBuffer = 0;
+  mFilterBufferSize = 0;
+
   /* We create more probers than sequence models because of Hebrew handling,
    * making Windows_1255HebrewModel and Ibm862HebrewModel used twice, while
    * Iso_8859_8HebrewModel is currently unused.
@@ -256,6 +259,7 @@ nsSBCSGroupProber::~nsSBCSGroupProber()
   }
   delete [] mProbers;
   delete [] mIsActive;
+  PR_FREEIF(mFilterBuffer);
 }
 
 
@@ -309,7 +313,6 @@ nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
 {
   nsProbingState st;
   PRUint32 i;
-  char *newBuf1 = 0;
   PRUint32 newLen1 = 0;
 
   //apply filter to original buffer, and we got new buffer back
@@ -318,17 +321,28 @@ nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
   //this is done without any consideration to KeepEnglishLetters
   //of each prober since as of now, there are no probers here which
   //recognize languages with English characters.
-  if (!FilterWithoutEnglishLetters(aBuf, aLen, &newBuf1, newLen1))
-    goto done;
+  if (aLen == 0)
+    return mState;
+
+  if (aLen > mFilterBufferSize)
+  {
+    char* newFilterBuffer = (char*)PR_Malloc(aLen);
+    if (!newFilterBuffer)
+      return mState;
+    PR_FREEIF(mFilterBuffer);
+    mFilterBuffer = newFilterBuffer;
+    mFilterBufferSize = aLen;
+  }
+  FilterWithoutEnglishLettersToBuffer(aBuf, aLen, mFilterBuffer, newLen1);
   
   if (newLen1 == 0)
-    goto done; // Nothing to see here, move on.
+    return mState; // Nothing to see here, move on.
 
   for (i = 0; i < n_sbcs_probers; i++)
   {
      if (!mIsActive[i])
        continue;
-     st = mProbers[i]->HandleData(newBuf1, newLen1, codePointBuffer, codePointBufferIdx);
+     st = mProbers[i]->HandleData(mFilterBuffer, newLen1, codePointBuffer, codePointBufferIdx);
      if (st == eFoundIt)
      {
        mBestGuess = i;
@@ -346,9 +360,6 @@ nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
        }
      }
   }
-
-done:
-  PR_FREEIF(newBuf1);
 
   return mState;
 }

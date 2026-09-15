@@ -76,6 +76,12 @@ public:
   static PRBool FilterWithoutEnglishLetters(const char* aBuf, PRUint32 aLen, char** newBuf, PRUint32& newLen);
   static PRBool FilterWithEnglishLetters(const char* aBuf, PRUint32 aLen, char** newBuf, PRUint32& newLen);
 
+  // Allocation-free variant for probers which own a reusable scratch buffer.
+  static void FilterWithoutEnglishLettersToBuffer(const char* aBuf,
+                                                  PRUint32 aLen,
+                                                  char* newBuf,
+                                                  PRUint32& newLen);
+
 };
 
 #endif /* nsCharSetProber_h__ */

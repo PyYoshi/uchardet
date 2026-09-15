@@ -84,6 +84,7 @@ protected:
   PRUint32 mKeepNext;
 
   PRBool   candidates[NUM_OF_PROBERS][NUM_OF_LANGUAGES];
+  PRBool   mCandidatesValid;
 
   int *codePointBuffer[NUM_OF_PROBERS];
   int  codePointBufferSize[NUM_OF_PROBERS];
@@ -92,8 +93,8 @@ protected:
   nsLanguageDetector *langDetectors[NUM_OF_PROBERS][NUM_OF_LANGUAGES];
 
 private:
+  void EnsureCandidates();
   void CheckCandidates();
 };
 
 #endif /* nsMBCSGroupProber_h__ */
-

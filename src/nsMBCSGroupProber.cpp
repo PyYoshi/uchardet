@@ -131,6 +131,7 @@ nsMBCSGroupProber::nsMBCSGroupProber(PRUint32 aLanguageFilter)
       langDetectors[i][j++] = new nsLanguageDetector(&UkrainianModel);
       langDetectors[i][j++] = new nsLanguageDetector(&VietnameseModel);
       langDetectors[i][j++] = new nsCJKDetector();
+
     }
     else
     {
@@ -162,7 +163,7 @@ int nsMBCSGroupProber::GetCandidates()
 {
   int num_candidates = 0;
 
-  CheckCandidates();
+  EnsureCandidates();
 
   for (PRUint32 i = 0; i < NUM_OF_PROBERS; i++)
     for (PRUint32 j = 0; j < NUM_OF_LANGUAGES; j++)
@@ -270,6 +271,7 @@ void nsMBCSGroupProber::Reset(void)
   }
   mState = eDetecting;
   mKeepNext = 0;
+  mCandidatesValid = PR_FALSE;
 }
 
 nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
@@ -279,6 +281,8 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
   nsProbingState st = eDetecting;
   PRUint32 start = 0;
   PRUint32 keepNext = mKeepNext;
+
+  mCandidatesValid = PR_FALSE;
 
   //do filtering to reduce load to probers
   for (PRUint32 pos = 0; pos < aLen; ++pos)
@@ -417,6 +421,15 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen,
   return mState;
 }
 
+void nsMBCSGroupProber::EnsureCandidates()
+{
+  if (!mCandidatesValid)
+  {
+    CheckCandidates();
+    mCandidatesValid = PR_TRUE;
+  }
+}
+
 void nsMBCSGroupProber::CheckCandidates()
 {
   for (int i = 0; i < NUM_OF_PROBERS; i++)
@@ -448,8 +461,12 @@ void nsMBCSGroupProber::CheckCandidates()
       }
       else
       {
-        for (int j = 0; j < NUM_OF_LANGUAGES; j++)
-          candidates[i][j] = (cf > CANDIDATE_THRESHOLD);
+        /* This prober already knows its language. Avoid emitting the same
+         * (encoding, language) pair once for every language slot only to have
+         * the public detector deduplicate it later. */
+        candidates[i][0] = (cf > CANDIDATE_THRESHOLD);
+        for (int j = 1; j < NUM_OF_LANGUAGES; j++)
+          candidates[i][j] = false;
       }
     }
   }
