@@ -1,4 +1,6 @@
 __pycache__/
+/build/
+/CMakeUserPresets.json
 
 # CMake files
 CMakeCache.txt

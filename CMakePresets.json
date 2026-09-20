@@ -1,0 +1,36 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {"major": 3, "minor": 21, "patch": 0},
+  "vendor": {"uchardet.dev/license": {"SPDX-License-Identifier": "MIT"}},
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "BUILD_TESTING": "ON",
+        "BUILD_SHARED_LIBS": "OFF",
+        "BUILD_BINARY": "OFF",
+        "BUILD_BENCHMARK": "ON"
+      }
+    },
+    {"name": "release", "inherits": "base", "cacheVariables": {"CMAKE_BUILD_TYPE": "Release"}},
+    {"name": "debug", "inherits": "base", "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "UCHARDET_WARNINGS": "ON"}},
+    {"name": "sanitize", "inherits": "debug", "cacheVariables": {"UCHARDET_ASAN": "ON", "UCHARDET_UBSAN": "ON"}},
+    {"name": "cxx20", "inherits": "release", "cacheVariables": {"CMAKE_CXX_STANDARD": "20"}}
+  ],
+  "buildPresets": [
+    {"name": "release", "configurePreset": "release"},
+    {"name": "debug", "configurePreset": "debug"},
+    {"name": "sanitize", "configurePreset": "sanitize"},
+    {"name": "cxx20", "configurePreset": "cxx20"}
+  ],
+  "testPresets": [
+    {"name": "release", "configurePreset": "release", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}},
+    {"name": "debug", "configurePreset": "debug", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}},
+    {"name": "sanitize", "configurePreset": "sanitize", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}},
+    {"name": "cxx20", "configurePreset": "cxx20", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}}
+  ]
+}
