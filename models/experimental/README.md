@@ -6,6 +6,10 @@
 
 この試作は **uchardetへ直接投入できるmodelではありません**。runtime・既定model・CMakeへ組み込んでいません。
 
+次段階の[SequenceModel接続契約](SEQUENCE_CONTRACT.md)では、別schemaの明示的な
+tableとparametersを検証して既存構造体へ出力できます。raw byte countからの暗黙変換や
+engineへの登録は行いません。
+
 ## 実行
 
 corpus frameworkで、trainingとvalidationを元文書単位で分け、完全なcp1252 text variant（`byte_limits`にnullを含める）を作成します。
