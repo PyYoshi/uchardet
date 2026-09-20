@@ -110,20 +110,30 @@ def _build(header, model_metadata, library, directory, compiler):
     return binary, provenance
 
 
-def observe(binary, data):
+def observe(binary, data, iterations=None):
     if len(data) > 65536:
         raise ValueError("probe input exceeds 65536 bytes")
+    if iterations is not None and (type(iterations) is not int or not 1 <= iterations <= 1000000):
+        raise ValueError("iterations must be an integer in [1, 1000000]")
     with tempfile.TemporaryDirectory(prefix="uchardet-sequence-input-") as temporary:
         path = Path(temporary) / "input.bin"
         path.write_bytes(data)
-        result = subprocess.run(
-            [str(binary), str(path)], check=True, capture_output=True, timeout=10
-        )
+        command = [str(binary), str(path)]
+        if iterations is not None:
+            command.append(str(iterations))
+        result = subprocess.run(command, check=True, capture_output=True, timeout=10)
     observation = json.loads(result.stdout)
     if observation.get("schema") != "sequence-native-probe-v1" or observation["raw_bytes"] != len(
         data
     ):
         raise ValueError("unexpected native observation")
+    if iterations is not None:
+        benchmark = observation["benchmark"]
+        if benchmark["iterations"] != iterations or benchmark["warmup_iterations"] != 128:
+            raise ValueError("unexpected native timing policy")
+        expected = int(observation["snapshot"]["confidence_bits"], 16) * iterations
+        if benchmark["elapsed_ns"] <= 0 or benchmark["checksum"] != expected:
+            raise ValueError("invalid native elapsed time/checksum")
     return observation
 
 

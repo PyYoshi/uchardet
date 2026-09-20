@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 import os
 import struct
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,6 +13,13 @@ from test_sequence_contract import fixture
 
 
 class SequenceProbeGuards(unittest.TestCase):
+    def test_iteration_limits_before_execution(self):
+        for iterations in (0, -1, 1000001, True, 1.5):
+            with patch.object(sequence_probe.subprocess, "run") as run:
+                with self.assertRaisesRegex(ValueError, "iterations"):
+                    sequence_probe.observe(Path("unused"), b"text", iterations)
+                run.assert_not_called()
+
     def test_input_limit_before_native_execution(self):
         with patch.object(sequence_probe.subprocess, "run") as run:
             with self.assertRaisesRegex(ValueError, "65536"):
@@ -107,6 +115,27 @@ class NativeSequenceProbeTests(unittest.TestCase):
             sequence_probe.build(
                 self.contract, Path(os.environ["UCHARDET_STATIC_LIBRARY"]), self.temporary.name
             )
+
+    def test_timing_preserves_observation_and_checksum(self):
+        for data in (b"", b"ASCII", b"caf\xe9", b"\xe9\xe8\xe0"):
+            baseline = self.observed(data)
+            timed = sequence_probe.observe(self.binary, data, iterations=3)
+            benchmark = timed.pop("benchmark")
+            self.assertEqual(timed, baseline)
+            self.assertEqual(benchmark["iterations"], 3)
+            self.assertEqual(benchmark["warmup_iterations"], 128)
+            self.assertGreater(benchmark["elapsed_ns"], 0)
+            self.assertEqual(
+                benchmark["checksum"], 3 * int(baseline["snapshot"]["confidence_bits"], 16)
+            )
+
+    def test_native_iteration_argument_validation(self):
+        for argument in ("0", "-1", "1x", "1000001"):
+            result = subprocess.run(
+                [str(self.binary), "unused", argument], capture_output=True, text=True, timeout=10
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("iterations", result.stderr)
 
 
 if __name__ == "__main__":
