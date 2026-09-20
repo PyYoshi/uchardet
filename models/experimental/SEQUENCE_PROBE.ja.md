@@ -6,6 +6,9 @@
 通常のdetectorに登録せず、libraryのsource/既定model/公開APIを変更しない。
 filterやprober処理の再実装ではなく、既存static libraryの関数を呼ぶ。
 
+後続の[既存モデル比較](NATIVE_COMPARISON.ja.md)では、`build_reference()`でlegacy symbolを
+直接参照できる。生成modelの契約やprovenanceを既存tableへ偽って付与しない。
+
 ## 実行
 
 ```sh

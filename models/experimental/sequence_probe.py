@@ -18,6 +18,38 @@ FLAGS = ["-std=c++11", "-O2", "-Wall", "-Wextra", "-Wpedantic"]
 
 def build(contract, library, directory, compiler="c++"):
     validate(contract)
+    return _build(
+        emit_cpp(contract),
+        {"contract_hash": contract["content_hash"]},
+        library,
+        directory,
+        compiler,
+    )
+
+
+def build_reference(library, directory, compiler="c++"):
+    """Use the linked legacy model without copying its tables or claiming new provenance."""
+    header = (
+        '#pragma once\n#include "nsSBCharSetProber.h"\n'
+        '#include "nsSBCharSetProber-generated.h"\n'
+        "namespace uchardet_sequence_pilot {\n"
+        "static const SequenceModel& model = Windows_1252FrenchModel;\n}\n"
+    ).encode()
+    source = Path(__file__).resolve().parents[2] / "src/LangModels/LangFrenchModel.cpp"
+    return _build(
+        header,
+        {
+            "reference_symbol": "Windows_1252FrenchModel",
+            "reference_source_sha256": digest(source.read_bytes()),
+            "training_provenance": "LEGACY_NOT_VERIFIED",
+        },
+        library,
+        directory,
+        compiler,
+    )
+
+
+def _build(header, model_metadata, library, directory, compiler):
     executable = shutil.which(compiler)
     if not executable:
         raise ValueError("C++ compiler not found")
@@ -27,7 +59,6 @@ def build(contract, library, directory, compiler="c++"):
     directory = Path(directory).resolve(strict=True)
     base = Path(__file__).resolve().parents[2]
     source = Path(__file__).with_name("sequence-probe.cpp")
-    header = emit_cpp(contract)
     write_idempotent(directory / "sequence-model.hpp", header)
     binary = directory / "sequence-probe"
     if binary.exists():
@@ -45,7 +76,7 @@ def build(contract, library, directory, compiler="c++"):
         )
     }
     provenance = dict(
-        contract_hash=contract["content_hash"],
+        **model_metadata,
         header_sha256=digest(header),
         static_library_sha256=digest(library.read_bytes()),
         compiler_sha256=digest(compiler.read_bytes()),

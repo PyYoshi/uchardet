@@ -59,7 +59,11 @@ int main(int argc, char** argv) {
     // Match the SBCS group's empty-filter behavior. This is a single, non-reversed prober.
     if (retained) probe.HandleData(buffer.data(), retained, nullptr, nullptr);
     std::cout << "{\"schema\":\"sequence-native-probe-v1\",\"raw_bytes\":" << data.size()
-              << ",\"filtered_bytes\":" << retained << ",\"snapshot\":";
+              << ",\"filtered_bytes\":" << retained
+              << ",\"model_encoding\":\"" << probe.GetCharSetName(0)
+              << "\",\"model_language\":\"" << probe.GetLanguage(0)
+              << "\",\"model_frequent_count\":" << uchardet_sequence_pilot::model.freqCharCount
+              << ",\"snapshot\":";
     probe.print();
     std::cout << ",\"after_reset\":";
     probe.Reset();
