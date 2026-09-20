@@ -41,7 +41,15 @@ int main(int argc, char** argv) {
     for (int file = 3; file < argc; ++file) {
       std::ifstream stream(argv[file], std::ios::binary);
       if (!stream) throw std::runtime_error("cannot open input");
+#ifdef UCHARDET_EXPERIMENTAL_INPUT_LIMIT
+      std::vector<char> bytes(UCHARDET_EXPERIMENTAL_INPUT_LIMIT + 1);
+      stream.read(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+      bytes.resize(static_cast<size_t>(stream.gcount()));
+      if (bytes.size() > UCHARDET_EXPERIMENTAL_INPUT_LIMIT)
+        throw std::runtime_error("experimental input exceeds 4096 bytes");
+#else
       const std::vector<char> bytes((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+#endif
       if (stream.bad()) throw std::runtime_error("cannot read input");
       if (!detector || mode == "fresh") detector.reset(uchardet_new());
       else uchardet_reset(detector.get());

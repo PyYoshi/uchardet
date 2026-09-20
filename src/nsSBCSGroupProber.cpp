@@ -46,6 +46,10 @@
 
 #include "nsHebrewProber.h"
 
+#ifdef UCHARDET_EXPERIMENTAL_FRENCH_MODEL
+#include "uchardet-experimental-model.hpp"
+#endif
+
 nsSBCSGroupProber::nsSBCSGroupProber()
 {
   nsHebrewProber *hebprober = new nsHebrewProber();
@@ -112,7 +116,11 @@ nsSBCSGroupProber::nsSBCSGroupProber()
 
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_1FrenchModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_15FrenchModel);
+#ifdef UCHARDET_EXPERIMENTAL_FRENCH_MODEL
+  mProbers[n++] = new nsSingleByteCharSetProber(&uchardet_sequence_pilot::model);
+#else
   mProbers[n++] = new nsSingleByteCharSetProber(&Windows_1252FrenchModel);
+#endif
 
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_1SpanishModel);
   mProbers[n++] = new nsSingleByteCharSetProber(&Iso_8859_15SpanishModel);
