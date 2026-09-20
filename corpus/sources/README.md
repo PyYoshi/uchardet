@@ -1,6 +1,9 @@
 <!-- SPDX-License-Identifier: MIT -->
 # 自由ライセンス自然文の小規模取得pilot
 
+[Paris Stories会話corpus](PARIS_STORIES.md)をvalidation専用の別ジャンルとして追加しました。
+元本文と注釈の権利を区別し、録音単位の文書・splitを維持します。
+
 tool・test・本文書はMITです。外部本文・許諾文のライセンスとは区別します。
 Gitにはrecipeとhashだけを保存し、取得本文や加工本文は同梱しません。
 

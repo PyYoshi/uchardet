@@ -1,0 +1,12 @@
+{
+  "recipe_version": 1,
+  "repository": "UniversalDependencies/UD_French-ParisStories",
+  "revision": "dec76f7a1731318b033c578d534410b0a3d4ea5c",
+  "license": "CC-BY-SA-4.0",
+  "upstream_split": "dev",
+  "files": [
+    ["LICENSE.txt", "899b1804a12ebc090b96339614eede1b64b686721b650a71430b55b5235f7f79", 202],
+    ["README.md", "3a6381529a560d09ffa9746fa6279b1d19ada33bb96386a2fa95e61e74205e91", 6015],
+    ["fr_parisstories-ud-dev.conllu", "3b37b918ab0d7885604f0fe5b91c412320157f18d0257eda11dbdec94e0666ad", 1163095]
+  ]
+}
