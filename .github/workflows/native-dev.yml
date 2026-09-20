@@ -80,6 +80,8 @@ jobs:
           UCHARDET_FILTER_PROFILE: build/release/benchmark/uchardet-filter-profile
         run: uv run --no-project --python 3.11 python -m unittest discover -s benchmark -p 'test_*.py'
       - name: Corpus and model tool tests (offline)
+        env:
+          UCHARDET_FILTER_PROFILE: build/release/benchmark/uchardet-filter-profile
         run: |
           uv run --no-project --python 3.11 python -m unittest discover -s corpus -p 'test_*.py'
           uv run --no-project --python 3.11 python -m unittest discover -s corpus/sources -p 'test_*.py'
