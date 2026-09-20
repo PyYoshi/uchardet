@@ -67,6 +67,45 @@ adjacent_letter_pairs、unseen matrix pair率の分母はmatrix_pairsです。
 分母0はnullです。合計はdocument別countsを足したmicro集計であり、documentごとの
 比率平均ではありません。文書を連結しないため、文書を跨ぐpairは生成しません。
 
+## v2: 文書平均と入力サイズ別集計
+
+`sequence-coverage-evaluation-v2`では従来のmicro集計を残し、
+`macro_rates`と`size_strata`を追加します。training artifact・table・profileは変更しません。
+
+`macro_rates`は各指標について、分母が正の文書だけを等しい重みで平均します。
+平均は既約分数の`numerator`/`denominator`で保存し、浮動小数点丸めを含めません。
+`defined_documents`と`undefined_documents`を併記します。分母0を率0として
+含めず、有効文書が0件ならmeanはnullです。分子0・分母正の文書は有効です。
+これは文書単位の記述統計であり、文書間の統計的独立性を仮定した信頼区間ではありません。
+
+`size_strata`は完全なcp1252文書のbyte長で分類します。下端inclusive、上端exclusiveで、
+境界は0 / 16 / 32 / 64 / 128 / 256 / 512 / 1024 / 4096 / 16384 / 65536 /
+262144 bytes、最後の上端はnull（無制限）です。空文書は最初の区間に入り、
+ちょうど16 bytesなら次の区間です。各区間に文書数、micro counts/rates、macro ratesを持ちます。
+空区間も文書数0、counts 0、rates nullとして明示します。
+
+この分類のために文書を切断・複製したり、新しいvariantを作ったりしません。
+区間のcountsを足すと全体countsに一致し、文書境界を跨ぐpairは増えません。
+同じsourceを異なる長さで切った場合のevidence量比較とは別の分析です。
+長文micro平均と短文を含む文書平均の差は分布の偏りを示しますが、
+detector accuracyやconfidence較正、母集団の代表性を証明しません。
+
+v1 reportのfileは保持し、v2は別出力先へ保存してください。schemaとevaluator依存hashが
+変わるためcontent hashも変わります。旧reportを再現する場合は生成時のrevisionを使用します。
+
+### 保存済み会話corpusでの確認（2026-09-21）
+
+Paris Stories validation 16文書に対し、固定training artifact
+`856a8ba06a4a6d8450ddb3f4afeafdf99223a2c715350ce6e381a8e271c80515`を再学習せず使用しました。
+v1の全document観測とaggregate countsが一致し、全16文書は[1024,4096) bytesでした。
+このcorpus単独では短文・大文書の比較ができないことを明示します。
+新しいnative予測・独立holdout評価は実行していません。
+
+French Tatoeba pilotへの同じ診断は、複数文が共通originを持つため既存の
+`duplicate selected evaluation source hash/origin`検証で拒否されました。
+成功reportは生成せず、origin制約を緩めたり本文を結合したりしていません。
+録音／文書／例文の集計単位とsource groupの違いは、別途契約を決める必要があります。
+
 ## 再現情報と限界
 
 reportには全監査manifest hash、実際に診断したsource metadata・sample hash・encoder

@@ -10,7 +10,7 @@ import unittest
 from model import canonical, digest, write_idempotent
 from framework import generate
 from sequence_training import character_classes, train
-from sequence_evaluation import counts, evaluate, rates
+from sequence_evaluation import SIZE_BOUNDS, counts, evaluate, rates, size_strata, summarize
 
 
 class SequenceEvaluationTests(unittest.TestCase):
@@ -51,6 +51,57 @@ class SequenceEvaluationTests(unittest.TestCase):
         self.assertEqual(report["deployment_status"], "NOT_ENGINE_CALIBRATED")
         self.assertNotIn("confidence", report["aggregate_counts"])
         self.assertEqual(report["sources"][0]["source"]["id"], "validation")
+        self.assertEqual(report["schema"], "sequence-coverage-evaluation-v2")
+        self.assertEqual(report["macro_rates"]["frequent_letter_coverage"],
+                         {"defined_documents": 1, "undefined_documents": 0,
+                          "mean": {"numerator": 3, "denominator": 4}})
+
+    def observed(self, data):
+        return {"counts": counts(data, self.training["contract"], {97, 98})}
+
+    def test_macro_is_not_micro_and_excludes_only_undefined(self):
+        documents = [self.observed(data) for data in (b"a", b"ccccccccc", b"123")]
+        result = summarize(documents)
+        self.assertEqual(result["aggregate_rates"]["frequent_letter_coverage"],
+                         {"numerator": 1, "denominator": 10})
+        self.assertEqual(result["macro_rates"]["frequent_letter_coverage"],
+                         {"defined_documents": 2, "undefined_documents": 1,
+                          "mean": {"numerator": 1, "denominator": 2}})
+        # Zero coverage is defined; single-letter documents have no pair rate.
+        self.assertEqual(result["macro_rates"]["matrix_pair_coverage"],
+                         {"defined_documents": 1, "undefined_documents": 2,
+                          "mean": {"numerator": 0, "denominator": 1}})
+
+    def test_exact_macro_fraction(self):
+        result = summarize([self.observed(b"acc"), self.observed(b"ac")])
+        self.assertEqual(result["macro_rates"]["frequent_letter_coverage"]["mean"],
+                         {"numerator": 5, "denominator": 12})
+
+    def test_empty_summary_is_explicit_not_zero_accuracy(self):
+        result = summarize([])
+        self.assertEqual(result["source_count"], 0)
+        self.assertTrue(all(value is None for value in result["aggregate_rates"].values()))
+        for value in result["macro_rates"].values():
+            self.assertEqual(value, {"defined_documents": 0, "undefined_documents": 0,
+                                     "mean": None})
+
+    def test_size_boundaries_partition_counts_without_new_pairs(self):
+        lengths = [0, *(n - 1 for n in SIZE_BOUNDS), *SIZE_BOUNDS, SIZE_BOUNDS[-1] + 1]
+        documents = [self.observed(b"a" * n) for n in lengths]
+        strata = size_strata(documents)
+        self.assertEqual(sum(row["source_count"] for row in strata), len(documents))
+        for row in strata:
+            lower, upper = row["minimum_bytes_inclusive"], row["maximum_bytes_exclusive"]
+            self.assertEqual(row["source_count"],
+                             sum(n >= lower and (upper is None or n < upper) for n in lengths))
+        total = summarize(documents)["aggregate_counts"]
+        for key, value in total.items():
+            if key == "category_mass":
+                self.assertEqual([sum(row["aggregate_counts"][key][i] for row in strata)
+                                  for i in range(4)], value)
+            else:
+                self.assertEqual(sum(row["aggregate_counts"][key] for row in strata), value)
+        self.assertEqual(size_strata(documents[::-1]), strata)
 
     def test_independent_and_training_are_rejected(self):
         for split in ("independent", "training"):
