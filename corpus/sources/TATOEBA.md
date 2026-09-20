@@ -70,7 +70,9 @@ URL由来・取得時刻はoperatorの申告であり、toolがサーバーへ�
 
 `ingest` は1〜2000の明示limit（既定200）を許可し、新規directoryに `config.json`、
 `ingestion-report.json` とsentence単位のUTF-8本文を保存する。
-sourceにはsentence ID、言語、元文hash、snapshot圧縮・展開hash、snapshot時刻、URL、CC0 licenseを残す。
+sourceにはsentence ID、言語、元文hash、snapshot圧縮・展開hash、URL、CC0 licenseを残す。
+取得時刻はsnapshotとingestion reportに保持し、同じbyteを別時刻に取得しただけで
+corpus content hashが変わらないよう、生成configのsourceには含めない。
 同じsnapshot・limitからのconfigとreportは出力directoryに依存せず同じになる。
 
 ## Splitと選択の制約
@@ -85,12 +87,31 @@ adapterを使わずoriginを書き換えたデータや、Tatoeba外の重複ま
 数値sentence ID昇順の先頭から、明示limit（既定200）まで選択する。
 これは再現可能なpilot選択であり、ランダム・均等・代表性のあるsampleではない。
 投稿時期や初期投稿者等の偏りがあり得るため、selection方法と全件数・採用件数をreportへ残す。
+選択内の完全一致本文のunique件数も記録する。異なるIDの同一文を黙って除外せず、
+近重複や翻訳の独立性を保証する指標とも扱わない。
 意味内容・native予測・legacy codecでの表現可否を選択条件にしない。
 
 選択した原文をUTF-8で保存し、仏語はUTF-8／CP1252、露語はUTF-8／CP1251向けのconfigを作る。
 Unicode正規化、文字置換、文字削除、legacy codecで表現不能なsentenceの事前除外はしない。
 変換不能・非往復mappingはcorpus frameworkの `record-and-continue` で記録する。
 このadapterの成功はmodel学習・精度改善・独立評価を意味しない。
+
+## 初回pilotの確認結果（2026-09-20）
+
+[取得・生成の記録](tatoeba-pilot-2026-09-20.json)には本文を含めずhashと件数を保存した。
+公式CC0 exportを各1回取得し、HTTP headerと圧縮byteをGit管理外へ保存後、
+`import-cache`でoffline登録した。圧縮転送量は2言語合計827,069 bytes。
+取得済みarchiveは二重downloadしていない。
+
+| 言語 | archive内sentence | 採用sentence | 生成attempt | 成功 | skip |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 仏語 | 14,202 | 200 | 1,200 | 1,170 | 30 |
+| 露語 | 23,036 | 200 | 1,200 | 1,197 | 3 |
+
+skipはcodec×sizeのvariant件数であり、除外sentence数ではない。
+2 manifest、400 source recordsの横断split監査は成功した。
+生成済み2,367 sampleを棚卸ししたが、native評価・独立holdout評価は行っていない。
+Python codecのversionは生成manifestに記録する。異なるencoder versionでの同一hashを保証しない。
 
 ## 参照
 

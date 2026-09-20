@@ -51,7 +51,7 @@ def parse_sentences(payload: bytes, language: str) -> list[dict]:
         if number in seen:
             raise ValueError("duplicate CC0 sentence ID")
         seen.add(number)
-        rows.append(dict(id=number, text=sentence, export_metadata_raw=metadata))
+        rows.append({"id": number, "text": sentence, "export_metadata_raw": metadata})
     if not rows:
         raise ValueError("empty CC0 export")
     return rows
@@ -68,7 +68,9 @@ def digest(data: bytes) -> str:
 
 
 def serialized(value: dict) -> bytes:
-    return (json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode("utf-8")
+    return (
+        json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
+    ).encode("utf-8")
 
 
 def decompress(data: bytes) -> bytes:
@@ -111,7 +113,9 @@ def checked_read(path: Path, limit: int) -> bytes:
 def capture(language: str, output: Path) -> dict:
     url = official_url(language)
     if output.exists():
-        raise ValueError("capture destination already exists; never overwrite a snapshot")
+        raise ValueError(
+            "capture destination already exists; never overwrite a snapshot"
+        )
     opener = urllib.request.build_opener(NoRedirect)
     request = urllib.request.Request(url, headers={"Accept-Encoding": "identity"})
     with opener.open(request, timeout=30) as response:
@@ -142,23 +146,23 @@ def store_snapshot(
     check_timestamp(captured_at)
     payload = decompress(compressed)
     rows = parse_sentences(payload, language)
-    snapshot = dict(
-        snapshot_version=1,
-        format=FORMAT,
-        language=language,
-        download_url=official_url(language),
-        source_url=SOURCE_URL,
-        license="CC0-1.0",
-        license_url=LICENSE_URL,
-        captured_at=captured_at,
-        capture_method=capture_method,
-        http_last_modified_raw=last_modified,
-        compressed_sha256=digest(compressed),
-        compressed_bytes=len(compressed),
-        uncompressed_sha256=digest(payload),
-        uncompressed_bytes=len(payload),
-        sentence_count=len(rows),
-    )
+    snapshot = {
+        "snapshot_version": 1,
+        "format": FORMAT,
+        "language": language,
+        "download_url": official_url(language),
+        "source_url": SOURCE_URL,
+        "license": "CC0-1.0",
+        "license_url": LICENSE_URL,
+        "captured_at": captured_at,
+        "capture_method": capture_method,
+        "http_last_modified_raw": last_modified,
+        "compressed_sha256": digest(compressed),
+        "compressed_bytes": len(compressed),
+        "uncompressed_sha256": digest(payload),
+        "uncompressed_bytes": len(payload),
+        "sentence_count": len(rows),
+    }
     new_artifacts(
         output,
         {
@@ -182,7 +186,9 @@ def import_cache(
     """Import operator-attested official bytes without requesting any URL."""
     official_url(language)
     if output.exists():
-        raise ValueError("snapshot destination already exists; never overwrite a snapshot")
+        raise ValueError(
+            "snapshot destination already exists; never overwrite a snapshot"
+        )
     if not re.fullmatch(r"[0-9a-f]{64}", expected_sha256):
         raise ValueError("expected SHA-256 must be a lowercase hex digest")
     compressed = checked_read(archive, MAX_COMPRESSED_BYTES)
@@ -239,47 +245,49 @@ def ingest(snapshot_root: Path, output: Path, limit: int = 200) -> dict:
         data = row["text"].encode("utf-8", errors="strict")
         files[path] = data
         sources.append(
-            dict(
-                id=source_id,
-                path=path,
-                language=language,
-                license="CC0-1.0",
-                license_reference=LICENSE_URL,
-                revision=snapshot["compressed_sha256"],
-                origin=ORIGIN,
-                kind="natural",
-                sha256=digest(data),
-                split="validation",
-                source_url=f"https://tatoeba.org/en/sentences/show/{row['id']}",
-                tatoeba_sentence_id=row["id"],
-                tatoeba_language=snapshot["language"],
-                export_metadata_raw=row["export_metadata_raw"],
-                snapshot_download_url=snapshot["download_url"],
-                snapshot_uncompressed_sha256=snapshot["uncompressed_sha256"],
-                snapshot_captured_at=snapshot["captured_at"],
-            )
+            {
+                "id": source_id,
+                "path": path,
+                "language": language,
+                "license": "CC0-1.0",
+                "license_reference": LICENSE_URL,
+                "revision": snapshot["compressed_sha256"],
+                "origin": ORIGIN,
+                "kind": "natural",
+                "sha256": digest(data),
+                "split": "validation",
+                "source_url": f"https://tatoeba.org/en/sentences/show/{row['id']}",
+                "tatoeba_sentence_id": row["id"],
+                "tatoeba_language": snapshot["language"],
+                "export_metadata_raw": row["export_metadata_raw"],
+                "snapshot_download_url": snapshot["download_url"],
+                "snapshot_uncompressed_sha256": snapshot["uncompressed_sha256"],
+            }
         )
-    config = dict(
-        sources=sources,
-        encodings=["utf-8", legacy_encoding],
-        formats=["text"],
-        boundaries=["complete"],
-        byte_limits=[None, 64, 1024],
-    )
-    report = dict(
-        ingestion_version=1,
-        snapshot=snapshot,
-        selection="ascending-numeric-sentence-id",
-        requested_limit=limit,
-        available_sentences=len(rows),
-        selected_sentences=len(selected),
-        selected_ids=[row["id"] for row in selected],
-        split="validation",
-        origin=ORIGIN,
-        bias="Lowest numeric IDs only; not random, representative or independent evaluation.",
-        legacy_representability_filter=False,
-        required_generation_failure_policy="record-and-continue",
-    )
+    config = {
+        "sources": sources,
+        "encodings": ["utf-8", legacy_encoding],
+        "formats": ["text"],
+        "boundaries": ["complete"],
+        "byte_limits": [None, 64, 1024],
+    }
+    report = {
+        "ingestion_version": 1,
+        "snapshot": snapshot,
+        "selection": "ascending-numeric-sentence-id",
+        "requested_limit": limit,
+        "available_sentences": len(rows),
+        "selected_sentences": len(selected),
+        "selected_ids": [row["id"] for row in selected],
+        "unique_selected_texts": len(
+            {digest(row["text"].encode("utf-8")) for row in selected}
+        ),
+        "split": "validation",
+        "origin": ORIGIN,
+        "bias": "Lowest numeric IDs only; not random, representative or independent evaluation.",
+        "legacy_representability_filter": False,
+        "required_generation_failure_policy": "record-and-continue",
+    }
     files["config.json"] = serialized(config)
     files["ingestion-report.json"] = serialized(report)
     new_artifacts(output, files)
@@ -289,7 +297,9 @@ def ingest(snapshot_root: Path, output: Path, limit: int = 200) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    cap = commands.add_parser("capture", help="explicit network capture into a fresh directory")
+    cap = commands.add_parser(
+        "capture", help="explicit network capture into a fresh directory"
+    )
     cap.add_argument("language", choices=sorted(LANGUAGES))
     cap.add_argument("output", type=Path)
     check = commands.add_parser("validate", help="offline snapshot validation")
@@ -303,7 +313,9 @@ def main() -> None:
     local.add_argument("--captured-at", required=True)
     local.add_argument("--sha256", required=True)
     local.add_argument("--last-modified")
-    convert = commands.add_parser("ingest", help="offline validation-only corpus config")
+    convert = commands.add_parser(
+        "ingest", help="offline validation-only corpus config"
+    )
     convert.add_argument("snapshot", type=Path)
     convert.add_argument("output", type=Path)
     convert.add_argument("--limit", type=int, default=200)

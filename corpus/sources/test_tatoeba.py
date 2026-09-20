@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from typing import ClassVar
 from unittest.mock import patch
 
 import tatoeba
@@ -24,7 +25,7 @@ class TatoebaTests(unittest.TestCase):
         self.payload = (
             "20\tfra\tCafé.\t2019-01-12 19:39:42\n"
             "3\tfra\tEmoji 😀 et \\n littéral.\tmetadata-not-interpreted\n"
-        ).encode("utf-8")
+        ).encode()
         self.archive = self.root / "download.bz2"
         self.archive.write_bytes(bz2.compress(self.payload))
         self.snapshot = self.root / "snapshot"
@@ -40,7 +41,9 @@ class TatoebaTests(unittest.TestCase):
 
     def test_import_offline_validation_and_provenance(self):
         with patch.object(
-            tatoeba.urllib.request, "build_opener", side_effect=AssertionError("network")
+            tatoeba.urllib.request,
+            "build_opener",
+            side_effect=AssertionError("network"),
         ):
             snapshot = self.imported()
             verified, rows = tatoeba.validate(self.snapshot)
@@ -57,7 +60,9 @@ class TatoebaTests(unittest.TestCase):
         self.imported()
         output = self.root / "ingested"
         with patch.object(
-            tatoeba.urllib.request, "build_opener", side_effect=AssertionError("network")
+            tatoeba.urllib.request,
+            "build_opener",
+            side_effect=AssertionError("network"),
         ):
             report = tatoeba.ingest(self.snapshot, output, limit=1)
         self.assertEqual(report["selected_ids"], [3])
@@ -72,7 +77,10 @@ class TatoebaTests(unittest.TestCase):
         self.assertEqual(source["export_metadata_raw"], "metadata-not-interpreted")
         self.assertIn("😀", (output / source["path"]).read_text(encoding="utf-8"))
         generated = generate(
-            config, output, self.root / "generated", failure_policy="record-and-continue"
+            config,
+            output,
+            self.root / "generated",
+            failure_policy="record-and-continue",
         )
         self.assertEqual(
             generated["generation_report"]["counts"],
@@ -111,7 +119,9 @@ class TatoebaTests(unittest.TestCase):
     def test_capture_mocked_official_url_and_hashes(self):
         class Response(io.BytesIO):
             status = 200
-            headers = {"Last-Modified": "Sat, 19 Sep 2026 06:31:34 GMT"}
+            headers: ClassVar[dict[str, str]] = {
+                "Last-Modified": "Sat, 19 Sep 2026 06:31:34 GMT"
+            }
 
             def geturl(self):
                 return tatoeba.official_url("fra")
@@ -123,15 +133,42 @@ class TatoebaTests(unittest.TestCase):
             request = factory.return_value.open.call_args.args[0]
             self.assertEqual(request.full_url, tatoeba.official_url("fra"))
         self.assertEqual(snapshot["capture_method"], "direct-https")
-        self.assertEqual(snapshot["http_last_modified_raw"], Response.headers["Last-Modified"])
+        self.assertEqual(
+            snapshot["http_last_modified_raw"], Response.headers["Last-Modified"]
+        )
         self.assertEqual(tatoeba.validate(self.snapshot)[0], snapshot)
         with patch.object(
-            tatoeba.urllib.request, "build_opener", side_effect=AssertionError("network")
+            tatoeba.urllib.request,
+            "build_opener",
+            side_effect=AssertionError("network"),
         ):
             with self.assertRaises(ValueError):
                 tatoeba.capture("fra", self.snapshot)
             with self.assertRaises(ValueError):
                 tatoeba.capture("https://example.com/other.bz2", self.root / "other")
+
+    def test_capture_time_does_not_change_corpus_content_identity(self):
+        self.imported()
+        second = self.root / "second-snapshot"
+        tatoeba.import_cache(
+            "fra",
+            self.archive,
+            second,
+            captured_at="2026-09-21T00:00:00Z",
+            expected_sha256=tatoeba.digest(self.archive.read_bytes()),
+        )
+        outputs = [self.root / "first-input", self.root / "second-input"]
+        first_report = tatoeba.ingest(self.snapshot, outputs[0])
+        second_report = tatoeba.ingest(second, outputs[1])
+        self.assertNotEqual(
+            first_report["snapshot"]["captured_at"],
+            second_report["snapshot"]["captured_at"],
+        )
+        self.assertEqual(
+            (outputs[0] / "config.json").read_bytes(),
+            (outputs[1] / "config.json").read_bytes(),
+        )
+        self.assertEqual(first_report["unique_selected_texts"], 2)
 
     def test_redirect_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "redirect"):
@@ -161,21 +198,36 @@ class TatoebaTests(unittest.TestCase):
             ("bad", "2026-09-20T00:00:00Z"),
             (tatoeba.digest(self.archive.read_bytes()), "2026-09-20T00:00:00"),
         ):
-            with self.subTest(sha=sha, timestamp=timestamp), self.assertRaises(ValueError):
+            with (
+                self.subTest(sha=sha, timestamp=timestamp),
+                self.assertRaises(ValueError),
+            ):
                 tatoeba.import_cache(
-                    "fra", self.archive, self.snapshot, captured_at=timestamp, expected_sha256=sha
+                    "fra",
+                    self.archive,
+                    self.snapshot,
+                    captured_at=timestamp,
+                    expected_sha256=sha,
                 )
             self.assertFalse(self.snapshot.exists())
 
     def test_budget_and_archive_completeness(self):
         compressed = self.archive.read_bytes()
-        with patch.object(tatoeba, "MAX_COMPRESSED_BYTES", len(compressed) - 1):
-            with self.assertRaisesRegex(ValueError, "2 MiB"):
-                tatoeba.decompress(compressed)
-        with patch.object(tatoeba, "MAX_UNCOMPRESSED_BYTES", len(self.payload) - 1):
-            with self.assertRaisesRegex(ValueError, "20 MiB"):
-                tatoeba.decompress(compressed)
-        for data in (compressed[:-1], compressed + b"trailing", compressed + compressed):
+        with (
+            patch.object(tatoeba, "MAX_COMPRESSED_BYTES", len(compressed) - 1),
+            self.assertRaisesRegex(ValueError, "2 MiB"),
+        ):
+            tatoeba.decompress(compressed)
+        with (
+            patch.object(tatoeba, "MAX_UNCOMPRESSED_BYTES", len(self.payload) - 1),
+            self.assertRaisesRegex(ValueError, "20 MiB"),
+        ):
+            tatoeba.decompress(compressed)
+        for data in (
+            compressed[:-1],
+            compressed + b"trailing",
+            compressed + compressed,
+        ):
             with self.subTest(length=len(data)), self.assertRaises(ValueError):
                 tatoeba.decompress(data)
 
@@ -216,7 +268,9 @@ class TatoebaTests(unittest.TestCase):
             ["ingest", str(self.snapshot), str(self.root / "out"), "--limit", "1"],
         ]
         with patch.object(
-            tatoeba.urllib.request, "build_opener", side_effect=AssertionError("network")
+            tatoeba.urllib.request,
+            "build_opener",
+            side_effect=AssertionError("network"),
         ):
             for args in commands:
                 with (
@@ -233,9 +287,12 @@ class TatoebaTests(unittest.TestCase):
             "--split",
             "training",
         ]
-        with patch.object(sys, "argv", args), patch("sys.stderr", new_callable=io.StringIO):
-            with self.assertRaises(SystemExit) as error:
-                tatoeba.main()
+        with (
+            patch.object(sys, "argv", args),
+            patch("sys.stderr", new_callable=io.StringIO),
+            self.assertRaises(SystemExit) as error,
+        ):
+            tatoeba.main()
         self.assertEqual(error.exception.code, 2)
 
 

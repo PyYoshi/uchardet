@@ -1,0 +1,47 @@
+{
+  "record_version": 1,
+  "source": "Tatoeba Sentences (CC0) subset",
+  "license": "CC0-1.0",
+  "source_url": "https://tatoeba.org/en/downloads",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "origin": "tatoeba:cc0-pilot",
+  "split": "validation",
+  "selection": "first 200 ascending numeric sentence IDs per language",
+  "native_evaluation_performed": false,
+  "downloaded_compressed_bytes": 827069,
+  "captures": [
+    {
+      "language": "fra",
+      "url": "https://downloads.tatoeba.org/exports/per_language/fra/fra_sentences_CC0.tsv.bz2",
+      "captured_at": "2026-09-20T13:18:56Z",
+      "compressed_bytes": 313297,
+      "compressed_sha256": "cf4509f2f3fd542222be2cf085d0d814ce3f9405263c5746bcc965d7e83dfd08",
+      "uncompressed_bytes": 1454766,
+      "uncompressed_sha256": "6882440170594b9d1d947b72b7467bcfc6e16207113bc3eb7f91e0c04a1a1b72",
+      "available_sentences": 14202,
+      "selected_sentences": 200,
+      "generation": {"attempted": 1200, "successful": 1170, "skipped": 30},
+      "generated_manifest_hash": "fb18c3fe1b320969ac6a4abb1e17faa429fd7aba8f9de6d0a1db172db0eca7e6"
+    },
+    {
+      "language": "rus",
+      "url": "https://downloads.tatoeba.org/exports/per_language/rus/rus_sentences_CC0.tsv.bz2",
+      "captured_at": "2026-09-20T13:20:11Z",
+      "compressed_bytes": 513772,
+      "compressed_sha256": "985347172abf1494f70eab5c78e4f932014d529487b4ff2eb02ad6bc32118f22",
+      "uncompressed_bytes": 3004518,
+      "uncompressed_sha256": "0fcd46be172a63e2a8ad49b31a392c9b76f317aae421edd870b9cd13af4cce2d",
+      "available_sentences": 23036,
+      "selected_sentences": 200,
+      "generation": {"attempted": 1200, "successful": 1197, "skipped": 3},
+      "generated_manifest_hash": "193b83127d09762921440c383698884184d732b6c1c0d74a4507475e3aa3172b"
+    }
+  ],
+  "limitations": [
+    "Official URLs are mutable; the retained local snapshots are needed for exact replay.",
+    "The observed fourth TSV column is retained without assigning timestamp semantics.",
+    "All selected sentences are validation-only, not independent holdout or training.",
+    "Recorded generation skips are variants, not sentence counts.",
+    "No sentence text is included in this record."
+  ]
+}
