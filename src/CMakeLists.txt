@@ -77,15 +77,7 @@ endif ()
 
 add_definitions(
 	-DVERSION="${UCHARDET_VERSION}"
-	-Wall
 )
-
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-	add_definitions(
-		-O0
-		-g3
-	)
-endif (CMAKE_BUILD_TYPE MATCHES Debug)
 
 add_library(
 	${UCHARDET_LIBRARY}

@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: MIT
+name: Native (dev)
+
+on:
+  push:
+    branches: [dev]
+    paths-ignore: ['**.md', '**.rst']
+  pull_request:
+    branches: [dev]
+    paths-ignore: ['**.md', '**.rst']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-dev-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: ${{ matrix.compiler }} / ${{ matrix.preset }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-24.04, compiler: GCC, cc: gcc, cxx: g++, preset: release}
+          - {os: ubuntu-24.04, compiler: GCC, cc: gcc, cxx: g++, preset: debug}
+          - {os: ubuntu-24.04, compiler: Clang, cc: clang, cxx: clang++, preset: sanitize}
+          - {os: ubuntu-24.04, compiler: GCC, cc: gcc, cxx: g++, preset: cxx20}
+          - {os: macos-14, compiler: AppleClang, cc: clang, cxx: clang++, preset: release}
+          - {os: macos-14, compiler: AppleClang, cc: clang, cxx: clang++, preset: cxx20}
+          - {os: windows-2022, compiler: MSVC, cc: cl, cxx: cl, preset: release}
+          - {os: windows-2022, compiler: MSVC, cc: cl, cxx: cl, preset: cxx20}
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+      ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - uses: actions/checkout@v7
+      - name: Initialize MSVC environment
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $installation) { throw 'MSVC installation not found' }
+          cmd /c "`"$installation\Common7\Tools\VsDevCmd.bat`" -arch=x64 -host_arch=x64 >nul && set" | ForEach-Object {
+            if ($_ -match '^([^=]+)=(.*)$') { "$($Matches[1])=$($Matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append }
+          }
+          if ($LASTEXITCODE -ne 0) { throw 'MSVC environment setup failed' }
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }} --parallel 2
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }} --timeout 30
+      - name: Install smoke test
+        run: cmake --install build/${{ matrix.preset }} --prefix build/install
