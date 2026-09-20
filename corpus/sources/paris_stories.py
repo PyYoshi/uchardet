@@ -61,8 +61,10 @@ def fetch(recipe, root):
     return {"transferred_bytes": transferred, "verified_bytes": sum(r[2] for r in recipe["files"])}
 
 
-def documents(raw):
-    if len(raw) > MAX_FILE_BYTES:
+def documents(raw, *, max_bytes=MAX_FILE_BYTES):
+    if type(max_bytes) is not int or not 0 < max_bytes <= 4 * 1024 * 1024:
+        raise ValueError("invalid source byte budget")
+    if len(raw) > max_bytes:
         raise ValueError("source byte budget exceeded")
     groups, seen_ids = {}, set()
     metadata, token_count = {}, 0
