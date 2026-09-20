@@ -10,6 +10,9 @@
 tableとparametersを検証して既存構造体へ出力できます。raw byte countからの暗黙変換や
 engineへの登録は行いません。
 
+[Python-only training profile](SEQUENCE_TRAINING.md)では、未較正の文字分類・量子化を
+明示し、文書別整数countsから契約とauditを再生成します。native接続や品質保証ではありません。
+
 ## 実行
 
 corpus frameworkで、trainingとvalidationを元文書単位で分け、完全なcp1252 text variant（`byte_limits`にnullを含める）を作成します。
