@@ -74,6 +74,7 @@ class NestedTraceTests(unittest.TestCase):
                 for record in current:
                     record.pop("children", None)
                     record.pop("language_detectors", None)
+                    record.pop("prober_evidence", None)
                 self.assertEqual(current, self.trace(data, chunk, os.environ["UCHARDET_TRACE_BASELINE"]))
 
     @unittest.skipUnless(os.environ.get("UCHARDET_CONFORMANCE") and os.environ.get("UCHARDET_CONFORMANCE_BASELINE"),

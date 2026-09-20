@@ -80,6 +80,7 @@ public:
   const SMModel* GetCodingStateMachine() {return mModel;}
 
 protected:
+  friend class UchardetTraceAccess;
   PRUint32 mCurrentState;
   PRUint32 mCurrentCharLen;
   PRUint32 mCurrentBytePos;
@@ -102,4 +103,3 @@ extern const SMModel ISO2022JPSMModel;
 extern const SMModel ISO2022KRSMModel;
 
 #endif /* nsCodingStateMachine_h__ */
-

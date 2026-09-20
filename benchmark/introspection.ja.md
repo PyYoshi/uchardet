@@ -77,7 +77,7 @@ UTF-16の2-byte BOM単独も同じ長さ条件により検出されません。
 ## 未観測の領域
 
 group直下childのstate/active変化とlanguage detectorのstate・累積counterは観測できますが、
-byte state machineの遷移、rejectの根本原因、threshold以下の候補、rankingの詳細
+byte単位のstate machine遷移、rejectの根本原因、threshold以下の候補、rankingの詳細
 理由は未観測です。doneとshortcut・group状態から原因を断定しません。
 したがってこれはV3-06の初期基盤であり、introspection全体の完了ではありません。
 
@@ -140,3 +140,34 @@ engineのcounterや判定を修正したわけではありません。
 modelを持たないCJK slotは同じ45文字でもsequence総数0でした。
 これを「model未対応」「文字を未処理」と解釈しません。state_reasonは引き続きunknownです。
 新しいfuzz、大入力、安全性修正、BOM改善、独立holdout評価は行っていません。
+
+## prober内部観測の限定検証（2026-09-21）
+
+snapshotの追加field `prober_evidence` は次の2項目を持ちます。
+group未生成ならそれぞれnullです。公開C API・Python APIへの追加ではありません。
+
+- `multibyte_machines`: group内indexとcoding stateの数値。
+  0は開始、1はerror、2は確定、それ以外はmodel固有の状態です。
+  Big5のindex 5は独自の処理なのでnullです。未対応encodingという意味ではありません。
+  feed後の現在値であり、途中の全byteの遷移履歴ではありません。
+- `singlebyte_models`: 統計modelを持つchildのindex、静的encoding/language label、
+  reverse flag、文字・control・frequent・out・sequence counterと4分類counter。
+  Hebrewの名前決定用補助proberは含めません。静的model labelは最終候補の名前と
+  同一とは限らず、counterをconfidenceとして再解釈・再計算しません。
+
+friend宣言だけで既存classのfieldを読み、layout・vtable・hot pathを変更しません。
+coding state machineの文字長・byte位置は生成直後に未初期化の場合があるため読みません。
+GetConfidence / GetLanguage / GetCandidatesも追加で呼びません。
+候補の順位やrejectの根本原因は引き続き未確定です。
+
+`test_prober_evidence.py`は既存の空・11-byte ASCII・135-byte日本語fixtureを使います。
+`UCHARDET_TRACE`に新tool、`UCHARDET_PROBER_TRACE_BASELINE`に変更前
+（language_detectorsあり・prober_evidenceなし）のtoolを指定します。
+比較変数がない場合は旧観測との比較がskipになります。
+
+GCC 16.2.1 / 同一Release build directory・flagsでbaseline `a56fd958`と比較し、
+whole / 1 / 7 / 64 / 1024 feedで追加fieldを除く全snapshotとraw Reportが一致しました。
+既存nested testでfresh/reuse・固定randomを含む6 scheduleの最終候補も一致しました。
+静的libraryの全61 object memberはbyte一致しました。archive metadataや
+全compilerの生成コード、一般的な性能不変まで主張するものではありません。
+診断toolのallocation・出力コストは性能benchmarkに含めません。

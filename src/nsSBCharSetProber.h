@@ -110,6 +110,7 @@ public:
 #endif
 
 protected:
+  friend class UchardetTraceAccess;
   nsProbingState mState;
   const SequenceModel* const mModel;
   const PRBool mReversed; // PR_TRUE if we need to reverse every pair in the model lookup

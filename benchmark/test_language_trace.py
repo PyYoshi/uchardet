@@ -74,6 +74,7 @@ class LanguageTraceTests(unittest.TestCase):
                 current = self.trace(data, chunk)
                 for record in current:
                     record.pop("language_detectors", None)
+                    record.pop("prober_evidence", None)
                 baseline = self.trace(data, chunk, os.environ["UCHARDET_LANGUAGE_TRACE_BASELINE"])
                 self.assertEqual(current, baseline)
 

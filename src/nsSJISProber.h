@@ -68,6 +68,7 @@ public:
   void      SetOpion() {}
 
 protected:
+  friend class UchardetTraceAccess;
   nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
 
@@ -81,4 +82,3 @@ protected:
 
 
 #endif /* nsSJISProber_h__ */
-
