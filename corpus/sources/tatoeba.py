@@ -17,13 +17,21 @@ MAX_UNCOMPRESSED_BYTES = 20 * 1024 * 1024
 SOURCE_URL = "https://tatoeba.org/en/downloads"
 LICENSE_URL = "https://creativecommons.org/publicdomain/zero/1.0/"
 ORIGIN = "tatoeba:cc0-pilot"
-LANGUAGES = {"fra": ("fr", "cp1252"), "rus": ("ru", "cp1251")}
+LANGUAGES = {
+    "fra": ("fr", "cp1252"),
+    "rus": ("ru", "cp1251"),
+    "jpn": ("ja", "cp932"),
+    "ara": ("ar", "cp1256"),
+    "heb": ("he", "cp1255"),
+}
 FORMAT = "tatoeba-cc0-tsv-4-columns-v1"
 
 
 def official_url(language: str) -> str:
     if language not in LANGUAGES:
-        raise ValueError("only fra/rus official CC0 exports are permitted")
+        raise ValueError(
+            "only explicitly listed official CC0 language exports are permitted"
+        )
     return f"https://downloads.tatoeba.org/exports/per_language/{language}/{language}_sentences_CC0.tsv.bz2"
 
 

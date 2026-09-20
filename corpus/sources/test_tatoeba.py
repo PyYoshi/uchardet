@@ -116,6 +116,60 @@ class TatoebaTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.imported()
 
+    def test_additional_scripts_keep_text_and_split_without_filtering(self):
+        for code, language, codec, sentence in (
+            ("jpn", "ja", "cp932", "日本語の例です。"),
+            ("ara", "ar", "cp1256", "هذا مثال."),
+            ("heb", "he", "cp1255", "זאת דוגמה."),
+        ):
+            with self.subTest(code=code):
+                snapshot = self.root / f"snapshot-{code}"
+                raw = f"1\t{code}\t{sentence}\tmetadata\n2\t{code}\t😀\tmetadata\n".encode()
+                tatoeba.store_snapshot(
+                    code,
+                    bz2.compress(raw),
+                    snapshot,
+                    "2026-09-21T00:00:00Z",
+                    "operator-import",
+                    None,
+                )
+                output = self.root / f"input-{code}"
+                with patch.object(
+                    tatoeba.urllib.request,
+                    "build_opener",
+                    side_effect=AssertionError("network"),
+                ):
+                    report = tatoeba.ingest(snapshot, output, limit=200)
+                self.assertEqual(report["selected_sentences"], 2)
+                self.assertEqual(report["requested_limit"], 200)
+                self.assertFalse(report["legacy_representability_filter"])
+                config = json.loads(
+                    (output / "config.json").read_text(encoding="utf-8")
+                )
+                self.assertEqual(config["encodings"], ["utf-8", codec])
+                for source, text in zip(config["sources"], (sentence, "😀")):
+                    self.assertEqual(source["language"], language)
+                    self.assertEqual(source["split"], "validation")
+                    self.assertEqual(source["origin"], tatoeba.ORIGIN)
+                    self.assertEqual(
+                        (output / source["path"]).read_text(encoding="utf-8"), text
+                    )
+                generated = generate(
+                    config,
+                    output,
+                    self.root / f"generated-{code}",
+                    failure_policy="record-and-continue",
+                )
+                self.assertEqual(
+                    generated["generation_report"]["counts"],
+                    {"attempted": 12, "successful": 9, "skipped": 3},
+                )
+
+    def test_language_allowlist_does_not_infer_other_cc0_exports(self):
+        for code in ("vie", "kor", "JPN", "../jpn", "jpn?license=other"):
+            with self.subTest(code=code), self.assertRaises(ValueError):
+                tatoeba.official_url(code)
+
     def test_capture_mocked_official_url_and_hashes(self):
         class Response(io.BytesIO):
             status = 200
