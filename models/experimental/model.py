@@ -12,6 +12,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "corpus"))
 from framework import check_source, digest, safe_path, validate as validate_corpus  # noqa: E402
+from artifact import write_idempotent  # noqa: E402
 
 VERSION = "byte-bigram-pilot-v1"
 
@@ -145,15 +146,6 @@ def score(model: dict, manifest: dict, root: Path, split: str) -> dict:
     return {"model_content_hash": model["content_hash"], "corpus_content_hash": manifest["content_hash"],
             "split": split, "metric": "laplace-smoothed byte bigram log loss; NOT encoding accuracy",
             "synthetic_only": all(source["kind"] == "synthetic" for source, _, _ in records), "samples": samples}
-
-
-def write_idempotent(path: Path, data: bytes) -> None:
-    if path.exists():
-        if path.read_bytes() != data:
-            raise ValueError("refusing to overwrite different artifact")
-        return
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(data)
 
 
 def load(path: Path) -> dict:

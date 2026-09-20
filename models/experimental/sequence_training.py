@@ -27,7 +27,7 @@ SPEC = {"filter": "identity-unfiltered-v1", "normalization": "none", "case_foldi
 def dependencies():
     base = Path(__file__).resolve().parents[2]
     names = ("models/experimental/sequence_training.py", "models/experimental/model.py",
-             "models/experimental/sequence_contract.py", "corpus/framework.py")
+             "models/experimental/sequence_contract.py", "corpus/framework.py", "corpus/artifact.py")
     result = {name: digest((base / name).read_bytes()) for name in names}
     result["stdlib:encodings.cp1252"] = digest(Path(encodings.cp1252.__file__).read_bytes())
     return result
