@@ -1,5 +1,8 @@
 # Native benchmark
 
+v3 開発用の候補・chunk・reset 差分検証は [日本語の conformance ガイド](conformance.ja.md)
+を参照してください。
+
 The benchmark calls the public uchardet C API directly and loads every input
 before timing, so filesystem and language-binding overhead are excluded.
 

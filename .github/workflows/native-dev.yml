@@ -60,3 +60,24 @@ jobs:
         run: ctest --preset ${{ matrix.preset }} --timeout 30
       - name: Install smoke test
         run: cmake --install build/${{ matrix.preset }} --prefix build/install
+
+  diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+      - name: Configure diagnostic tools
+        run: cmake --preset release -DBUILD_INTROSPECTION=ON
+      - name: Build
+        run: cmake --build --preset release --parallel 2
+      - name: Tool tests
+        env:
+          UCHARDET_TRACE: build/release/benchmark/uchardet-trace
+        run: uv run --no-project --python 3.11 python -m unittest discover -s benchmark -p 'test_*.py'
+      - name: Candidate and lifecycle observations
+        run: uv run --no-project --python 3.11 python benchmark/conformance.py build/release/benchmark/uchardet-conformance > conformance.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: native-conformance
+          path: conformance.json
