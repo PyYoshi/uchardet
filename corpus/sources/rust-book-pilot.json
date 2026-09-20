@@ -1,0 +1,48 @@
+{
+  "recipe_version": 1,
+  "license_choice": "MIT",
+  "chapters": [
+    ["ch00-00-introduction.md", "training"],
+    ["ch01-00-getting-started.md", "tuning"],
+    ["ch02-00-guessing-game-tutorial.md", "validation"],
+    ["ch03-00-common-programming-concepts.md", "independent"]
+  ],
+  "repositories": [
+    {
+      "language": "ja", "repository": "rust-lang-ja/book-ja", "revision": "5092e5395bf32a65b277c3b1cc1a81ba288c7d46", "prefix": "src", "legacy_encoding": "cp932",
+      "files": [
+        ["LICENSE-MIT", "ca26f1dc26d49796222010a244441372bec6d174bea88658aed2246fbcde4cca", 1076],
+        ["LICENSE-APACHE", "abaac347bbb1f852f190dfb6067e88c4ea4382d5e978a05a8810f550afd3229d", 10848],
+        ["COPYRIGHT", "48693c3dcfa04729482e9bfc00cb8c248e4e94caff295441fee7d9b12d7030b3", 11861],
+        ["src/ch00-00-introduction.md", "974b26a20b3f65d8fd1322547ad0232d41eeeaa73cc6b7ba262bf7bdd82b0589", 24253],
+        ["src/ch01-00-getting-started.md", "5fce40286cff5d6b87af356b3914bde98901a56ab12696de3e089ced62a6c30b", 747],
+        ["src/ch02-00-guessing-game-tutorial.md", "d75643de89f16dcc3da3d43f7760acc733a750934d4cd1699fa665aad86b5c73", 83954],
+        ["src/ch03-00-common-programming-concepts.md", "defb62ca958a05828d912f38e77f243c8b302a49629771abc28e6ac70dcbb76e", 2752]
+      ]
+    },
+    {
+      "language": "fr", "repository": "Jimskapt/rust-book-fr", "revision": "42bfcc8ccea02a1272e5fda936dd593b88361b80", "prefix": "FRENCH/src", "legacy_encoding": "cp1252",
+      "files": [
+        ["LICENSE-MIT", "0621878e61f0d0fda054bcbe02df75192c28bde1ecc8289cbd86aeba2dd72720", 1071],
+        ["LICENSE-APACHE", "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2", 10847],
+        ["COPYRIGHT", "a84b611a508be3cd06ee112dd93ea6612831572ab2c093ccc198928f0f3a8e6b", 11865],
+        ["FRENCH/src/ch00-00-introduction.md", "00e1375c1a2d6aefab77435d157d35accce3194f1d38605d6b614c58600e41de", 23391],
+        ["FRENCH/src/ch01-00-getting-started.md", "5f051c7f9d359d4d2fa38afcdea93376dd1512a7b23f6bbdbf8514b31b6e0f7e", 709],
+        ["FRENCH/src/ch02-00-guessing-game-tutorial.md", "8c558da7d7163977f6a31e51dee6a84e3993e9f9b6c11e9fc76f6bbba7ca134a", 86500],
+        ["FRENCH/src/ch03-00-common-programming-concepts.md", "d664a1c97d32976416561e342f48528aacab291ca05508e4130ffc6039c4eb41", 2666]
+      ]
+    },
+    {
+      "language": "ru", "repository": "rust-lang-ru/book", "revision": "05d3ba8d94ab12218100b7726d23730304603bef", "prefix": "rustbook-ru/src", "legacy_encoding": "cp1251",
+      "files": [
+        ["LICENSE-MIT", "0621878e61f0d0fda054bcbe02df75192c28bde1ecc8289cbd86aeba2dd72720", 1071],
+        ["LICENSE-APACHE", "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2", 10847],
+        ["COPYRIGHT", "48693c3dcfa04729482e9bfc00cb8c248e4e94caff295441fee7d9b12d7030b3", 11861],
+        ["rustbook-ru/src/ch00-00-introduction.md", "e725825cf72ad4aecbe8b28c1ed1df77c3f3501f9b55204c459a35088a02e5e5", 18769],
+        ["rustbook-ru/src/ch01-00-getting-started.md", "8060caf2bb4627e3bd925298eb1036b0f5f8b62972c97c234706b5ba1ed4f69f", 531],
+        ["rustbook-ru/src/ch02-00-guessing-game-tutorial.md", "e3cd2d85e0c52acb7e3aafd43f9209b09c68ae9fadd697a0a933481669cc1b11", 63489],
+        ["rustbook-ru/src/ch03-00-common-programming-concepts.md", "42add3f947c931f9f0620afe979718cce222d1da61ab13fb318d2ef61474e971", 2251]
+      ]
+    }
+  ]
+}
