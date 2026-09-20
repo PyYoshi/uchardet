@@ -4,6 +4,9 @@
 公開 C API の追加や detector library 内への hook 挿入はありません。
 `BUILD_INTROSPECTION` は既定OFFで、通常buildのhot pathには観測処理を追加しません。
 内部symbolを参照するためstatic build専用です。
+group headerには診断accessor用のfriend宣言のみを追加しています。
+accessorの実装・event記録・前回snapshotの保持は診断実行ファイルにだけ存在し、
+engineのobject layout・vtable・hot pathや公開C APIは変更しません。
 
 ```sh
 cmake -S . -B build-trace -DCMAKE_BUILD_TYPE=Release \
@@ -27,6 +30,16 @@ JSONLの `initial`／`after_feed`／`after_end` eventには次を記録します
 - `shortcut_encoding`：shortcutが選んだencoding。なければnull。
 - `probers`：最上位multibyte／singlebyte group、Latin1、escapeの状態。
   nullは未生成または破棄済み、detecting／found／rejectedは実際のGetState値です。
+- `children`：multibyte／singlebyte group直下のchild一覧。group未生成時はnull。
+  各childには安定index、`current`（present／active／state）、直前snapshotの
+  `previous`、その差分の`changed`を記録します。初観測のpreviousとchangedはnull。
+  raw_reportはsnapshotではないため、previousの更新対象にはなりません。
+  activeはgroupが持つ実際のflag、stateはchildの実際のGetState値であり、同義では
+  ありません。reject等の根本原因は観測していないため `state_reason="unknown"`。
+
+childのindexは同一source revisionのgroup内で安定しており、revisionを跨ぐmodel追加・
+並べ替えで変わる可能性があります。encoding名・language名の代わりにindexを使い、
+名前取得に伴う副作用も避けています。出力に入力本文・byte列は含めません。
 
 `raw_report` はengineのReport callbackをそのまま記録します。
 confidenceはbinary32 bit列です。**これはC APIの最終候補順位ではありません。**
@@ -57,10 +70,32 @@ UTF-16の2-byte BOM単独も同じ長さ条件により検出されません。
 
 ## 未観測の領域
 
-group内部の個々のprober、内部state machineの遷移、reject理由、threshold以下の
-候補、rankingの詳細理由は未観測です。doneとshortcut・group状態から推定できても、
-JSONには原因を断定する架空のreason fieldを追加しません。
+group直下childのstate/active変化は観測できますが、その内部state machineの遷移、
+language detectorの内部状態、rejectの根本原因、threshold以下の候補、rankingの詳細
+理由は未観測です。doneとshortcut・group状態から原因を断定しません。
 したがってこれはV3-06の初期基盤であり、introspection全体の完了ではありません。
 
 有効／無効buildで `conformance.py --baseline ...` を実行し、同一feedの出力一致を
 確認してください。観測tool自体の繰り返し実行についてもtestで決定性を確認します。
+
+## child観測の限定検証
+
+`test_nested_trace.py` は既存の小fixture（空、ASCII、135-byte日本語UTF-8）のみを
+使います。新しい不正入力探索、大入力、BOM改善、fuzz・安全性修正は行いません。
+
+```sh
+UCHARDET_TRACE="$PWD/build-trace/benchmark/uchardet-trace" \
+  uv run --no-project python -m unittest discover -s benchmark -p test_nested_trace.py
+```
+
+`UCHARDET_TRACE_BASELINE` に変更前toolを渡すと、追加children fieldを除く従来の
+state・raw Report・confidenceが同じであることも比較します。
+`UCHARDET_CONFORMANCE`／`UCHARDET_CONFORMANCE_BASELINE` を指定すると、同一feedの
+最終候補をfresh／reuse、whole／1／7／64／1024／固定random chunkで比較します。
+比較用環境変数を省略したtestはskipとして表示され、検証済みとは扱いません。
+
+初回検証（GCC 16.2.1／同一Release build directory・flags）では、friend宣言により
+再compileされたMBCS group／SBCS group／UniversalDetectorの各object memberが変更前と
+byte単位で一致しました。archive自体のmetadata差分は別扱いです。
+これは当該buildでの生成コード比較であり、性能向上や全toolchainでの一致の主張では
+ありません。既定OFFは維持し、診断tool自体の追加出力・allocationは計測用途から除外します。

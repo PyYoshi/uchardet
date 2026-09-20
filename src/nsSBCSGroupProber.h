@@ -41,6 +41,8 @@
 
 class nsCharSetProber;
 class nsSBCSGroupProber: public nsCharSetProber {
+  // Read-only diagnostic accessor, defined only in the opt-in trace executable.
+  friend class UchardetTraceAccess;
 public:
   nsSBCSGroupProber();
   virtual ~nsSBCSGroupProber();
