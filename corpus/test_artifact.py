@@ -2,6 +2,9 @@
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
+import time
 import unittest
 from unittest.mock import patch
 
@@ -67,6 +70,71 @@ class PublicationTests(unittest.TestCase):
         stale.write_bytes(b"unfinished")
         write_idempotent(self.target, b"complete")
         self.assertEqual(stale.read_bytes(), b"unfinished")
+
+    def test_process_killed_at_publication_boundary_can_retry(self):
+        # Stop a real child without allowing its finally block to clean up.
+        # Synchronize at the link boundary instead of racing a timed kill.
+        child = """
+import sys
+from pathlib import Path
+from unittest.mock import patch
+sys.path.insert(0, sys.argv[1])
+import artifact
+target, ready = map(Path, sys.argv[2:4])
+phase = sys.argv[4]
+link = artifact.os.link
+def pause_at_link(source, destination):
+    if phase == 'after':
+        link(source, destination)
+    ready.write_text('ready', encoding='ascii')
+    sys.stdin.buffer.read(1)
+    if phase == 'before':
+        link(source, destination)
+with patch('artifact.os.link', side_effect=pause_at_link):
+    artifact.write_idempotent(target, b'complete')
+"""
+        for phase in ("before", "after"):
+            with self.subTest(phase=phase):
+                directory = self.root / phase
+                directory.mkdir()
+                target = directory / "model.json"
+                ready = directory / "ready"
+                process = subprocess.Popen(
+                    [sys.executable, "-I", "-c", child,
+                     str(Path(__file__).resolve().parent), str(target), str(ready), phase],
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                )
+                try:
+                    deadline = time.monotonic() + 15
+                    while not ready.exists():
+                        if process.poll() is not None:
+                            self.fail(f"child exited before checkpoint: {process.communicate()!r}")
+                        if time.monotonic() >= deadline:
+                            self.fail("child did not reach publication checkpoint")
+                        time.sleep(0.01)
+                    process.kill()
+                    process.communicate(timeout=5)
+                    self.assertNotEqual(process.returncode, 0)
+                    staged = list(directory.glob(".model.json.*.tmp"))
+                    self.assertEqual(len(staged), 1)
+                    self.assertEqual(staged[0].read_bytes(), b"complete")
+                    self.assertEqual(target.exists(), phase == "after")
+                    if target.exists():
+                        self.assertEqual(target.read_bytes(), b"complete")
+                    write_idempotent(target, b"complete")
+                    self.assertEqual(target.read_bytes(), b"complete")
+                    before = target.stat().st_mtime_ns
+                    write_idempotent(target, b"complete")
+                    self.assertEqual(target.stat().st_mtime_ns, before)
+                    with self.assertRaises(ValueError):
+                        write_idempotent(target, b"different")
+                    self.assertEqual(target.read_bytes(), b"complete")
+                    self.assertEqual(list(directory.glob(".model.json.*.tmp")), staged)
+                    self.assertEqual(staged[0].read_bytes(), b"complete")
+                finally:
+                    if process.poll() is None:
+                        process.kill()
+                    process.communicate(timeout=5)
 
 
 if __name__ == "__main__":
