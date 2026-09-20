@@ -2,12 +2,14 @@
 // Independent observation harness. Detector/filter implementations stay in the library.
 #include "sequence-model.hpp"
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 class SequenceProbe : public nsSingleByteCharSetProber {
@@ -39,7 +41,17 @@ class SequenceProbe : public nsSingleByteCharSetProber {
 
 int main(int argc, char** argv) {
   try {
-    if (argc != 2) throw std::runtime_error("usage: sequence-probe FILE");
+    if (argc != 2 && argc != 3)
+      throw std::runtime_error("usage: sequence-probe FILE [ITERATIONS]");
+    std::uint64_t iterations = 0;
+    if (argc == 3) {
+      const std::string argument(argv[2]);
+      if (argument.empty() || argument.find_first_not_of("0123456789") != std::string::npos)
+        throw std::runtime_error("iterations must be unsigned decimal");
+      iterations = std::stoull(argument);
+      if (iterations == 0 || iterations > 1000000)
+        throw std::runtime_error("iterations must be in [1, 1000000]");
+    }
     std::ifstream input(argv[1], std::ios::binary);
     if (!input) throw std::runtime_error("cannot open input");
     const std::size_t limit = 65536;
@@ -50,14 +62,34 @@ int main(int argc, char** argv) {
     if (data.size() > limit) throw std::runtime_error("input exceeds 65536 byte diagnostic limit");
     std::vector<char> buffer(std::max<std::size_t>(1, data.size()));
     PRUint32 retained = 0;
-    if (!data.empty()) {
-      nsCharSetProber::FilterWithoutEnglishLettersToBuffer(
-          data.data(), static_cast<PRUint32>(data.size()), buffer.data(), retained);
-    }
-    if (retained > data.size()) throw std::runtime_error("unexpected filter length");
     SequenceProbe probe(&uchardet_sequence_pilot::model);
-    // Match the SBCS group's empty-filter behavior. This is a single, non-reversed prober.
-    if (retained) probe.HandleData(buffer.data(), retained, nullptr, nullptr);
+    const auto run = [&]() {
+      probe.Reset();
+      retained = 0;
+      if (!data.empty()) {
+        nsCharSetProber::FilterWithoutEnglishLettersToBuffer(
+            data.data(), static_cast<PRUint32>(data.size()), buffer.data(), retained);
+      }
+      if (retained > data.size()) throw std::runtime_error("unexpected filter length");
+      // Match the SBCS group's empty-filter behavior; a single non-reversed prober.
+      if (retained) probe.HandleData(buffer.data(), retained, nullptr, nullptr);
+      const float confidence = probe.GetConfidence(0);
+      std::uint32_t bits = 0;
+      std::memcpy(&bits, &confidence, sizeof(bits));
+      return bits;
+    };
+    run();
+    std::int64_t elapsed_ns = 0;
+    volatile std::uint64_t checksum = 0;
+    const unsigned warmup = 128;
+    if (iterations) {
+      for (unsigned i = 0; i < warmup; ++i) checksum += run();
+      checksum = 0;
+      const auto start = std::chrono::steady_clock::now();
+      for (std::uint64_t i = 0; i < iterations; ++i) checksum += run();
+      elapsed_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+          std::chrono::steady_clock::now() - start).count();
+    }
     std::cout << "{\"schema\":\"sequence-native-probe-v1\",\"raw_bytes\":" << data.size()
               << ",\"filtered_bytes\":" << retained
               << ",\"model_encoding\":\"" << probe.GetCharSetName(0)
@@ -68,6 +100,12 @@ int main(int argc, char** argv) {
     std::cout << ",\"after_reset\":";
     probe.Reset();
     probe.print();
+    if (iterations) {
+      std::cout << ",\"benchmark\":{\"iterations\":" << iterations
+                << ",\"warmup_iterations\":" << warmup
+                << ",\"elapsed_ns\":" << elapsed_ns
+                << ",\"checksum\":" << checksum << '}';
+    }
     std::cout << "}\n";
     return std::cout ? 0 : 1;
   } catch (const std::exception& error) {
