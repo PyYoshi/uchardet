@@ -1,6 +1,8 @@
 <!-- SPDX-License-Identifier: MIT -->
 # 新規model generatorの最小試作
 
+[固定 table の validation 診断](SEQUENCE_EVALUATION.md)は、学習済み table を変更せず文字・pair coverage を集計します。detector accuracy の評価ではありません。
+
 新規tool・test・本文書はMIT（`../../corpus/LICENSES/MIT.txt`）。既存tableや旧generatorをコピーせず、byte頻度と隣接byte頻度を数える独立した機構として実装しています。
 **生成データの権利は別です。** sourceのlicense／reference／revision／hashを記録し、生成modelのlicenseは `UNDETERMINED` として明示します。generatorがMITでも生成物を自動的にMITと扱いません。
 
