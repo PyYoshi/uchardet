@@ -11,6 +11,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#ifdef UCHARDET_ALLOCATION_PROBE
+#include "allocation-hooks.hpp"
+#endif
 
 class SequenceProbe : public nsSingleByteCharSetProber {
  public:
@@ -43,6 +46,10 @@ int main(int argc, char** argv) {
   try {
     if (argc != 2 && argc != 3)
       throw std::runtime_error("usage: sequence-probe FILE [ITERATIONS]");
+#ifdef UCHARDET_ALLOCATION_PROBE
+    if (argc != 2) throw std::runtime_error("allocation and timing are separate modes");
+    allocation_self_test();
+#endif
     std::uint64_t iterations = 0;
     if (argc == 3) {
       const std::string argument(argv[2]);
@@ -79,6 +86,12 @@ int main(int argc, char** argv) {
       return bits;
     };
     run();
+#ifdef UCHARDET_ALLOCATION_PROBE
+    for (unsigned i = 0; i < 128; ++i) run();
+    allocation_tracking = true;
+    run();
+    allocation_tracking = false;
+#endif
     std::int64_t elapsed_ns = 0;
     volatile std::uint64_t checksum = 0;
     const unsigned warmup = 128;
@@ -97,6 +110,15 @@ int main(int argc, char** argv) {
               << "\",\"model_frequent_count\":" << uchardet_sequence_pilot::model.freqCharCount
               << ",\"snapshot\":";
     probe.print();
+#ifdef UCHARDET_ALLOCATION_PROBE
+    const AllocationCalls& c = allocation_calls;
+    std::cout << ",\"allocation_calls\":{\"malloc\":" << c.malloc_calls
+              << ",\"calloc\":" << c.calloc_calls << ",\"realloc\":" << c.realloc_calls
+              << ",\"free\":" << c.free_calls << ",\"new\":" << c.new_calls
+              << ",\"new_array\":" << c.new_array_calls
+              << ",\"delete\":" << c.delete_calls
+              << ",\"delete_array\":" << c.delete_array_calls << '}';
+#endif
     std::cout << ",\"after_reset\":";
     probe.Reset();
     probe.print();
