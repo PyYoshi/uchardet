@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import argparse
 import json
+from fractions import Fraction
 from pathlib import Path
 
 from model import canonical, digest, safe_path, write_idempotent
 from framework import validate as validate_corpus
 from sequence_training import character_classes, dependencies as training_dependencies, runtime, validate as validate_training
 
-VERSION = "sequence-coverage-evaluation-v1"
+VERSION = "sequence-coverage-evaluation-v2"
+SIZE_BOUNDS = (16, 32, 64, 128, 256, 512, 1024, 4096, 16384, 65536, 262144)
 COUNTERS = ("bytes", "letters", "frequent_letters", "known_rare_letters", "unknown_letters",
             "adjacent_letter_pairs", "matrix_pairs", "outside_matrix_pairs", "unseen_matrix_pairs")
 
@@ -50,6 +52,43 @@ def rates(counters):
             "unknown_letter_rate": fraction(counters["unknown_letters"], counters["letters"]),
             "matrix_pair_coverage": fraction(counters["matrix_pairs"], counters["adjacent_letter_pairs"]),
             "unseen_matrix_pair_rate": fraction(counters["unseen_matrix_pairs"], counters["matrix_pairs"])}
+
+
+def summarize(documents):
+    """Micro counts and equally weighted defined document rates, exactly."""
+    aggregate = {key: sum(item["counts"][key] for item in documents) for key in COUNTERS}
+    aggregate["category_mass"] = [
+        sum(item["counts"]["category_mass"][category] for item in documents)
+        for category in range(4)
+    ]
+    macro = {}
+    for name in rates(aggregate):
+        values = [rates(item["counts"])[name] for item in documents]
+        defined = [Fraction(value["numerator"], value["denominator"])
+                   for value in values if value is not None]
+        mean = sum(defined, Fraction()) / len(defined) if defined else None
+        macro[name] = {
+            "defined_documents": len(defined),
+            "undefined_documents": len(values) - len(defined),
+            "mean": ({"numerator": mean.numerator, "denominator": mean.denominator}
+                     if mean is not None else None),
+        }
+    return {"source_count": len(documents), "aggregate_counts": aggregate,
+            "aggregate_rates": rates(aggregate), "macro_rates": macro}
+
+
+def size_strata(documents):
+    """Disjoint complete-document byte ranges; never generate truncated variants."""
+    result = []
+    lower = 0
+    for upper in (*SIZE_BOUNDS, None):
+        selected = [item for item in documents
+                    if item["counts"]["bytes"] >= lower
+                    and (upper is None or item["counts"]["bytes"] < upper)]
+        result.append({"minimum_bytes_inclusive": lower, "maximum_bytes_exclusive": upper,
+                       **summarize(selected)})
+        lower = upper
+    return result
 
 
 def evaluate(training, manifests, split):
@@ -99,8 +138,7 @@ def evaluate(training, manifests, split):
                              "counts": observed, "rates": rates(observed)})
     if not selected:
         raise ValueError("no full complete cp1252 text documents for requested language/split")
-    aggregate = {key: sum(item["counts"][key] for item in selected) for key in COUNTERS}
-    aggregate["category_mass"] = [sum(item["counts"]["category_mass"][category] for item in selected) for category in range(4)]
+    summary = summarize(selected)
     dependencies = training_dependencies()
     dependencies["models/experimental/sequence_evaluation.py"] = digest(Path(__file__).read_bytes())
     report = {"schema": VERSION, "deployment_status": "NOT_ENGINE_CALIBRATED",
@@ -111,7 +149,7 @@ def evaluate(training, manifests, split):
               "evaluator_dependencies": dependencies, "evaluator_source_hash": digest(canonical(dependencies)),
               "audited_manifests": sorted(seen_manifests), "source_count": len(selected),
               "synthetic_only": all(item["source"]["kind"] == "synthetic" for item in selected),
-              "sources": selected, "aggregate_counts": aggregate, "aggregate_rates": rates(aggregate)}
+              "sources": selected, **summary, "size_strata": size_strata(selected)}
     report["content_hash"] = digest(canonical(report))
     return report
 
