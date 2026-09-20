@@ -75,6 +75,11 @@ jobs:
         env:
           UCHARDET_TRACE: build/release/benchmark/uchardet-trace
         run: uv run --no-project --python 3.11 python -m unittest discover -s benchmark -p 'test_*.py'
+      - name: Corpus and model tool tests (offline)
+        run: |
+          uv run --no-project --python 3.11 python -m unittest discover -s corpus -p 'test_*.py'
+          uv run --no-project --python 3.11 python -m unittest discover -s corpus/sources -p 'test_*.py'
+          uv run --no-project --python 3.11 python -m unittest discover -s models/experimental -p 'test_*.py'
       - name: Candidate and lifecycle observations
         run: uv run --no-project --python 3.11 python benchmark/conformance.py build/release/benchmark/uchardet-conformance > conformance.json
       - uses: actions/upload-artifact@v7
