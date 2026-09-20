@@ -19,7 +19,7 @@
     {"name": "release", "inherits": "base", "cacheVariables": {"CMAKE_BUILD_TYPE": "Release"}},
     {"name": "debug", "inherits": "base", "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "UCHARDET_WARNINGS": "ON"}},
     {"name": "sanitize", "inherits": "debug", "cacheVariables": {"UCHARDET_ASAN": "ON", "UCHARDET_UBSAN": "ON"}},
-    {"name": "cxx20", "inherits": "release", "cacheVariables": {"CMAKE_CXX_STANDARD": "20"}}
+    {"name": "cxx20", "inherits": "release", "cacheVariables": {"CMAKE_CXX_STANDARD": "20", "BUILD_CXX20_PROBE": "ON"}}
   ],
   "buildPresets": [
     {"name": "release", "configurePreset": "release"},

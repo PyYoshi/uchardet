@@ -58,6 +58,9 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }} --parallel 2
       - name: Test
         run: ctest --preset ${{ matrix.preset }} --timeout 30
+      - name: Record C++20 library availability
+        if: matrix.preset == 'cxx20'
+        run: ctest --preset cxx20 -R '^cxx20-library-features$' -V
       - name: Install smoke test
         run: cmake --install build/${{ matrix.preset }} --prefix build/install
 

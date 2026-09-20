@@ -2,6 +2,7 @@
 # v3 corpus 基盤（schema version 1）
 
 [source 本文の重複監査](OVERLAP.md)で、metadata だけでは見えない正規化一致・近似一致を診断できます。
+[候補グループ診断](GROUPS.md)では、候補ペアの連結成分とサイズ分布を確認できます。
 
 このディレクトリの新規tool・test・文書は `LICENSES/MIT.txt` に従います。
 既存detector、model、外部corpusを再ライセンスするものではありません。
