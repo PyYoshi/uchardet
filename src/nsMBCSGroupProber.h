@@ -55,6 +55,8 @@
 #define NUM_OF_LANGUAGES  (NUM_OF_LANGUAGE_MODELS + 1)
 
 class nsMBCSGroupProber: public nsCharSetProber {
+  // Read-only diagnostic accessor, defined only in the opt-in trace executable.
+  friend class UchardetTraceAccess;
 public:
   nsMBCSGroupProber(PRUint32 aLanguageFilter);
   virtual ~nsMBCSGroupProber();

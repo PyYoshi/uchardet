@@ -4,6 +4,8 @@
 #include "nscore.h"
 #include "nsUniversalDetector.h"
 #include "nsCharSetProber.h"
+#include "nsMBCSGroupProber.h"
+#include "nsSBCSGroupProber.h"
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
@@ -28,6 +30,35 @@ static void quoted(const char* value) {
   std::cout << '"';
 }
 
+struct ChildState {
+  bool present;
+  bool active;
+  int state;
+};
+
+// Friendship grants access without a cast to a fictitious derived object or
+// changing class layout. GetState implementations of these children only read
+// state (Hebrew delegates to the two model probers); do not query scores/names.
+class UchardetTraceAccess {
+public:
+  static std::vector<ChildState> Children(const nsMBCSGroupProber& group) {
+    return Read(group.mProbers, group.mIsActive, NUM_OF_PROBERS);
+  }
+  static std::vector<ChildState> Children(const nsSBCSGroupProber& group) {
+    return Read(group.mProbers, group.mIsActive, group.n_sbcs_probers);
+  }
+private:
+  static std::vector<ChildState> Read(nsCharSetProber* const* probers,
+                                    const PRBool* active, size_t count) {
+    std::vector<ChildState> result;
+    result.reserve(count);
+    for (size_t i = 0; i < count; ++i)
+      result.push_back({probers[i] != nullptr, active[i] != 0,
+                        probers[i] ? static_cast<int>(probers[i]->GetState()) : -1});
+    return result;
+  }
+};
+
 class Observer : public nsUniversalDetector {
 public:
   Observer() : nsUniversalDetector(NS_FILTER_ALL), offset_(0) {}
@@ -46,6 +77,10 @@ public:
       quoted(names[i]); std::cout << ':'; State(mCharSetProbers[i]);
     }
     std::cout << ",\"escape\":"; State(mEscCharSetProber);
+    std::cout << "},\"children\":{\"multibyte_group\":";
+    Children(dynamic_cast<nsMBCSGroupProber*>(mCharSetProbers[0]), previous_multibyte_);
+    std::cout << ",\"singlebyte_group\":";
+    Children(dynamic_cast<nsSBCSGroupProber*>(mCharSetProbers[1]), previous_singlebyte_);
     std::cout << "}}\n";
   }
 protected:
@@ -58,9 +93,39 @@ protected:
               << bits << std::dec << "\"}\n";
   }
 private:
+  static void Child(const ChildState& child) {
+    std::cout << "{\"present\":" << (child.present ? "true" : "false")
+              << ",\"active\":" << (child.active ? "true" : "false") << ",\"state\":";
+    if (!child.present) std::cout << "null";
+    else StateName(child.state);
+    std::cout << '}';
+  }
+  template<class Group>
+  static void Children(const Group* group, std::vector<ChildState>& previous) {
+    if (!group) { std::cout << "null"; previous.clear(); return; }
+    const std::vector<ChildState> current = UchardetTraceAccess::Children(*group);
+    std::cout << '[';
+    for (size_t i = 0; i < current.size(); ++i) {
+      if (i) std::cout << ',';
+      std::cout << "{\"index\":" << i << ",\"current\":"; Child(current[i]);
+      std::cout << ",\"previous\":";
+      if (i < previous.size()) Child(previous[i]); else std::cout << "null";
+      std::cout << ",\"changed\":";
+      if (i >= previous.size()) std::cout << "null";
+      else std::cout << ((current[i].present != previous[i].present ||
+                         current[i].active != previous[i].active ||
+                         current[i].state != previous[i].state) ? "true" : "false");
+      std::cout << ",\"state_reason\":\"unknown\"}";
+    }
+    std::cout << ']';
+    previous = current;
+  }
   static void State(nsCharSetProber* prober) {
     if (!prober) { std::cout << "null"; return; }
-    switch (prober->GetState()) {
+    StateName(prober->GetState());
+  }
+  static void StateName(int state) {
+    switch (state) {
       case eDetecting: quoted("detecting"); break;
       case eFoundIt: quoted("found"); break;
       case eNotMe: quoted("rejected"); break;
@@ -68,6 +133,8 @@ private:
     }
   }
   size_t offset_;
+  std::vector<ChildState> previous_multibyte_;
+  std::vector<ChildState> previous_singlebyte_;
 };
 
 int main(int argc, char** argv) {
