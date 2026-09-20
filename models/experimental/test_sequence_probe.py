@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 import os
 import struct
+import sys
 import subprocess
 import tempfile
 import unittest
@@ -13,6 +14,18 @@ from test_sequence_contract import fixture
 
 
 class SequenceProbeGuards(unittest.TestCase):
+    def test_resource_counter_validation(self):
+        valid = dict(user_cpu_ns=0, system_cpu_ns=1000, voluntary_switches=0,
+                     involuntary_switches=2, minor_faults=0, major_faults=0)
+        sequence_probe.validate_resources(valid)
+        sequence_probe.validate_resources(None)
+        for value in (-1, True, 1.5, 2**63):
+            with self.assertRaisesRegex(ValueError, "resource"):
+                sequence_probe.validate_resources(valid | {"user_cpu_ns": value})
+        for invalid in ({}, [], valid | {"unknown": 1}):
+            with self.assertRaisesRegex(ValueError, "resource"):
+                sequence_probe.validate_resources(invalid)
+
     def test_iteration_limits_before_execution(self):
         for iterations in (0, -1, 1000001, True, 1.5):
             with patch.object(sequence_probe.subprocess, "run") as run:
@@ -125,6 +138,9 @@ class NativeSequenceProbeTests(unittest.TestCase):
             self.assertEqual(benchmark["iterations"], 3)
             self.assertEqual(benchmark["warmup_iterations"], 128)
             self.assertGreater(benchmark["elapsed_ns"], 0)
+            sequence_probe.validate_resources(benchmark["resources"])
+            if sys.platform == "linux":
+                self.assertIsInstance(benchmark["resources"], dict)
             self.assertEqual(
                 benchmark["checksum"], 3 * int(baseline["snapshot"]["confidence_bits"], 16)
             )
