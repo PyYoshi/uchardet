@@ -11,7 +11,7 @@ from framework import digest
 
 class AcquisitionTests(unittest.TestCase):
     def test_frozen_recipe(self):
-        recipe = json.loads(Path(__file__).with_name("rust-book-pilot.json").read_text())
+        recipe = json.loads(Path(__file__).with_name("rust-book-pilot.json").read_text(encoding="utf-8"))
         self.assertEqual(validate_recipe(recipe), 381359)
         recipe["repositories"][0]["revision"] = "main"
         with self.assertRaises(ValueError):
@@ -48,19 +48,19 @@ class AcquisitionTests(unittest.TestCase):
             # Keep recipe paths exactly consistent, including the explicit prefix.
             recipe["repositories"][0]["files"][-1][0] = "./chapter.md"
             ingest(recipe, root / "raw", root / "out")
-            config = json.loads((root / "out/fr-cp1252.json").read_text())
+            config = json.loads((root / "out/fr-cp1252.json").read_text(encoding="utf-8"))
             source = config["sources"][0]
             self.assertEqual(source["excluded_paragraphs"], 1)
             self.assertEqual(source["origin"], "rust-book:chapter.md")
             self.assertTrue(source["license_reference"].startswith("https://github.com/"))
-            self.assertEqual((root / "out" / source["path"]).read_text(), "Café.\n")
+            self.assertEqual((root / "out" / source["path"]).read_text(encoding="utf-8"), "Café.\n")
             ingest(recipe, root / "raw", root / "out")
             (raw / "chapter.md").write_bytes(b"changed")
             with self.assertRaises(ValueError):
                 ingest(recipe, root / "raw", root / "other")
 
     def test_recipe_path_and_size_rejected(self):
-        original = json.loads(Path(__file__).with_name("rust-book-pilot.json").read_text())
+        original = json.loads(Path(__file__).with_name("rust-book-pilot.json").read_text(encoding="utf-8"))
         for bad in (["../escape", "a" * 64, 1], ["file", "a" * 64, 2**30]):
             recipe = copy.deepcopy(original)
             recipe["repositories"][0]["files"][0] = bad
