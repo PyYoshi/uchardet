@@ -63,6 +63,7 @@ public:
   void      SetOpion() {}
 
 protected:
+  friend class UchardetTraceAccess;
   void      GetDistribution(PRUint32 aCharLen, const char* aStr);
   
   nsCodingStateMachine* mCodingSM;
@@ -77,4 +78,3 @@ protected:
 
 
 #endif /* nsGB2312Prober_h__ */
-

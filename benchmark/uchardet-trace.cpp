@@ -6,6 +6,14 @@
 #include "nsCharSetProber.h"
 #include "nsMBCSGroupProber.h"
 #include "nsSBCSGroupProber.h"
+#include "nsSBCharSetProber.h"
+#include "nsUTF8Prober.h"
+#include "nsSJISProber.h"
+#include "nsEUCJPProber.h"
+#include "nsGB2312Prober.h"
+#include "nsEUCKRProber.h"
+#include "nsEUCTWProber.h"
+#include "nsJohabProber.h"
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
@@ -41,6 +49,49 @@ struct ChildState {
 // state (Hebrew delegates to the two model probers); do not query scores/names.
 class UchardetTraceAccess {
 public:
+  static void Machines(const nsMBCSGroupProber* group) {
+    if (!group) { std::cout << "null"; return; }
+    std::cout << '[';
+    for (size_t i = 0; i < NUM_OF_PROBERS; ++i) {
+      if (i) std::cout << ',';
+      std::cout << "{\"prober_index\":" << i << ",\"coding_state\":";
+      const nsCodingStateMachine* machine = Machine(group->mProbers[i]);
+      // Only mCurrentState is initialized by construction and Reset.
+      // Character length and byte position are intentionally not read.
+      if (machine) std::cout << machine->mCurrentState;
+      else std::cout << "null";
+      std::cout << '}';
+    }
+    std::cout << ']';
+  }
+  static void SingleByte(const nsSBCSGroupProber* group) {
+    if (!group) { std::cout << "null"; return; }
+    std::cout << '[';
+    bool first = true;
+    for (size_t i = 0; i < group->n_sbcs_probers; ++i) {
+      const nsSingleByteCharSetProber* prober =
+          dynamic_cast<const nsSingleByteCharSetProber*>(group->mProbers[i]);
+      if (!prober) continue; // Do not treat the Hebrew auxiliary as a model.
+      if (!first) std::cout << ',';
+      first = false;
+      std::cout << "{\"prober_index\":" << i << ",\"model_encoding\":";
+      quoted(prober->mModel->charsetName);
+      std::cout << ",\"model_language\":"; quoted(prober->mModel->langName);
+      std::cout << ",\"reversed\":" << (prober->mReversed ? "true" : "false")
+                << ",\"total_characters\":" << prober->mTotalChar
+                << ",\"control_characters\":" << prober->mCtrlChar
+                << ",\"frequent_characters\":" << prober->mFreqChar
+                << ",\"out_characters\":" << prober->mOutChar
+                << ",\"total_sequences\":" << prober->mTotalSeqs
+                << ",\"sequence_categories\":[";
+      for (size_t j = 0; j < NUMBER_OF_SEQ_CAT; ++j) {
+        if (j) std::cout << ',';
+        std::cout << prober->mSeqCounters[j];
+      }
+      std::cout << "]}";
+    }
+    std::cout << ']';
+  }
   static std::vector<ChildState> Children(const nsMBCSGroupProber& group) {
     return Read(group.mProbers, group.mIsActive, NUM_OF_PROBERS);
   }
@@ -80,6 +131,16 @@ public:
     std::cout << ']';
   }
 private:
+  static const nsCodingStateMachine* Machine(const nsCharSetProber* prober) {
+    if (const auto* p = dynamic_cast<const nsUTF8Prober*>(prober)) return p->mCodingSM;
+    if (const auto* p = dynamic_cast<const nsSJISProber*>(prober)) return p->mCodingSM;
+    if (const auto* p = dynamic_cast<const nsEUCJPProber*>(prober)) return p->mCodingSM;
+    if (const auto* p = dynamic_cast<const nsGB18030Prober*>(prober)) return p->mCodingSM;
+    if (const auto* p = dynamic_cast<const nsEUCKRProber*>(prober)) return p->mCodingSM;
+    if (const auto* p = dynamic_cast<const nsEUCTWProber*>(prober)) return p->mCodingSM;
+    if (const auto* p = dynamic_cast<const nsJohabProber*>(prober)) return p->mCodingSM;
+    return nullptr; // Big5 uses custom logic, not nsCodingStateMachine.
+  }
   static std::vector<ChildState> Read(nsCharSetProber* const* probers,
                                     const PRBool* active, size_t count) {
     std::vector<ChildState> result;
@@ -115,6 +176,11 @@ public:
     Children(dynamic_cast<nsSBCSGroupProber*>(mCharSetProbers[1]), previous_singlebyte_);
     std::cout << "},\"language_detectors\":";
     UchardetTraceAccess::Languages(dynamic_cast<nsMBCSGroupProber*>(mCharSetProbers[0]));
+    std::cout << ",\"prober_evidence\":{\"multibyte_machines\":";
+    UchardetTraceAccess::Machines(dynamic_cast<nsMBCSGroupProber*>(mCharSetProbers[0]));
+    std::cout << ",\"singlebyte_models\":";
+    UchardetTraceAccess::SingleByte(dynamic_cast<nsSBCSGroupProber*>(mCharSetProbers[1]));
+    std::cout << '}';
     std::cout << "}\n";
   }
 protected:

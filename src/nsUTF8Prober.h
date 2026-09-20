@@ -63,6 +63,7 @@ public:
   virtual bool DecodeToUnicode() {return true;}
 
 protected:
+  friend class UchardetTraceAccess;
   nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
   PRUint32 mNumOfMBChar;
