@@ -1,65 +1,57 @@
-# Supporting new or Updating languages #
+# 旧model生成toolの廃止（v3開発）
 
-We generate statistical language data using Wikipedia as natural
-language text resource.
+`BuildLangModel.py`、`create-table.py` と旧tool専用の `requirements.txt` は、
+v3の `dev` で廃止した。通常build・CI・新generatorから利用しない。
+この変更で既存detectorのmodelを再生成・交換したわけではない。
 
-Right now, we have automated scripts only to generate statistical data
-for single-byte encodings. Multi-byte encodings usually requires more
-in-depth knowledge of its specification.
+## 廃止理由と確認範囲
 
-## New single-byte encoding ##
+maintainerから、以前の使用時にべき等でなくmodel品質が低下する傾向があったとの
+報告を受けている。これは過去の観測であり、今回scriptを実行して再現した結果ではない。
 
-Uchardet uses language data, and therefore rather than supporting a
-charset, we in fact support a couple (language, charset). So for
-instance if uchardet supports (French, ISO-8859-15), it should be able
-to recognize French text encoded in ISO-8859-15, but may fail at
-detecting ISO-8859-15 for non-supported languages.
+今回sourceを読んで確認した点は、旧generatorがWikipediaの現行ページを取得し、
+ページのlinkを `random.shuffle` で巡回していたこと、生成物とlogを直接上書きしていたこと。
+固定corpus・固定パラメータから再生成する新しい開発基盤の前提にはしない。
+`create-table.py` も旧charset定義の生成補助として廃止する。
+通常buildはcommit済みのC++ modelを直接compileしており、旧toolの実行を必要としない。
 
-This is why, though less flexible, it also makes uchardet much more
-accurate than other detection systems, as well as making it an efficient
-language recognition system.
-Since many single-byte charsets actually share the same layout (or very
-similar ones), it is actually impossible to have an accurate single-byte
-encoding detector for random text.
+## 履歴と保持する資料
 
-Therefore you need to describe the language and the codepoint layouts of
-every charset you want to add support for.
+廃止前のnative commitは `1056e6018b6a785bb8bb4576c79255f3594b11cc`。
+旧実装と旧手順はこのcommitのGit履歴から参照・復元できる。
+復元できることは、v3の通常開発で再実行を推奨するという意味ではない。
 
-I recommend having a look at langs/fr.py which is heavily commented as
-a base of a new language description, and charsets/windows-1252.py as a
-base for a new charset layout (note that charset layouts can be shared
-between languages. If yours is already there, you have nothing to do).
-The important name in the charset file are:
+- 旧generator:
+  https://github.com/PyYoshi/uchardet/blob/1056e6018b6a785bb8bb4576c79255f3594b11cc/script/BuildLangModel.py
+- 旧table生成補助:
+  https://github.com/PyYoshi/uchardet/blob/1056e6018b6a785bb8bb4576c79255f3594b11cc/script/create-table.py
+- 旧README・依存定義:
+  https://github.com/PyYoshi/uchardet/tree/1056e6018b6a785bb8bb4576c79255f3594b11cc/script
 
-- `name`: an iconv-compatible name.
-- `charmap`: fill it with CTR (control character), SYM (symbol), NUM
-             (number), LET (letter), ILL (illegal codepoint).
+次のファイル群は変更せず保持する。
 
-## Tools ##
+- `src/LangModels/` の生成済みmodel 38ファイル。
+- `src/nsSBCharSetProber-generated.h` と `src/nsLanguageDetector-generated.h`。
+- `script/BuildLangModelLogs/` のlog 39ファイル。
+- `script/langs/`、`script/charsets/`、`script/header-template.cpp`、`script/support.txt`。
+- `script/release.sh`、`script/debug.sh`、`script/win32.sh`。
 
-You must install Python 3 and the [`Wikipedia` Python
-tool](https://github.com/goldsmith/Wikipedia).
+langs・charsets・template・supportは既存modelの由来を調べるための履歴資料として凍結する。
+新generatorのimport元・template・依存関係にはしない。既存のlicense表記も保持する。
+logと現在のmodelが完全な一対一対応であることや、履歴だけで完全再現できることは保証しない。
+release・debug・win32 scriptは今回の廃止対象ではない。
 
-If requirements change, these will be updated in `requirements.txt`, so that you
-can just run `pip3 install -r requirements.txt`.
+廃止前後で上記保護対象のbyte一致を確認した。
+`git ls-files -z` に上記pathを渡し、`xargs -0 sha256sum | sha256sum` でまとめた確認値は
+変更前後とも `320db8b147b4319b5a20402de0e5f86d023826a2cf328a46d94182943e51908b`。
+この値は今回の差分確認用であり、将来の正当なmodel更新まで禁止するものではない。
 
-## Run script ##
+## v3の新しい開発経路
 
-Let's say you added (or modified) support for French (`fr`), run:
+- [corpus基盤](../corpus/README.md)
+- [独立した新generatorとmodel契約](../models/experimental/README.md)
+- [明示的なsequence training profile](../models/experimental/SEQUENCE_TRAINING.md)
 
-> ./BuildLangModel.py fr --max-page=200 --max-depth=4
-
-The options can be changed to any value. Bigger values mean the script
-will process more data, so more processing time now, but uchardet may
-possibly be more accurate in the end.
-
-## Updating core code ##
-
-If you were only updating data for an existing language model, you have nothing
-else to do. Just build `uchardet` again and test it.
-
-If you were creating new models though, you will have to add the sequence models
-in src/nsSBCSGroupProber.cpp and the language model in src/nsMBCSGroupProber.cpp.
-Finally add the new file in src/CMakeLists.txt.
-
-I will be looking to make this step more straightforward in the future.
+新generatorは実験段階であり、既存のproduction modelを置き換えていない。
+学習・生成できることと、detectorへの登録、ranking/confidenceの較正、精度上の有効性は別である。
+旧scriptの修復や再実行を、新generator開発の前提にしない。
