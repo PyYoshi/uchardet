@@ -7,6 +7,12 @@ target_link_libraries(uchardet-output ${UCHARDET_LIBRARY})
 add_executable(uchardet-conformance uchardet-conformance.cpp)
 target_link_libraries(uchardet-conformance ${UCHARDET_LIBRARY})
 
+if(TARGET libuchardet_experimental)
+  add_executable(uchardet-conformance-experimental EXCLUDE_FROM_ALL uchardet-conformance.cpp)
+  target_compile_definitions(uchardet-conformance-experimental PRIVATE UCHARDET_EXPERIMENTAL_INPUT_LIMIT=4096)
+  target_link_libraries(uchardet-conformance-experimental libuchardet_experimental)
+endif()
+
 option(BUILD_INTROSPECTION "Build internal diagnostic observer (static builds only)" OFF)
 if(BUILD_INTROSPECTION)
   if(BUILD_SHARED_LIBS)

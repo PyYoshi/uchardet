@@ -83,6 +83,7 @@ jobs:
         env:
           UCHARDET_FILTER_PROFILE: build/release/benchmark/uchardet-filter-profile
           UCHARDET_STATIC_LIBRARY: build/release/src/libuchardet.a
+          UCHARDET_ENGINE_EXPERIMENT: '1'
         run: |
           uv run --no-project --python 3.11 python -m unittest discover -s corpus -p 'test_*.py'
           uv run --no-project --python 3.11 python -m unittest discover -s corpus/sources -p 'test_*.py'

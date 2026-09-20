@@ -177,6 +177,26 @@ install(
 
 include(symbols.cmake)
 
+# Explicitly requested diagnostic library: never installed or part of ALL.
+set(UCHARDET_EXPERIMENTAL_MODEL_HEADER "" CACHE FILEPATH
+    "Private generated French cp1252 model header for experimental diagnostics")
+if(UCHARDET_EXPERIMENTAL_MODEL_HEADER)
+    if(NOT BUILD_BENCHMARK OR BUILD_SHARED_LIBS)
+        message(FATAL_ERROR "Experimental model requires BUILD_BENCHMARK=ON and BUILD_SHARED_LIBS=OFF")
+    endif()
+    if(NOT EXISTS "${UCHARDET_EXPERIMENTAL_MODEL_HEADER}")
+        message(FATAL_ERROR "Experimental model header does not exist")
+    endif()
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/experimental")
+    configure_file("${UCHARDET_EXPERIMENTAL_MODEL_HEADER}"
+        "${CMAKE_CURRENT_BINARY_DIR}/experimental/uchardet-experimental-model.hpp" COPYONLY)
+    add_library(libuchardet_experimental STATIC EXCLUDE_FROM_ALL ${UCHARDET_SOURCES})
+    target_compile_definitions(libuchardet_experimental PRIVATE
+        BUILDING_UCHARDET UCHARDET_EXPERIMENTAL_FRENCH_MODEL)
+    target_include_directories(libuchardet_experimental PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
+        PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/experimental")
+endif()
+
 if (BUILD_BINARY)
 	add_subdirectory(tools)
 endif (BUILD_BINARY)
