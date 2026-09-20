@@ -17,7 +17,7 @@ set_target_properties(
 	uchardet-tests
 	PROPERTIES
 		LINKER_LANGUAGE
-			C
+			CXX
 		OUTPUT_NAME
 			uchardet-tests
 )
