@@ -14,12 +14,29 @@ from acquire import NoRedirect, serialized
 TEXT_FILE = "fr_parisstories-ud-train.conllu"
 MAX_FILE_BYTES = 4 * 1024 * 1024
 PROFILE = "paris-stories-recording-training-v1"
+SPLIT_PROFILE = "paris-stories-recording-training-tuning-v1"
+
+
+def recording_splits(identities, tuning_count):
+    """Fixed metadata-only ordering; never inspect text or detector predictions."""
+    identities = list(identities)
+    if (type(tuning_count) is not int or tuning_count < 0 or
+            tuning_count >= len(identities) or len(set(identities)) != len(identities)):
+        raise ValueError("tuning count must leave at least one training recording")
+    if any(not re.fullmatch(r"[0-9a-f]{64}", identity) for identity in identities):
+        raise ValueError("recording identities must be SHA-256")
+    tuning = set(sorted(identities)[:tuning_count])
+    return {identity: "tuning" if identity in tuning else "training"
+            for identity in sorted(identities)}
 
 
 def validate_recipe(recipe):
     if (recipe.get("recipe_version") != 1 or recipe.get("repository") != pilot.REPOSITORY or
             recipe.get("license") != "CC-BY-SA-4.0" or recipe.get("upstream_split") != "train"):
         raise ValueError("unsupported training recipe")
+    count = recipe.get("tuning_recordings", 0)
+    if type(count) is not int or not 0 <= count <= 100:
+        raise ValueError("invalid tuning recording count")
     if not re.fullmatch(r"[0-9a-f]{40}", recipe["revision"]):
         raise ValueError("immutable revision required")
     if not re.fullmatch(r"[0-9a-f]{64}", recipe["validation_manifest_content_hash"]):
@@ -112,6 +129,7 @@ def ingest(recipe, root, validation, output):
                                reason="VALIDATION_RECORDING_OVERLAP"))
     if not groups:
         raise ValueError("no admissible training recordings")
+    assignments = recording_splits(groups, recipe.get("tuning_recordings", 0))
     validation_ids = {sid for s in validation["sources"] for sid in s.get("sentence_ids", [])}
     sources, payloads = [], {}
     base = f"https://github.com/{pilot.REPOSITORY}/blob/{recipe['revision']}"
@@ -126,7 +144,7 @@ def ingest(recipe, root, validation, output):
             id=source_id, path=relative, language="fr", kind="natural",
             license=recipe["license"], license_reference=f"{base}/LICENSE.txt",
             revision=recipe["revision"], origin=f"parisstories:recording:{identity}",
-            sha256=digest(data), split="training", source_url=f"{base}/{TEXT_FILE}",
+            sha256=digest(data), split=assignments[identity], source_url=f"{base}/{TEXT_FILE}",
             source_file_sha256=digest(cached[TEXT_FILE]), upstream_split="train",
             source_kind="spoken-transcript", extraction_profile=PROFILE,
             sentence_ids=group["sentence_ids"], recording_identity_sha256=identity,
@@ -147,6 +165,11 @@ def ingest(recipe, root, validation, output):
                       p.name: digest(p.read_bytes()) for p in (Path(__file__), Path(pilot.__file__))
                   }, quarantined_records=quarantine,
                   quarantine_policy="explicit missing-recording/validation-overlap identities; raw retained")
+    if recipe.get("tuning_recordings", 0):
+        report.update(profile=SPLIT_PROFILE, source_split="training+tuning",
+                      recording_assignments=assignments,
+                      split_policy="ascending recording SHA-256; first N tuning; remainder training",
+                      previous_training_models_reusable=False)
     output.mkdir(parents=True)
     for relative, data in payloads.items():
         write_idempotent(safe_path(output, relative), data)

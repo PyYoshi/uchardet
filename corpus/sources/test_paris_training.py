@@ -13,6 +13,38 @@ from framework import content_hash, generate
 
 
 class ParisTrainingTests(unittest.TestCase):
+    def test_recording_assignment_is_order_independent(self):
+        identities = ["3" * 64, "1" * 64, "2" * 64]
+        expected = {"1" * 64: "tuning", "2" * 64: "training", "3" * 64: "training"}
+        self.assertEqual(training.recording_splits(identities, 1), expected)
+        self.assertEqual(training.recording_splits(reversed(identities), 1), expected)
+        self.assertEqual(set(training.recording_splits(identities, 0).values()), {"training"})
+        for invalid in (True, -1, 3, 4, 1.0):
+            with self.assertRaises(ValueError):
+                training.recording_splits(identities, invalid)
+        with self.assertRaises(ValueError):
+            training.recording_splits(["1" * 64, "1" * 64], 1)
+
+    def test_tuning_recipe_preserves_recordings_and_excludes_old_models(self):
+        data = self.raw + fixtures.sentence("extra_1", "Autre texte.", "separate").encode()
+        (self.root / training.TEXT_FILE).write_bytes(data)
+        self.recipe["files"][-1] = [training.TEXT_FILE, pilot.digest(data), len(data)]
+        self.recipe["tuning_recordings"] = 1
+        report = self.ingest()
+        config = json.loads((self.root / "output/config.json").read_text())
+        self.assertEqual({s["split"] for s in config["sources"]}, {"training", "tuning"})
+        self.assertEqual(report["profile"], training.SPLIT_PROFILE)
+        self.assertFalse(report["previous_training_models_reusable"])
+        self.assertEqual(sum(len(s["sentence_ids"]) for s in config["sources"]), 2)
+        for source in config["sources"]:
+            self.assertEqual(source["split"], report["recording_assignments"][source["recording_identity_sha256"]])
+
+    def test_tuning_cannot_take_all_recordings(self):
+        self.recipe["tuning_recordings"] = 1
+        with self.assertRaisesRegex(ValueError, "leave at least one"):
+            self.ingest()
+        self.assertFalse((self.root / "output").exists())
+
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)

@@ -68,3 +68,38 @@ full textのUTF-8/cp1252をstrict往復で生成し、変換不能はframework�
 会話という同一domain内のvalidationであり、独立評価を代替しない。
 このPRではmodel再生成・検出精度評価・独立holdout予測は行っていない。
 本文やmodelをrepositoryへ公開せず、P01の保留作業も再開しない。
+
+## training / tuningを分ける新しいrevision
+
+係数を調整する場合は既存validationを転用せず、別recipeへ
+`"tuning_recordings": 8`を指定する。既知の隔離を適用した後の32録音について、
+recording identity SHA-256の昇順の先頭8録音をtuning、残り24録音をtrainingとする。
+順位は本文、文字コードへの変換可否、入力長、検出結果には依存しない。
+録音内の文を別splitに分けない。少なくとも1録音をtrainingに残す条件を検証する。
+
+新profileは`paris-stories-recording-training-tuning-v1`。
+既存recipeにこのfieldがない場合は従来どおり全録音trainingで、旧profileを維持する。
+recipe・出力先を新しくし、既存corpus、validation manifest、modelを上書きしない。
+reportには録音ごとの割当と`previous_training_models_reusable: false`を記録する。
+通常のframeworkで生成した後、既存split/近重複監査を再実行する。
+
+32録音すべてで学習した旧モデルは、新しいtuning録音を既に学習しているため、
+新分割での未学習比較には使えない。24録音だけからmodelを再生成する。
+この分割は「未読の独立holdoutを確保した」という主張ではない。既存trainingとして
+利用済みの資料を、今後の再学習・較正のために分離する手続きである。
+話者・意味内容の独立性は録音IDの分離だけでは保証しない。
+係数候補や採否基準はtuning予測を見る前に固定し、独立holdoutは引き続き開封しない。
+
+固定recipeは`corpus/sources/paris-training-tuning.json`。上記ingest/generate commandの
+recipeと出力先を変更して再現する。外部再取得は不要で、既存の検証済みraw cacheを使える。
+
+初回の実データ検証ではtraining 24録音 / tuning 8録音、UTF-8/cp1252の64 variantsが
+全て成功した。別出力先への再取込・再生成は全fileでbyte一致した。
+tuningのfull入力は1,625〜3,331 bytesで、4 KiB上限の候補競合評価に収まる。
+長さによる録音の再選択は行っていない。
+
+- 新manifest content hash: `1da3f89ee4325d1216e79aefc078def8fb4d8fec3730f3893deef4af0648bd19`
+- validationを含む48 source / 1,128 pairの近似重複候補: 0
+- overlap report content hash: `b0691327f16ef9447e5b778ba62088adf70877e55175aa0e18fdfda5f1a87434`
+
+この段階では新modelの学習・tuning予測・係数変更はまだ実施していない。

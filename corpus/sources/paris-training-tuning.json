@@ -1,0 +1,58 @@
+{
+  "recipe_version": 1,
+  "repository": "UniversalDependencies/UD_French-ParisStories",
+  "revision": "dec76f7a1731318b033c578d534410b0a3d4ea5c",
+  "license": "CC-BY-SA-4.0",
+  "upstream_split": "train",
+  "quarantine_recording_ids": [
+    "3d6643a3c3dc8219b68ff1a45c1d48c35635be5dea1ca7ffd61a17d8c9b0235c"
+  ],
+  "quarantine_sentence_ids": [
+    "ParisStories_2020_maisonAbondonnee_1",
+    "ParisStories_2020_maisonAbondonnee_2",
+    "ParisStories_2020_maisonAbondonnee_3",
+    "ParisStories_2020_maisonAbondonnee_4",
+    "ParisStories_2020_maisonAbondonnee_5",
+    "ParisStories_2020_maisonAbondonnee_6",
+    "ParisStories_2020_maisonAbondonnee_7",
+    "ParisStories_2020_maisonAbondonnee_8",
+    "ParisStories_2020_maisonAbondonnee_9",
+    "ParisStories_2020_maisonAbondonnee_10",
+    "ParisStories_2020_maisonAbondonnee_11",
+    "ParisStories_2020_maisonAbondonnee_12",
+    "ParisStories_2020_maisonAbondonnee_13",
+    "ParisStories_2020_maisonAbondonnee_14",
+    "ParisStories_2020_maisonAbondonnee_15",
+    "ParisStories_2020_maisonAbondonnee_16",
+    "ParisStories_2020_maisonAbondonnee_17",
+    "ParisStories_2020_maisonAbondonnee_18",
+    "ParisStories_2020_maisonAbondonnee_19",
+    "ParisStories_2020_maisonAbondonnee_20",
+    "ParisStories_2020_maisonAbondonnee_21",
+    "ParisStories_2020_maisonAbondonnee_22",
+    "ParisStories_2020_maisonAbondonnee_23",
+    "ParisStories_2020_maisonAbondonnee_24",
+    "ParisStories_2020_maisonAbondonnee_25",
+    "ParisStories_2020_maisonAbondonnee_26",
+    "ParisStories_2020_maisonAbondonnee_27"
+  ],
+  "validation_manifest_content_hash": "6340aff3b3d424fced87b782d75036c64152b4840eec98a05dc9a5b4f90216aa",
+  "files": [
+    [
+      "LICENSE.txt",
+      "899b1804a12ebc090b96339614eede1b64b686721b650a71430b55b5235f7f79",
+      202
+    ],
+    [
+      "README.md",
+      "3a6381529a560d09ffa9746fa6279b1d19ada33bb96386a2fa95e61e74205e91",
+      6015
+    ],
+    [
+      "fr_parisstories-ud-train.conllu",
+      "558c125ecb84f4e16ef8d8871368e24b8c6054446a06da9a5211fc67abb65a1d",
+      2208034
+    ]
+  ],
+  "tuning_recordings": 8
+}
