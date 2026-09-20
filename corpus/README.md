@@ -62,4 +62,5 @@ Python codec環境が違えば同じ結果を保証しません。再現時はPy
 ## 現段階の制約
 
 外部corpusの取得、license本文の自動検証、model学習、近重複排除、HTTP metadata、壊れたHTMLの体系的生成は含みません。
-保存予算・取得予算は実行担当が別途管理します。この基盤のtest成功はdetectorの精度改善を意味しません。
+v1は書き出し前の検証のためartifactをメモリに保持します。元文書と全variantの合計を1回64 MiBまでに制限し、超過は出力前に拒否します（Python object等のoverheadはこの値に含みません）。大規模corpus投入にはstreaming stagingへの拡張が必要です。
+取得・保存全体の予算は実行担当が別途管理します。この基盤のtest成功はdetectorの精度改善を意味しません。

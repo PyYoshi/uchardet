@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from framework import content_hash, digest, encode_variant, generate, safe_path, validate
 
@@ -83,6 +84,25 @@ class CorpusTests(unittest.TestCase):
         source.update(sha256=digest(data), byte_length=len(data), character_length=len(data))
         manifest["sources"].append(source)
         self.assert_invalid(manifest)
+
+    def test_invalid_split_preflight_leaves_no_output(self):
+        config = copy.deepcopy(self.config)
+        config["sources"].append(dict(config["sources"][0], id="renamed", split="training"))
+        with self.assertRaisesRegex(ValueError, "split leakage"):
+            self.generate(config)
+        self.assertFalse((self.root / "out").exists())
+        self.generate()
+
+    def test_duplicate_id_preflight_and_artifact_budget(self):
+        config = copy.deepcopy(self.config)
+        config["sources"].append(config["sources"][0])
+        with self.assertRaisesRegex(ValueError, "duplicate source"):
+            self.generate(config)
+        self.assertFalse((self.root / "out").exists())
+        with patch("framework.MAX_ARTIFACT_BYTES", len(self.raw) + 1):
+            with self.assertRaisesRegex(ValueError, "budget"):
+                self.generate()
+        self.assertFalse((self.root / "out").exists())
 
     def test_strict_unencodable_and_non_roundtrip(self):
         with self.assertRaises(UnicodeEncodeError):

@@ -14,6 +14,7 @@ from pathlib import Path
 
 SPLITS = {"training", "tuning", "validation", "independent"}
 ID = re.compile(r"[A-Za-z0-9_-]+\Z")
+MAX_ARTIFACT_BYTES = 64 * 1024 * 1024
 
 
 def digest(data: bytes) -> str:
@@ -52,6 +53,19 @@ def check_source(source: dict) -> None:
         raise ValueError("invalid source id or split")
     if source["kind"] not in {"synthetic", "natural"}:
         raise ValueError("invalid source kind")
+
+
+def check_source_groups(sources: list[dict]) -> None:
+    ids, hashes, origins = set(), {}, {}
+    for source in sources:
+        check_source(source)
+        if source["id"] in ids:
+            raise ValueError("duplicate source id")
+        ids.add(source["id"])
+        for groups, key in ((hashes, source["sha256"]), (origins, source["origin"])):
+            if key in groups and groups[key] != source["split"]:
+                raise ValueError("source split leakage")
+            groups[key] = source["split"]
 
 
 def encode_variant(text: str, encoding: str, limit: int | None,
@@ -149,9 +163,17 @@ def generate(config: dict, source_root: Path, output: Path) -> dict:
     if output.exists():
         raise ValueError("output must not exist (never overwrite corpus artifacts)")
     sources, samples, files = [], [], {}
+    check_source_groups(config["sources"])
+    artifact_bytes = 0
     for original in config["sources"]:
         check_source(original)
-        data = safe_path(source_root, original["path"]).read_bytes()
+        source_path = safe_path(source_root, original["path"])
+        if source_path.stat().st_size > MAX_ARTIFACT_BYTES - artifact_bytes:
+            raise ValueError("v1 artifact budget exceeded (64 MiB)")
+        data = source_path.read_bytes()
+        artifact_bytes += len(data)
+        if artifact_bytes > MAX_ARTIFACT_BYTES:
+            raise ValueError("v1 artifact budget exceeded (64 MiB)")
         if digest(data) != original["sha256"]:
             raise ValueError("source hash mismatch")
         text = data.decode("utf-8", errors="strict")
@@ -165,6 +187,9 @@ def generate(config: dict, source_root: Path, output: Path) -> dict:
                 for boundary in config.get("boundaries", ["complete"]):
                     for limit in config.get("byte_limits", [None]):
                         encoded, chars = encode_variant(payload, encoding, limit, boundary)
+                        artifact_bytes += len(encoded)
+                        if artifact_bytes > MAX_ARTIFACT_BYTES:
+                            raise ValueError("v1 artifact budget exceeded (64 MiB)")
                         sample_id = f"{source['id']}-{encoding}-{format}-{boundary}-{limit}"
                         sample = dict(id=sample_id, path=f"samples/{sample_id}.bin", source_id=source["id"],
                                       split=source["split"], encoding=encoding, format=format,
