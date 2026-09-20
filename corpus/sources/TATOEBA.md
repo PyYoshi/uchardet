@@ -6,7 +6,8 @@ toolのMITと入力文の `CC0-1.0` は別に扱う。既存Rust book adapterは
 
 ## 固定する前提
 
-- 初期対象は公式CC0 exportの `fra` / `rus` のみ。任意URLや通常exportは受け付けない。
+- 対象は公式CC0 exportの `fra` / `rus` / `jpn` / `ara` / `heb` の明示listのみ。
+  任意URLや通常exportは受け付けない。対応言語の推測によるURL拡張もしない。
 - 公式URLは週次で更新されるためimmutableとはみなさない。取得したbyteをsnapshotとして固定する。
 - 1 snapshot当たり圧縮2 MiB、展開20 MiBを上限とする。追加のネットワーク取得・再試行・redirectは行わない。
 - snapshot、展開本文、生成文をGitへ追加しない。作業ディスクのGit管理外directoryへ保存する。
@@ -18,7 +19,7 @@ toolのMITと入力文の `CC0-1.0` は別に扱う。既存Rust book adapterは
 通常sentence exportの3列形式と混同せず、今回のadapterはこの4列をstrictに検証する。
 
 1. 正の数値sentence ID（重複不可）
-2. 言語code（対象の `fra` または `rus` と一致）
+2. 言語code（指定した許可済みexportのcodeと一致）
 3. 原文（空文字不可）
 4. 追加export metadata（意味未確定、`export_metadata_raw` としてそのまま保存）
 
@@ -41,7 +42,7 @@ uv run --no-project python corpus/sources/tatoeba.py ingest /disk/tatoeba/fra-sn
 uv run --no-project python corpus/framework.py generate /disk/tatoeba/fra-input-1/config.json /disk/tatoeba/fra-generated-1 --failure-policy record-and-continue
 ```
 
-`capture` のURLは公式HTTPS CC0の2 URLのみから決定し、任意URL、redirect、再試行は許可しない。
+`capture` のURLは公式HTTPS CC0の5 URLのみから決定し、任意URL、redirect、再試行は許可しない。
 同じ出力pathを指定するとnetwork取得前に停止する。新しい週の再取得は `capture` を明示的に実行し、別directoryへ保存する。
 `validate` / `ingest` はcache不足・破損時も自動取得しない。
 
@@ -91,7 +92,16 @@ adapterを使わずoriginを書き換えたデータや、Tatoeba外の重複ま
 近重複や翻訳の独立性を保証する指標とも扱わない。
 意味内容・native予測・legacy codecでの表現可否を選択条件にしない。
 
-選択した原文をUTF-8で保存し、仏語はUTF-8／CP1252、露語はUTF-8／CP1251向けのconfigを作る。
+選択した原文をUTF-8で保存し、次のconfigを作る。
+
+| export | manifest language | encoding |
+| --- | --- | --- |
+| fra | fr | UTF-8 / CP1252 |
+| rus | ru | UTF-8 / CP1251 |
+| jpn | ja | UTF-8 / CP932 |
+| ara | ar | UTF-8 / CP1256 |
+| heb | he | UTF-8 / CP1255 |
+
 Unicode正規化、文字置換、文字削除、legacy codecで表現不能なsentenceの事前除外はしない。
 変換不能・非往復mappingはcorpus frameworkの `record-and-continue` で記録する。
 このadapterの成功はmodel学習・精度改善・独立評価を意味しない。
@@ -112,6 +122,28 @@ skipはcodec×sizeのvariant件数であり、除外sentence数ではない。
 2 manifest、400 source recordsの横断split監査は成功した。
 生成済み2,367 sampleを棚卸ししたが、native評価・独立holdout評価は行っていない。
 Python codecのversionは生成manifestに記録する。異なるencoder versionでの同一hashを保証しない。
+
+## 日本語・アラビア語・ヘブライ語の追加pilot（2026-09-21 JST）
+
+公式downloadページのCC0 listを確認し、各exportを1回だけ取得した。
+圧縮転送量は合計1,783 bytes。新しい[結果JSON](tatoeba-script-pilot-2026-09-21.json)に
+本文を含めずsnapshot hash、件数、manifest content hashを固定した。
+
+| 言語 | archive内 / 採用sentence | requested limit | 生成attempt / 成功 / skip |
+| --- | ---: | ---: | ---: |
+| 日本語 | 2 / 2 | 200 | 12 / 12 / 0 |
+| アラビア語 | 2 / 2 | 200 | 12 / 12 / 0 |
+| ヘブライ語 | 27 / 27 | 200 | 162 / 162 / 0 |
+
+別出力でのingestとgenerateは全ファイルbyte一致。
+既存の仏語・露語snapshotの再ingestも、以前のconfig/report/本文と全byte一致だった。
+5言語431 source recordsの横断split監査も成功し、全体を同じvalidation originに保持した。
+これは翻訳関係がないことや意味的独立性の保証ではない。
+
+**日本語・アラビア語は各2文しかなく、代表的な精度評価やmodel学習には不足する。**
+ヘブライ語も27文の小規模pilotにすぎない。取得成功を十分なcoverageと数えず、
+次のsource選定では別の権利確認済みcollectionと文書・著者の多様性が必要となる。
+すべてvalidationであり、native予測・model学習・独立holdout評価は行っていない。
 
 ## 参照
 

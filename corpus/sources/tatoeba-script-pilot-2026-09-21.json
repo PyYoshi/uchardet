@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "license": "CC0-1.0",
+  "origin": "tatoeba:cc0-pilot",
+  "split": "validation",
+  "compressed_transfer_bytes": 1783,
+  "requested_limit_per_language": 200,
+  "native_predictions_performed": false,
+  "independent_holdout_evaluated": false,
+  "regenerated_files_byte_identical": true,
+  "existing_fra_rus_ingestion_byte_identical": true,
+  "cross_manifest_audit": {"manifests": 5, "source_records": 431, "split_leakage": false},
+  "snapshots": [
+    {
+      "language": "jpn", "sentences": 2, "compressed_bytes": 228,
+      "compressed_sha256": "39e6768de61f901a0904d9e74e554772d4e12286121ec3e2c6bd5307ce543465",
+      "manifest_content_hash": "74e589dbe61e52aff60b7ecc086fe3e9db3aba38b61bec13d3fdeb42eba8a135",
+      "attempted": 12, "successful": 12, "skipped": 0
+    },
+    {
+      "language": "ara", "sentences": 2, "compressed_bytes": 151,
+      "compressed_sha256": "8537d5cce4e878b588d9124f9bf26582c98002681accbcaf69c3927ed43c8364",
+      "manifest_content_hash": "49e19896e6126c5769946af425058d3073b715fea0278529fb19b087c05d7925",
+      "attempted": 12, "successful": 12, "skipped": 0
+    },
+    {
+      "language": "heb", "sentences": 27, "compressed_bytes": 1404,
+      "compressed_sha256": "8c3935be2fc7b15f9208691acf648a1e32e3bb904bf99c297308d24c1bd40028",
+      "manifest_content_hash": "64e407dc46ad27189e556511d5b07c1eee545cf89bda5306d2654e774ee69d9d",
+      "attempted": 162, "successful": 162, "skipped": 0
+    }
+  ],
+  "limitations": ["Small validation pilot, not representative", "Japanese and Arabic have only two sentences each", "No translation independence claim"]
+}
