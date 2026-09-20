@@ -86,3 +86,21 @@ jobs:
         with:
           name: native-conformance
           path: conformance.json
+
+  corpus-portability:
+    name: Corpus tools / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, windows-2022]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+      - name: Corpus tests
+        run: uv run --no-project --python 3.11 python -m unittest discover -s corpus -p 'test_*.py'
+      - name: Acquisition tests
+        run: uv run --no-project --python 3.11 python -m unittest discover -s corpus/sources -p 'test_*.py'
+      - name: Model tests
+        run: uv run --no-project --python 3.11 python -m unittest discover -s models/experimental -p 'test_*.py'

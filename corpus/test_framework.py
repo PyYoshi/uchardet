@@ -154,7 +154,7 @@ class CorpusTests(unittest.TestCase):
         manifest = self.generate()
         manifest["samples"][0]["character_length"] = 1000
         self.assert_invalid(manifest)
-        manifest = json.loads((self.root / "out/manifest.json").read_text())
+        manifest = json.loads((self.root / "out/manifest.json").read_text(encoding="utf-8"))
         target = self.root / "out" / manifest["samples"][0]["path"]
         target.write_bytes(b"tampered")
         self.assert_invalid(manifest)

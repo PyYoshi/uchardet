@@ -89,9 +89,12 @@ class ModelTests(unittest.TestCase):
         header.write_bytes(emit_cpp(self.model))
         source = self.root / "check.cpp"
         source.write_text('#include "model.hpp"\n'
-            'static_assert(uchardet_model_pilot::symbols[233] == 3, "accent count");\n'
-            'int main() { return 0; }\n')
-        subprocess.run(["g++", "-std=c++11", "-Wall", "-Wextra", "-Werror", "-fsyntax-only", str(source)], check=True)
+            'int main() { return uchardet_model_pilot::symbols[233] == 3 ? 0 : 1; }\n',
+            encoding="utf-8")
+        executable = self.root / "check-model.exe"
+        subprocess.run(["g++", "-std=c++11", "-Wall", "-Wextra", "-Werror", str(source),
+                        "-o", str(executable)], check=True, timeout=60)
+        subprocess.run([str(executable)], check=True, timeout=30)
 
 
 if __name__ == "__main__":
