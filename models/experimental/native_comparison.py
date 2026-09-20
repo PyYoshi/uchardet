@@ -72,8 +72,7 @@ def summarize(documents):
     )
 
 
-def compare(identity, filtered, manifest, root, split, library, compiler="c++"):
-    records = select_records(identity, filtered, manifest, root, split)
+def observe_models(identity, filtered, records, library, compiler="c++"):
     library = Path(library).resolve(strict=True)
     library_hash = digest(library.read_bytes())
     profiles, lengths = {}, {}
@@ -91,14 +90,16 @@ def compare(identity, filtered, manifest, root, split, library, compiler="c++"):
             for source, sample, data in records:
                 observed = sequence_probe.observe(binary, data)
                 current = (observed["raw_bytes"], observed["filtered_bytes"])
-                if source["id"] in lengths and current != lengths[source["id"]]:
+                key = (source["id"], sample["id"])
+                if key in lengths and current != lengths[key]:
                     raise ValueError("filter lengths differ between models")
-                lengths[source["id"]] = current
+                lengths[key] = current
                 documents.append(
                     dict(
                         source=source,
                         sample_sha256=sample["sha256"],
                         sample_id=sample["id"],
+                        sample_encoding=sample["encoding"],
                         encoder=sample["encoder"],
                         encoder_version=sample["encoder_version"],
                         observation=observed,
@@ -112,6 +113,12 @@ def compare(identity, filtered, manifest, root, split, library, compiler="c++"):
         )
     if digest(library.read_bytes()) != library_hash:
         raise ValueError("static library changed during comparison")
+    return profiles
+
+
+def compare(identity, filtered, manifest, root, split, library, compiler="c++"):
+    records = select_records(identity, filtered, manifest, root, split)
+    profiles = observe_models(identity, filtered, records, library, compiler)
     report = dict(
         schema="native-french-model-comparison-v1",
         deployment_status="NOT_ENGINE_CALIBRATED",
