@@ -4,7 +4,7 @@
 公開 C API の追加や detector library 内への hook 挿入はありません。
 `BUILD_INTROSPECTION` は既定OFFで、通常buildのhot pathには観測処理を追加しません。
 内部symbolを参照するためstatic build専用です。
-group headerには診断accessor用のfriend宣言のみを追加しています。
+groupとlanguage detectorのheaderには診断accessor用のfriend宣言のみを追加しています。
 accessorの実装・event記録・前回snapshotの保持は診断実行ファイルにだけ存在し、
 engineのobject layout・vtable・hot pathや公開C APIは変更しません。
 
@@ -36,6 +36,12 @@ JSONLの `initial`／`after_feed`／`after_end` eventには次を記録します
   raw_reportはsnapshotではないため、previousの更新対象にはなりません。
   activeはgroupが持つ実際のflag、stateはchildの実際のGetState値であり、同義では
   ありません。reject等の根本原因は観測していないため `state_reason="unknown"`。
+- `language_detectors`: multibyte group内で生成済みのlanguage detector一覧。
+  group未生成時はnull。各slotのprober index、language index、内部state、処理文字総数、
+  sequence総数、4分類counter（negative / neutral / probable / positive順）を記録します。
+  `model_language`は既存modelの静的なlabelで、予測languageではありません。
+  modelを持たないCJK detectorではnullです。未生成slotは一覧に含めません。
+  `unlikely`はlanguage detector自身のstateであり、groupによるencoding棄却とは別です。
 
 childのindexは同一source revisionのgroup内で安定しており、revisionを跨ぐmodel追加・
 並べ替えで変わる可能性があります。encoding名・language名の代わりにindexを使い、
@@ -70,8 +76,8 @@ UTF-16の2-byte BOM単独も同じ長さ条件により検出されません。
 
 ## 未観測の領域
 
-group直下childのstate/active変化は観測できますが、その内部state machineの遷移、
-language detectorの内部状態、rejectの根本原因、threshold以下の候補、rankingの詳細
+group直下childのstate/active変化とlanguage detectorのstate・累積counterは観測できますが、
+byte state machineの遷移、rejectの根本原因、threshold以下の候補、rankingの詳細
 理由は未観測です。doneとshortcut・group状態から原因を断定しません。
 したがってこれはV3-06の初期基盤であり、introspection全体の完了ではありません。
 
@@ -99,3 +105,38 @@ state・raw Report・confidenceが同じであることも比較します。
 byte単位で一致しました。archive自体のmetadata差分は別扱いです。
 これは当該buildでの生成コード比較であり、性能向上や全toolchainでの一致の主張では
 ありません。既定OFFは維持し、診断tool自体の追加出力・allocationは計測用途から除外します。
+
+## language観測の限定検証（2026-09-21）
+
+追加観測は初期化済みのfieldとmodelの静的labelを読むだけです。
+GetLanguage / GetConfidence / GetCandidatesを追加で呼ばず、cacheを更新しません。
+CJK側の遅延計算済みlanguage/confidenceも読みません。基底の文字counter等だけを読みます。
+観測位置はfeed後・DataEnd後であり、1文字ごとの内部遷移を再現するものではありません。
+
+`test_language_trace.py` は従来と同じ空・ASCII・135-byte日本語UTF-8 fixtureだけを使います。
+
+```sh
+UCHARDET_TRACE="$PWD/build-trace/benchmark/uchardet-trace" \
+  uv run --no-project python -m unittest discover -s benchmark -p test_language_trace.py
+```
+
+`UCHARDET_LANGUAGE_TRACE_BASELINE`へ変更前（childrenあり・language_detectorsなし）の
+toolを指定すると、新fieldを除いたsnapshot・raw Report・confidenceの一致も検証します。
+比較変数がない場合はその比較をskipと表示します。旧children追加前の比較用変数とは別です。
+
+GCC 16.2.1 / 同じRelease build directory・flagsで、変更前 `664101c` と比較しました。
+空・ASCII・日本語のwhole / 1 / 7 / 64 / 1024 feedについて旧観測が一致しました。
+同一feedでの最終候補も、既存nested testのfresh/reuse・固定randomを含む6 scheduleで一致。
+静的library内の全61 object memberもbyte一致しました。archive自体にはmetadata差があり、
+archive hash一致とは主張しません。全compilerでの一致や一般的な性能測定ではありません。
+
+135-byte日本語を7-byte feedした後の例では、39 language slotを観測しました。
+French modelは45文字・35 sequence、4分類counterはすべて0でした。
+これは低頻度・model外の文字対がsequence総数だけに加算される実装によるもので、
+4分類の合計をconfidenceの分母と同一視できないことを示します。
+当初testが両者の一致を仮定して失敗したため、sourceと実測に合わせてtestを修正しました。
+engineのcounterや判定を修正したわけではありません。
+
+modelを持たないCJK slotは同じ45文字でもsequence総数0でした。
+これを「model未対応」「文字を未処理」と解釈しません。state_reasonは引き続きunknownです。
+新しいfuzz、大入力、安全性修正、BOM改善、独立holdout評価は行っていません。

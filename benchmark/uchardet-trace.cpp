@@ -47,6 +47,38 @@ public:
   static std::vector<ChildState> Children(const nsSBCSGroupProber& group) {
     return Read(group.mProbers, group.mIsActive, group.n_sbcs_probers);
   }
+  static void Languages(const nsMBCSGroupProber* group) {
+    if (!group) { std::cout << "null"; return; }
+    std::cout << '[';
+    bool first = true;
+    for (size_t i = 0; i < NUM_OF_PROBERS; ++i) {
+      for (size_t j = 0; j < NUM_OF_LANGUAGES; ++j) {
+        const nsLanguageDetector* detector = group->langDetectors[i][j];
+        if (!detector) continue;
+        if (!first) std::cout << ',';
+        first = false;
+        std::cout << "{\"prober_index\":" << i << ",\"language_index\":" << j
+                  << ",\"model_language\":";
+        quoted(detector->mModel ? detector->mModel->langName : nullptr);
+        std::cout << ",\"state\":";
+        switch (detector->mState) {
+          case STATE_DETECTING: quoted("detecting"); break;
+          case STATE_FOUND: quoted("found"); break;
+          case STATE_UNLIKELY: quoted("unlikely"); break;
+          default: throw std::runtime_error("unknown language detector state");
+        }
+        std::cout << ",\"total_characters\":" << detector->mTotalChar
+                  << ",\"total_sequences\":" << detector->mTotalSeqs
+                  << ",\"sequence_categories\":[";
+        for (size_t category = 0; category < LANG_NUMBER_OF_SEQ_CAT; ++category) {
+          if (category) std::cout << ',';
+          std::cout << detector->mSeqCounters[category];
+        }
+        std::cout << "],\"state_reason\":\"unknown\"}";
+      }
+    }
+    std::cout << ']';
+  }
 private:
   static std::vector<ChildState> Read(nsCharSetProber* const* probers,
                                     const PRBool* active, size_t count) {
@@ -81,7 +113,9 @@ public:
     Children(dynamic_cast<nsMBCSGroupProber*>(mCharSetProbers[0]), previous_multibyte_);
     std::cout << ",\"singlebyte_group\":";
     Children(dynamic_cast<nsSBCSGroupProber*>(mCharSetProbers[1]), previous_singlebyte_);
-    std::cout << "}}\n";
+    std::cout << "},\"language_detectors\":";
+    UchardetTraceAccess::Languages(dynamic_cast<nsMBCSGroupProber*>(mCharSetProbers[0]));
+    std::cout << "}\n";
   }
 protected:
   void Report(const char* encoding, const char* language, float confidence) override {
