@@ -89,6 +89,8 @@ typedef enum {
 } nsDetectState;
 
 class nsLanguageDetector {
+  // Read-only accessor implemented only in the opt-in diagnostic executable.
+  friend class UchardetTraceAccess;
 public:
   nsLanguageDetector(const LanguageModel *model) : mModel(model) {
     for (PRUint32 i = 0; i < LANG_ORDER_CACHE_SIZE; i++)
