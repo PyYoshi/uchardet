@@ -29,6 +29,7 @@ include(GNUInstallDirs)
 
 option(BUILD_BINARY "Build the CLI tool." ON)
 option(BUILD_BENCHMARK "Build the native benchmark tool." OFF)
+option(BUILD_CXX20_PROBE "Build standalone C++20 library feature probe (not linked to detector)." OFF)
 option(UCHARDET_WARNINGS "Enable additional compiler warnings (not errors)." OFF)
 option(UCHARDET_ASAN "Instrument this build with AddressSanitizer." OFF)
 option(UCHARDET_UBSAN "Instrument this build with UndefinedBehaviorSanitizer." OFF)
@@ -99,6 +100,9 @@ if (BUILD_TESTING)
 endif ()
 if (BUILD_BENCHMARK)
     add_subdirectory(benchmark)
+endif ()
+if (BUILD_CXX20_PROBE)
+    add_subdirectory(tools/cxx20)
 endif ()
 
 ######## Exported targets
