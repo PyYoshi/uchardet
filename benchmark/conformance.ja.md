@@ -1,5 +1,8 @@
 # v3 native conformance 基盤
 
+内部stateの任意観測とBOM境界の原因調査は [introspectionガイド](introspection.ja.md)
+を参照してください。
+
 `uchardet-conformance` は公開 C API の結果を JSONL で観測する専用 tool です。
 `BUILD_BENCHMARK=ON` で既存 benchmark と一緒に build します。
 既存 `uchardet-output` の TSV 形式・呼び出し方は変更しません。
