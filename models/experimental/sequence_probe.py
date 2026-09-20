@@ -143,6 +143,18 @@ def _build(header, model_metadata, library, directory, compiler, *, allocations=
     return binary, provenance
 
 
+def validate_resources(resources):
+    if resources is None:
+        return
+    fields = {
+        "user_cpu_ns", "system_cpu_ns", "voluntary_switches", "involuntary_switches",
+        "minor_faults", "major_faults",
+    }
+    if (not isinstance(resources, dict) or set(resources) != fields or
+            any(type(v) is not int or not 0 <= v < 2**63 for v in resources.values())):
+        raise ValueError("invalid native resource counters")
+
+
 def observe(binary, data, iterations=None):
     if len(data) > 65536:
         raise ValueError("probe input exceeds 65536 bytes")
@@ -172,6 +184,7 @@ def observe(binary, data, iterations=None):
         expected = int(observation["snapshot"]["confidence_bits"], 16) * iterations
         if benchmark["elapsed_ns"] <= 0 or benchmark["checksum"] != expected:
             raise ValueError("invalid native elapsed time/checksum")
+        validate_resources(benchmark.get("resources"))
     return observation
 
 

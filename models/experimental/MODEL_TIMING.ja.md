@@ -48,6 +48,24 @@ checksumはconfidence bits × iteration数とも照合する。
 計時値は再実行で変動する。JSON全byteの一致を性能の再現性と扱わず、独立runの分布を比較する。
 保存先はrunごとに変える。異なる既存reportを上書きしない。
 
+## v2: 試行ごとのresource観測
+
+Linuxでは[`getrusage(RUSAGE_SELF)`](https://man7.org/linux/man-pages/man2/getrusage.2.html)
+をwall計測の直前・直後に呼び、user/system CPU時間、voluntary/involuntary context switch、
+minor/major page faultの差を保存する。単一thread processの観測で、他processや子processは含めない。
+counter読取りはwall区間外だが、resource差分の区間はclock読取り等を含むため厳密には異なる。
+CPU時間はmicrosecond精度のtimevalをnsへ換算した値で、ns分解能を意味しない。
+短い試行では0もあり得る。CPU時間がwall時間以下であることをassertしない。
+
+report schemaは`native-model-timing-v2`。各sourceの`trial_resources`配列は`elapsed_ns`と
+同じ試行順・件数で、全試行を除外せず保存する。Linuxのresource取得失敗は計測失敗とする。
+non-Linuxの低レベルprobeは`resources: null`とし、未観測値を0と偽らない。
+Linux affinity必須の上位runnerはresourceが欠けた場合にreport生成を拒否する。
+
+CPUとwallの差やcontext switchの増加は原因調査の材料であって、個々の停止時間や
+周波数・cache missの計測ではない。相関だけでOSやmodelを原因と断定しない。
+新しいcounterを理由に試行を自動削除したり、過去reportを補完したりしない。
+
 ## 採用判断とは別
 
 このtoolは単一モデルのreuse処理コストだけを測る。allocation数、ピークmemory、

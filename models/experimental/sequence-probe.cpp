@@ -11,6 +11,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#ifdef __linux__
+#include <sys/resource.h>
+#endif
 #ifdef UCHARDET_ALLOCATION_PROBE
 #include "allocation-hooks.hpp"
 #endif
@@ -95,13 +98,24 @@ int main(int argc, char** argv) {
     std::int64_t elapsed_ns = 0;
     volatile std::uint64_t checksum = 0;
     const unsigned warmup = 128;
+#ifdef __linux__
+    struct rusage usage_before = {}, usage_after = {};
+#endif
     if (iterations) {
       for (unsigned i = 0; i < warmup; ++i) checksum += run();
       checksum = 0;
+#ifdef __linux__
+      if (getrusage(RUSAGE_SELF, &usage_before) != 0)
+        throw std::runtime_error("cannot read resource usage before timing");
+#endif
       const auto start = std::chrono::steady_clock::now();
       for (std::uint64_t i = 0; i < iterations; ++i) checksum += run();
       elapsed_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
           std::chrono::steady_clock::now() - start).count();
+#ifdef __linux__
+      if (getrusage(RUSAGE_SELF, &usage_after) != 0)
+        throw std::runtime_error("cannot read resource usage after timing");
+#endif
     }
     std::cout << "{\"schema\":\"sequence-native-probe-v1\",\"raw_bytes\":" << data.size()
               << ",\"filtered_bytes\":" << retained
@@ -126,7 +140,22 @@ int main(int argc, char** argv) {
       std::cout << ",\"benchmark\":{\"iterations\":" << iterations
                 << ",\"warmup_iterations\":" << warmup
                 << ",\"elapsed_ns\":" << elapsed_ns
-                << ",\"checksum\":" << checksum << '}';
+                << ",\"checksum\":" << checksum << ",\"resources\":";
+#ifdef __linux__
+      const auto cpu_ns = [](const struct timeval& value) -> std::int64_t {
+        return static_cast<std::int64_t>(value.tv_sec) * 1000000000 +
+               static_cast<std::int64_t>(value.tv_usec) * 1000;
+      };
+      std::cout << "{\"user_cpu_ns\":" << cpu_ns(usage_after.ru_utime) - cpu_ns(usage_before.ru_utime)
+                << ",\"system_cpu_ns\":" << cpu_ns(usage_after.ru_stime) - cpu_ns(usage_before.ru_stime)
+                << ",\"voluntary_switches\":" << usage_after.ru_nvcsw - usage_before.ru_nvcsw
+                << ",\"involuntary_switches\":" << usage_after.ru_nivcsw - usage_before.ru_nivcsw
+                << ",\"minor_faults\":" << usage_after.ru_minflt - usage_before.ru_minflt
+                << ",\"major_faults\":" << usage_after.ru_majflt - usage_before.ru_majflt << '}';
+#else
+      std::cout << "null";
+#endif
+      std::cout << '}';
     }
     std::cout << "}\n";
     return std::cout ? 0 : 1;

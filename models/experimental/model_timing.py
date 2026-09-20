@@ -93,6 +93,7 @@ def run(
                         sample_sha256=sample["sha256"],
                         byte_length=len(data),
                         elapsed_ns=[],
+                        trial_resources=[],
                     )
                     for source, sample, data in records
                 },
@@ -106,8 +107,13 @@ def run(
                     timing = observed.pop("benchmark")
                     if observed != baselines[name][source["id"]]:
                         raise ValueError("timed run differs from untimed observation")
+                    if timing.get("resources") is None:
+                        raise ValueError("Linux timing requires native resource observation")
                     profiles[name]["sources"][source["id"]]["elapsed_ns"].append(
                         timing["elapsed_ns"]
+                    )
+                    profiles[name]["sources"][source["id"]]["trial_resources"].append(
+                        timing["resources"]
                     )
     if affinity() != cpus or digest(library.read_bytes()) != library_hash:
         raise ValueError("affinity/library changed during timing")
@@ -121,7 +127,7 @@ def run(
         ]
         profile["summed_document_trial_summary"] = summary(totals, iterations)
     report = dict(
-        schema="native-model-timing-v1",
+        schema="native-model-timing-v2",
         corpus_content_hash=manifest["content_hash"],
         split=split,
         scope="reused single prober: reset + filter + feed + confidence + checksum",
@@ -130,6 +136,8 @@ def run(
         repeats=repeats,
         warmup_iterations=128,
         clock="C++ steady_clock; nanoseconds",
+        resource_scope="Linux RUSAGE_SELF deltas around wall interval; single-thread process",
+        resource_precision="CPU timeval microseconds converted to ns; not nanosecond resolution",
         cpu_affinity=cpus,
         aggregate_policy=(
             "sum of independent warmed same-document trial means; not interleaved corpus"
