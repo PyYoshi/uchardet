@@ -83,6 +83,10 @@ jobs:
         run: cmake --preset release -DBUILD_INTROSPECTION=ON
       - name: Build
         run: cmake --build --preset release --parallel 2
+      - name: Build non-default fixed-block pilot
+        run: cmake --build --preset release --target uchardet-fixed-block uchardet-fixed-block-test --parallel 2
+      - name: Fixed-block contract comparisons
+        run: timeout 10s build/release/benchmark/uchardet-fixed-block-test
       - name: Tool tests
         env:
           UCHARDET_TRACE: build/release/benchmark/uchardet-trace
