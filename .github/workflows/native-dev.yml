@@ -89,6 +89,7 @@ jobs:
         run: timeout 10s build/release/benchmark/uchardet-fixed-block-test
       - name: Tool tests
         env:
+          UCHARDET_FIXED_BLOCK: build/release/benchmark/uchardet-fixed-block
           UCHARDET_TRACE: build/release/benchmark/uchardet-trace
           UCHARDET_FILTER_PROFILE: build/release/benchmark/uchardet-filter-profile
         run: uv run --no-project --python 3.11 python -m unittest discover -s benchmark -p 'test_*.py'

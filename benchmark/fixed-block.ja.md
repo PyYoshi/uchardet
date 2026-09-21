@@ -70,9 +70,22 @@ uv run --no-project python benchmark/fixed_block_compare.py \
   /workspace/archives/v3-corpus/paris24-ratio-chunks-v1.json \
   /tmp/uchardet-fixed-block-build/benchmark/uchardet-fixed-block \
   /tmp/uchardet-fixed-block-build/benchmark/uchardet-conformance \
-  /workspace/archives/v3-corpus/fixed-block-tuning-v1.json
+  /workspace/archives/v3-corpus/fixed-block-tuning-v3.json
 ```
 
 `/workspace`は保存済みprivate artifactの実際の配置へ置き換える。
 reportはbinary hash・driver hash・入力hash・全観測を含み、同じ出力への上書きは
 内容が同一の場合のみ許可する。性能・memory測定や一般化した精度保証ではない。
+
+最終driverで再実行したreportのcontent hash:
+`d198e153f5167a561d5809f011717def074fb3ab3991d84fa0f438bad816c63d`。
+driver hash: `ff20a322644fabf6778dcea38ab44145ff06bb00ed765e339c1aee92e36efc67`。
+adapter binary: `b3f82885dcc9dab19b08dd30e26add6daf3a9b83599c62cea5eb8faf03a473fb`、
+baseline binary: `2944d943c50af9a76222617e9591bb6294526b5e18d6390b978501187d67501e`。
+再実行のreport全byte一致。v1/v2はdriverのmetadata検証・記録拡充前の保存物であり、
+結果の選別ではない。各blockの観測結果は同じだった。
+
+追加の7 unittestは、固定report改変、用途/境界/encoding/hash metadata、重複ID、
+範囲外pathの拒否、CLI引数・入力上限、fresh/resetとevidence上限を検証する。
+ローカルのbenchmark suiteは36件中31成功・5 skip（各追加toolの環境指定条件）。
+初回PR CIは11件成功。追加testを含む最終headのCIは別途確認する。
