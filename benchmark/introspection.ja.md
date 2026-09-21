@@ -23,6 +23,15 @@ chunkは0（全体）、1、7、64、1024を指定できます。性能測定に
 
 ## 観測できること
 
+`singlebyte_selection`はSBCS groupの既存キャッシュを読み取ります。
+`cached_best_index`は`children.singlebyte_group`およびmodel統計のindexと対応し、
+未選択ならnull。`active_count`はgroupが保持するactive数です。
+`selection_path`はgroupがfoundなら`found_shortcut`、rejectedなら`all_rejected`、
+それ以外は`unknown`です。detecting状態のキャッシュはconfidence照会でも名前取得時の
+fallbackでも更新され得るため、indexがあるだけで最大scoreによる選択と断定しません。
+GetConfidence/GetCharSetNameを追加で呼ばず、engineの計算や状態を変更しません。
+SBCS内部の選択とC API全候補の先頭選択も別です。
+
 JSONLの `initial`／`after_feed`／`after_end` eventには次を記録します。
 
 - `input_state`：0=ASCII、1=escape系、2=high-byte入力。
