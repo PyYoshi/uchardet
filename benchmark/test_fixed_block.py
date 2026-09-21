@@ -33,7 +33,7 @@ class FrozenInputTests(unittest.TestCase):
             ]
         )
 
-    def run_rejected(self, manifest=None, mutate_previous=False):
+    def run_rejected(self, manifest=None, mutate_previous=False, split="tuning"):
         manifest = copy.deepcopy(manifest or self.manifest)
         previous = dict(
             manifest_hash=comparison.manifest_hash(manifest),
@@ -46,6 +46,12 @@ class FrozenInputTests(unittest.TestCase):
                 )
             ],
         )
+        if split == "validation":
+            previous["corpus_content_hash"] = previous.pop("manifest_hash")
+            previous["split"] = split
+            row = previous["documents"][0]
+            row["sample_encoding"] = row.pop("encoding")
+            row["observations"] = {"legacy": {}}
         frozen = comparison.content_hash(previous)
         previous["content_hash"] = frozen
         if mutate_previous:
@@ -56,11 +62,11 @@ class FrozenInputTests(unittest.TestCase):
         previous_path.write_text(json.dumps(previous), encoding="utf-8")
         # Synthetic frozen fixture only; the production constant is never changed.
         with (
-            patch.object(comparison, "FROZEN", frozen),
+            patch.object(comparison, "FROZEN" if split == "tuning" else "VALIDATION", frozen),
             patch.object(comparison.subprocess, "run") as run,
         ):
             with self.assertRaises(ValueError):
-                comparison.run(manifest_path, previous_path, self.sample, self.sample)
+                comparison.run(manifest_path, previous_path, self.sample, self.sample, split)
             run.assert_not_called()
 
     def test_changed_frozen_report_rejected_before_execution(self):
@@ -87,6 +93,21 @@ class FrozenInputTests(unittest.TestCase):
         manifest = copy.deepcopy(self.manifest)
         manifest["samples"][0]["path"] = "../not-a-corpus-sample"
         self.run_rejected(manifest)
+
+    def test_validation_cannot_use_tuning_or_independent_samples(self):
+        for split in ("tuning", "independent"):
+            manifest = copy.deepcopy(self.manifest)
+            manifest["samples"][0]["split"] = split
+            self.run_rejected(manifest, split="validation")
+
+    def test_modified_validation_report_rejected(self):
+        self.run_rejected(mutate_previous=True, split="validation")
+
+    def test_independent_mode_rejected_before_reading(self):
+        with patch.object(Path, "read_text") as read:
+            with self.assertRaises(ValueError):
+                comparison.run(self.sample, self.sample, self.sample, self.sample, "independent")
+            read.assert_not_called()
 
 
 @unittest.skipUnless(os.environ.get("UCHARDET_FIXED_BLOCK"), "set UCHARDET_FIXED_BLOCK")
