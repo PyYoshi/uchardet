@@ -24,6 +24,13 @@ set_target_properties(
 
 add_executable(uchardet-lifecycle uchardet-lifecycle.cpp)
 target_link_libraries(uchardet-lifecycle ${UCHARDET_LIBRARY})
+if(WIN32 AND BUILD_SHARED_LIBS)
+    add_custom_command(TARGET uchardet-lifecycle POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:${UCHARDET_LIBRARY}>
+            $<TARGET_FILE_DIR:uchardet-lifecycle>
+        VERBATIM)
+endif()
 add_test(NAME native-lifecycle COMMAND uchardet-lifecycle)
 set_tests_properties(native-lifecycle PROPERTIES TIMEOUT 10)
 

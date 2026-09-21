@@ -63,6 +63,15 @@ jobs:
         run: ctest --preset cxx20 -R '^cxx20-library-features$' -V
       - name: Install smoke test
         run: cmake --install build/${{ matrix.preset }} --prefix build/install
+      - name: Configure shared-library lifecycle test
+        if: matrix.preset == 'release'
+        run: cmake -S . -B build/shared-lifecycle -DBUILD_SHARED_LIBS=ON -DBUILD_BINARY=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release
+      - name: Build shared-library lifecycle test
+        if: matrix.preset == 'release'
+        run: cmake --build build/shared-lifecycle --config Release --target uchardet-lifecycle --parallel 2
+      - name: Test shared-library lifecycle
+        if: matrix.preset == 'release'
+        run: ctest --test-dir build/shared-lifecycle -C Release -R '^native-lifecycle$' --output-on-failure --no-tests=error
 
   diagnostics:
     runs-on: ubuntu-24.04

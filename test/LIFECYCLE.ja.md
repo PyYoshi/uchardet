@@ -23,6 +23,9 @@ ctest --test-dir /disk/lifecycle-build -R '^native-lifecycle$' --output-on-failu
 ```
 
 CTest timeoutは10秒。標準engineや公開APIを変更しない。
+CIではstatic presetに加え、Linux/macOS/WindowsのRelease shared libraryにも
+同じtestをリンクして実行する。既存の公開関数`uchardet_is_done`がGNU/Darwinの
+export一覧から漏れていた問題を修正し、shared構成のリンク回帰も検出する。
 error/OOM注入、arbitrary-byte fuzz、大入力、並列利用、language weightの全契約は未対象。
 nativeの繰返しfinalizeやfinalize後feedについては、Python wrapperが呼出しを抑止する
 挙動とnative C APIの保証を混同せず、今回のtestで保証を追加しない。

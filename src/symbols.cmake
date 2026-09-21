@@ -5,6 +5,7 @@ set(
 	uchardet_handle_data
 	uchardet_data_end
 	uchardet_reset
+	uchardet_is_done
 	uchardet_get_charset
     uchardet_get_n_candidates
     uchardet_get_encoding
