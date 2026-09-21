@@ -49,6 +49,20 @@ struct ChildState {
 // state (Hebrew delegates to the two model probers); do not query scores/names.
 class UchardetTraceAccess {
 public:
+  static void Selection(const nsSBCSGroupProber* group) {
+    if (!group) { std::cout << "null"; return; }
+    // Reset initializes this cache. Do not call GetConfidence/GetCharSetName:
+    // both can update it, destroying the state we intend to observe.
+    std::cout << "{\"cached_best_index\":";
+    if (group->mBestGuess < 0) std::cout << "null";
+    else std::cout << group->mBestGuess;
+    std::cout << ",\"active_count\":" << group->mActiveNum
+              << ",\"selection_path\":";
+    if (group->mState == eFoundIt) quoted("found_shortcut");
+    else if (group->mState == eNotMe) quoted("all_rejected");
+    else quoted("unknown"); // Could be a score query or a name fallback.
+    std::cout << '}';
+  }
   static void Machines(const nsMBCSGroupProber* group) {
     if (!group) { std::cout << "null"; return; }
     std::cout << '[';
@@ -174,7 +188,9 @@ public:
     Children(dynamic_cast<nsMBCSGroupProber*>(mCharSetProbers[0]), previous_multibyte_);
     std::cout << ",\"singlebyte_group\":";
     Children(dynamic_cast<nsSBCSGroupProber*>(mCharSetProbers[1]), previous_singlebyte_);
-    std::cout << "},\"language_detectors\":";
+    std::cout << "},\"singlebyte_selection\":";
+    UchardetTraceAccess::Selection(dynamic_cast<nsSBCSGroupProber*>(mCharSetProbers[1]));
+    std::cout << ",\"language_detectors\":";
     UchardetTraceAccess::Languages(dynamic_cast<nsMBCSGroupProber*>(mCharSetProbers[0]));
     std::cout << ",\"prober_evidence\":{\"multibyte_machines\":";
     UchardetTraceAccess::Machines(dynamic_cast<nsMBCSGroupProber*>(mCharSetProbers[0]));
