@@ -125,3 +125,6 @@ uv run --no-project python benchmark/fixed_block_compare.py \
 report content hash: `07945ca56191edfab5afad23c492e708849d2e64b941b5c1338d5e2c89f63c19`。
 3件の追加testで、validationへのtuning/独立sample混入、保存reportの改変、
 独立split指定を拒否する。新旧合わせて10件成功。
+
+後続の[native処理コスト測定](fixed-block-timing.ja.md)では、64-byteの性能悪化が
+2 runで再現した。品質件数だけで64/1024のどちらも採用可能とは判断しない。

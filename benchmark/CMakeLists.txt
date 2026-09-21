@@ -14,6 +14,8 @@ add_executable(uchardet-fixed-block EXCLUDE_FROM_ALL uchardet-conformance.cpp)
 target_compile_definitions(uchardet-fixed-block PRIVATE
   UCHARDET_FIXED_BLOCK_PILOT=1 UCHARDET_EXPERIMENTAL_INPUT_LIMIT=4096)
 target_link_libraries(uchardet-fixed-block ${UCHARDET_LIBRARY})
+add_executable(uchardet-fixed-block-timing EXCLUDE_FROM_ALL fixed-block-timing.cpp)
+target_link_libraries(uchardet-fixed-block-timing ${UCHARDET_LIBRARY})
 
 if(TARGET libuchardet_experimental)
   add_executable(uchardet-conformance-experimental EXCLUDE_FROM_ALL uchardet-conformance.cpp)
