@@ -22,6 +22,11 @@ set_target_properties(
 			uchardet-tests
 )
 
+add_executable(uchardet-lifecycle uchardet-lifecycle.cpp)
+target_link_libraries(uchardet-lifecycle ${UCHARDET_LIBRARY})
+add_test(NAME native-lifecycle COMMAND uchardet-lifecycle)
+set_tests_properties(native-lifecycle PROPERTIES TIMEOUT 10)
+
 # Iterate through all langs.
 file(GLOB dirs "[a-z][a-z]")
 foreach(dir ${dirs})
