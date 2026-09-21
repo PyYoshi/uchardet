@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-"""Frozen small tuning pilot; not independent evaluation or block selection."""
+"""Frozen small tuning/validation pilot; not independent evaluation or selection."""
 
 import argparse
 import hashlib
@@ -16,6 +16,7 @@ from model import canonical, write_idempotent
 from sequence_contract import content_hash
 
 FROZEN = "5d28f112f1ed472e1a438df9790f9e2f50c9aa0e216943059e2bb51621d0c8c1"
+VALIDATION = "7b4695e8ff78effdeca177f71cf761081b46c64427ae8ad5c1d58de02e7e7265"
 BLOCKS = (1, 7, 64, 1024)
 CHUNKS = (0, 1, 7, 64, 1024)
 
@@ -24,27 +25,44 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run(manifest_path, previous_path, binary, baseline):
+def run(manifest_path, previous_path, binary, baseline, split="tuning"):
+    if split not in ("tuning", "validation"):
+        raise ValueError("independent/unknown split is not permitted")
     manifest = json.loads(manifest_path.read_text())
     previous = json.loads(previous_path.read_text())
-    if previous.get("content_hash") != FROZEN or content_hash(previous) != FROZEN:
-        raise ValueError("requires frozen tuning chunk report")
-    if manifest_hash(manifest) != previous["manifest_hash"]:
-        raise ValueError("manifest differs from frozen tuning run")
+    frozen = FROZEN if split == "tuning" else VALIDATION
+    expected_count = 16 if split == "tuning" else 32
+    if previous.get("content_hash") != frozen or content_hash(previous) != frozen:
+        raise ValueError("requires frozen report for selected split")
+    corpus_hash = previous["manifest_hash" if split == "tuning" else "corpus_content_hash"]
+    if manifest_hash(manifest) != corpus_hash:
+        raise ValueError("manifest differs from frozen run")
+    records = previous["documents"]
+    if split == "validation":
+        if previous["split"] != "validation":
+            raise ValueError("prior report is not validation")
+        records = [
+            dict(
+                row,
+                encoding=row["sample_encoding"],
+                observations={"0": {"legacy": row["observations"]["legacy"]}},
+            )
+            for row in records
+        ]
     samples = {s["id"]: s for s in manifest["samples"]}
     if len(samples) != len(manifest["samples"]):
         raise ValueError("duplicate sample IDs")
     hashes = {"adapter": sha(binary), "baseline": sha(baseline)}
     documents = []
-    for old in previous["documents"]:
+    for old in records:
         sample = samples[old["sample_id"]]
         if (
-            sample["split"] != "tuning"
+            sample["split"] != split
             or sample["boundary"] != "complete"
             or sample["encoding"] != old["encoding"]
             or sample["sha256"] != old["sample_sha256"]
         ):
-            raise ValueError("only complete tuning samples are allowed")
+            raise ValueError("only complete samples from selected split are allowed")
         root = manifest_path.parent.resolve()
         path = (root / sample["path"]).resolve()
         if not path.is_relative_to(root) or path.stat().st_size > 4096:
@@ -101,8 +119,8 @@ def run(manifest_path, previous_path, binary, baseline):
                 baseline_score=score(normal, data, sample["encoding"], "fr"),
             )
         )
-    if len(documents) != 16:
-        raise ValueError("expected sixteen frozen tuning inputs")
+    if len(documents) != expected_count:
+        raise ValueError("unexpected number of frozen inputs")
     if hashes != {"adapter": sha(binary), "baseline": sha(baseline)}:
         raise ValueError("binary changed during evaluation")
     summary = {}
@@ -121,9 +139,10 @@ def run(manifest_path, previous_path, binary, baseline):
                 ),
             )
     result = dict(
-        schema="fixed-block-tuning-pilot-v1",
-        previous_hash=FROZEN,
-        manifest_hash=previous["manifest_hash"],
+        schema="fixed-block-" + split + "-pilot-v1",
+        split=split,
+        previous_hash=frozen,
+        manifest_hash=corpus_hash,
         binary_hashes=hashes,
         driver_hash=sha(Path(__file__)),
         blocks=list(BLOCKS),
@@ -143,7 +162,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("manifest", "previous", "binary", "baseline", "output"):
         parser.add_argument(name, type=Path)
+    parser.add_argument("--split", choices=("tuning", "validation"), default="tuning")
     args = parser.parse_args()
-    result = run(args.manifest, args.previous, args.binary.resolve(), args.baseline.resolve())
+    result = run(
+        args.manifest, args.previous, args.binary.resolve(), args.baseline.resolve(), args.split
+    )
     write_idempotent(args.output, canonical(result))
     print(json.dumps(result["summary"], indent=2))

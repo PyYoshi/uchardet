@@ -89,3 +89,42 @@ baseline binary: `2944d943c50af9a76222617e9591bb6294526b5e18d6390b978501187d6750
 範囲外pathの拒否、CLI引数・入力上限、fresh/resetとevidence上限を検証する。
 ローカルのbenchmark suiteは36件中31成功・5 skip（各追加toolの環境指定条件）。
 初回PR CIは11件成功。追加testを含む最終headのCIは別途確認する。
+
+## 既存validationでの固定block比較（2026-09-22）
+
+`--split validation`を明示すると、保存済みfull-engine reportのhash
+`7b4695e8ff78effdeca177f71cf761081b46c64427ae8ad5c1d58de02e7e7265`と
+対応manifestへ固定する。tuningとvalidationは同じ入力として扱わない。
+独立holdoutの指定は受け付けない。結果を見たblock追加やモデル変更は行っていない。
+
+Paris validation 16録音のcp1252/UTF-8各16入力（計32）のすべてを評価した。
+32×4内部block×5外部chunkの640観測で、同じblock長の候補/done/core位置が一致した。
+再実行のreport全byte一致。
+
+| 内部block | cp1252 exact / 16 | cp1252 decode-equivalent / 16 | UTF-8 exact / 16 | wholeと候補全体が異なる入力 / 32 |
+| --- | --- | --- | --- | --- |
+| 1 | 0 | 0 | 16 | 32 |
+| 7 | 3 | 4 | 16 | 32 |
+| 64 | 11 | 16 | 16 | 32 |
+| 1024 | 11 | 16 | 16 | 8 |
+
+legacy whole-inputはcp1252 exact 11/16、decode-equivalent 16/16。
+64/1024がこのvalidationのtop-1件数を維持したことと、旧候補/confidence完全互換は別。
+既に分析に使ったvalidationであり、未参照の独立評価と称しない。
+全言語・実Webへの一般化、性能/memory、block長採用は依然として未確定。
+
+```sh
+uv run --no-project python benchmark/fixed_block_compare.py \
+  /workspace/archives/v3-corpus/paris-stories-generated-1/manifest.json \
+  /workspace/archives/v3-corpus/paris-full-engine-comparison-v1.json \
+  /tmp/uchardet-fixed-block-build/benchmark/uchardet-fixed-block \
+  /tmp/uchardet-fixed-block-build/benchmark/uchardet-conformance \
+  /workspace/archives/v3-corpus/fixed-block-validation-v1.json --split validation
+```
+
+report content hash: `07945ca56191edfab5afad23c492e708849d2e64b941b5c1338d5e2c89f63c19`。
+3件の追加testで、validationへのtuning/独立sample混入、保存reportの改変、
+独立split指定を拒否する。新旧合わせて10件成功。
+
+後続の[native処理コスト測定](fixed-block-timing.ja.md)では、64-byteの性能悪化が
+2 runで再現した。品質件数だけで64/1024のどちらも採用可能とは判断しない。

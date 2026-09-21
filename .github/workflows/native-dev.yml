@@ -84,12 +84,13 @@ jobs:
       - name: Build
         run: cmake --build --preset release --parallel 2
       - name: Build non-default fixed-block pilot
-        run: cmake --build --preset release --target uchardet-fixed-block uchardet-fixed-block-test --parallel 2
+        run: cmake --build --preset release --target uchardet-fixed-block uchardet-fixed-block-test uchardet-fixed-block-timing --parallel 2
       - name: Fixed-block contract comparisons
         run: timeout 10s build/release/benchmark/uchardet-fixed-block-test
       - name: Tool tests
         env:
           UCHARDET_FIXED_BLOCK: build/release/benchmark/uchardet-fixed-block
+          UCHARDET_FIXED_BLOCK_TIMING: build/release/benchmark/uchardet-fixed-block-timing
           UCHARDET_TRACE: build/release/benchmark/uchardet-trace
           UCHARDET_FILTER_PROFILE: build/release/benchmark/uchardet-filter-profile
         run: uv run --no-project --python 3.11 python -m unittest discover -s benchmark -p 'test_*.py'
