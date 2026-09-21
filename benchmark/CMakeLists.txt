@@ -17,6 +17,20 @@ target_link_libraries(uchardet-fixed-block ${UCHARDET_LIBRARY})
 add_executable(uchardet-fixed-block-timing EXCLUDE_FROM_ALL fixed-block-timing.cpp)
 target_link_libraries(uchardet-fixed-block-timing ${UCHARDET_LIBRARY})
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SIZEOF_VOID_P EQUAL 8
+   AND NOT BUILD_SHARED_LIBS AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  add_executable(uchardet-fixed-block-allocations-plain EXCLUDE_FROM_ALL fixed-block-allocations.cpp)
+  target_link_libraries(uchardet-fixed-block-allocations-plain ${UCHARDET_LIBRARY})
+  add_executable(uchardet-fixed-block-allocations EXCLUDE_FROM_ALL
+    fixed-block-allocations.cpp ../models/experimental/allocation-hooks.cpp)
+  target_compile_definitions(uchardet-fixed-block-allocations PRIVATE UCHARDET_ALLOCATION_PROBE=1)
+  target_compile_options(uchardet-fixed-block-allocations PRIVATE -fno-lto)
+  target_link_libraries(uchardet-fixed-block-allocations ${UCHARDET_LIBRARY})
+  foreach(symbol malloc calloc realloc free _Znwm _Znam _ZdlPv _ZdaPv)
+    target_link_options(uchardet-fixed-block-allocations PRIVATE "-Wl,--wrap=${symbol}")
+  endforeach()
+endif()
+
 if(TARGET libuchardet_experimental)
   add_executable(uchardet-conformance-experimental EXCLUDE_FROM_ALL uchardet-conformance.cpp)
   target_compile_definitions(uchardet-conformance-experimental PRIVATE UCHARDET_EXPERIMENTAL_INPUT_LIMIT=4096)
