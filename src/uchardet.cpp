@@ -117,6 +117,8 @@ public:
         std::vector<UChardetCandidate>::iterator it;
 
         nsUniversalDetector::Reset();
+        /* Weighed candidates borrow the strings freed below. */
+        weighed_candidates.clear();
         for (it = candidates.begin(); it != candidates.end(); it++)
         {
             free(it->encoding);

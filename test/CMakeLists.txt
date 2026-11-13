@@ -22,6 +22,25 @@ set_target_properties(
 			uchardet-tests
 )
 
+add_executable(
+	uchardet-lifecycle-tests
+	uchardet-lifecycle-tests.c
+)
+
+target_link_libraries(
+	uchardet-lifecycle-tests
+	${UCHARDET_LIBRARY}
+)
+
+set_target_properties(
+	uchardet-lifecycle-tests
+	PROPERTIES
+		LINKER_LANGUAGE
+			C
+)
+
+add_test(NAME "lifecycle" COMMAND uchardet-lifecycle-tests)
+
 # Iterate through all langs.
 file(GLOB dirs "[a-z][a-z]")
 foreach(dir ${dirs})
